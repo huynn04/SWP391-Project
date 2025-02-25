@@ -3,6 +3,7 @@
     Created on : Feb 12, 2025, 3:39:48 PM
     Author     : Nguyễn Ngoc Huy CE180178
 --%>
+
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.util.List, model.Product" %>
 <!DOCTYPE html>
