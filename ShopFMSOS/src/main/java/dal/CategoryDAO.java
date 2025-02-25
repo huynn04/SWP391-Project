@@ -20,7 +20,9 @@ public class CategoryDAO extends DBContext {
         List<Category> categories = new ArrayList<>();
         String sql = "SELECT category_id, category_name, description, image, status, created_at, updated_at FROM categories";
 
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+        try (Connection con = getConnection(); 
+             PreparedStatement ps = con.prepareStatement(sql); 
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Category category = new Category(
@@ -36,7 +38,7 @@ public class CategoryDAO extends DBContext {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace();  // Nên log lỗi thay vì chỉ in ra console
         }
 
         return categories;
@@ -47,19 +49,20 @@ public class CategoryDAO extends DBContext {
         String categoryName = null;
         String sql = "SELECT category_name FROM categories WHERE category_id = ?";
 
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = getConnection(); 
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, categoryId);
 
-            try ( ResultSet rs = ps.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     categoryName = rs.getString("category_name");
                 }
             }
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace();  // Nên log lỗi thay vì chỉ in ra console
         }
 
         return categoryName;
     }
-
 }

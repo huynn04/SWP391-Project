@@ -103,6 +103,7 @@
                                             <th>Image</th>
                                             <th>ID</th>
                                             <th>Name</th>
+                                            <th>Category Name</th> <!-- Cột mới cho tên danh mục -->
                                             <th>Price</th>
                                             <th>Discount</th>
                                             <th>Quantity</th>
@@ -124,8 +125,9 @@
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </td>
-                                                <td>${product.productId}</td> <!-- ✅ Đã sửa -->
-                                                <td>${product.productName}</td> <!-- ✅ Đã sửa -->
+                                                <td>${product.productId}</td>
+                                                <td>${product.productName}</td>
+                                                <td>${categoryNames[product.productId]}</td> <!-- Hiển thị tên danh mục từ map -->
                                                 <td>${product.price}</td>
                                                 <td>${product.discount}%</td>
                                                 <td>${product.quantity}</td>
@@ -137,17 +139,13 @@
                                                     </c:choose>
                                                 </td>
                                                 <td>
-                                                    <!-- Thêm liên kết xem chi tiết -->
-                                                    <a href="ViewProduct?id=${product.productId}" class="btn btn-info btn-sm">View</a> <!-- ✅ Đã sửa -->
-
-                                                    <!-- Thêm liên kết chỉnh sửa sản phẩm -->
-                                                    <a href="EditProduct?id=${product.productId}" class="btn btn-primary btn-sm">Edit</a> <!-- ✅ Đã sửa -->
-
-                                                    <!-- Thêm liên kết xóa sản phẩm -->
-                                                    <a href="DeleteProduct?id=${product.productId}" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">Delete</a> <!-- ✅ Đã sửa -->
+                                                    <a href="ViewProduct?id=${product.productId}" class="btn btn-info btn-sm">View</a>
+                                                    <a href="EditProduct?id=${product.productId}" class="btn btn-primary btn-sm">Edit</a>
+                                                    <a href="DeleteProduct?id=${product.productId}" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">Delete</a>
                                                 </td>
                                             </tr>
                                         </c:forEach>
+
                                     </tbody>
                                 </table>
                             </div>
@@ -163,7 +161,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
         <script src="https://unpkg.com/feather-icons"></script>
         <script>
-                                                        feather.replace();
+                feather.replace();
         </script>
     </body>
 </html>

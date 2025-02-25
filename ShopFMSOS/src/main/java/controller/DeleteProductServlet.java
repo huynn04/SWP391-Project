@@ -4,7 +4,6 @@
  */
 package controller;
 
-import dal.CategoryDAO;
 import dal.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,13 +11,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.Product;
 
 /**
  *
  * @author Tran Huy Lam CE180899
  */
-public class ViewProductServlet extends HttpServlet {
+public class DeleteProductServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,10 +35,10 @@ public class ViewProductServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ViewProductServlet</title>");
+            out.println("<title>Servlet DeleteProductServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ViewProductServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet DeleteProductServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -58,21 +56,28 @@ public class ViewProductServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Lấy tham số id từ request
+        String idStr = request.getParameter("id");
+        if (idStr == null || idStr.trim().isEmpty()) {
+            // Nếu không có id, chuyển hướng về trang quản lý sản phẩm
+            response.sendRedirect("ManageProduct");
+            return;
+        }
+
+        int productId = Integer.parseInt(idStr);
+
+        // Gọi DAO để xóa sản phẩm
         ProductDAO productDAO = new ProductDAO();
-        int productId = Integer.parseInt(request.getParameter("id"));
-        Product product = productDAO.getProductById(productId);
+        boolean success = productDAO.deleteProduct(productId);
 
-// Lấy tên danh mục của sản phẩm
-        CategoryDAO categoryDao = new CategoryDAO();
-        String categoryName = categoryDao.getCategoryNameById(product.getCategoryId());
-
-// Lưu thông tin sản phẩm và tên danh mục vào request
-        request.setAttribute("product", product);
-        request.setAttribute("categoryName", categoryName);
-
-// Chuyển hướng đến trang view
-        request.getRequestDispatcher("/ViewProduct.jsp").forward(request, response);
-
+        // Sau khi xóa, chuyển hướng về trang quản lý sản phẩm
+        if (success) {
+            response.sendRedirect("ManageProduct");
+        } else {
+            // Nếu xóa thất bại, hiển thị thông báo lỗi và quay lại trang quản lý sản phẩm
+            request.setAttribute("error", "❌ Failed to delete product.");
+            request.getRequestDispatcher("ManageProduct").forward(request, response);
+        }
     }
 
     /**

@@ -18,35 +18,38 @@ import model.Order;
 public class ProductDAO extends DBContext {
 
     public List<Product> getAllProducts() {
-        List<Product> products = new ArrayList<>();
-        String sql = "SELECT product_id, category_id, product_name, detail_desc, image, price, discount, quantity, sold, target, factory, status, created_at, updated_at FROM [products]";
+    List<Product> products = new ArrayList<>();
+    String sql = "SELECT p.product_id, p.category_id, p.product_name, p.detail_desc, p.image, p.price, p.discount, p.quantity, p.sold, p.target, p.factory, p.status, p.created_at, p.updated_at, c.category_name " +
+                 "FROM products p " +
+                 "JOIN categories c ON p.category_id = c.category_id";  // JOIN với bảng categories
 
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                Product product = new Product(
-                        rs.getInt("product_id"),
-                        rs.getInt("category_id"),
-                        rs.getString("product_name"),
-                        rs.getString("detail_desc"),
-                        rs.getString("image"),
-                        rs.getBigDecimal("price"),
-                        rs.getBigDecimal("discount"),
-                        rs.getInt("quantity"),
-                        rs.getInt("sold"),
-                        rs.getString("target"),
-                        rs.getString("factory"),
-                        rs.getInt("status"),
-                        rs.getDate("created_at"),
-                        rs.getDate("updated_at")
-                );
-                products.add(product);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            Product product = new Product(
+                    rs.getInt("product_id"),
+                    rs.getInt("category_id"),
+                    rs.getString("product_name"),
+                    rs.getString("detail_desc"),
+                    rs.getString("image"),
+                    rs.getBigDecimal("price"),
+                    rs.getBigDecimal("discount"),
+                    rs.getInt("quantity"),
+                    rs.getInt("sold"),
+                    rs.getString("target"),
+                    rs.getString("factory"),
+                    rs.getInt("status"),
+                    rs.getDate("created_at"),
+                    rs.getDate("updated_at")
+            );
+            // Chỉ sử dụng category_name từ ResultSet và không cần thêm thuộc tính vào Product
+            products.add(product);
         }
-        return products;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return products;
+}
+
 
     public int countAllProducts() {
         int count = 0;

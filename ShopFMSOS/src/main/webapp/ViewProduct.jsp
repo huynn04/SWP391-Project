@@ -14,6 +14,8 @@
         <title>View Product</title>
         <!-- Using Bootstrap CDN for UI -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+        <!-- Add jQuery Zoom CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.css">
         <style>
             body {
                 padding-top: 56px;
@@ -39,6 +41,7 @@
                 object-fit: cover;
                 border-radius: 15px;
                 margin-bottom: 20px;
+                cursor: zoom-in;  /* Thêm con trỏ chuột khi hover vào ảnh */
             }
             .detail-section {
                 margin-bottom: 30px;
@@ -83,7 +86,7 @@
                 <!-- Main content area -->
                 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                     <div class="pt-3 pb-2 mb-3 border-bottom">
-                        <h1 class="h2">Product Detail</h1>
+                        <h1 class="h2">View Product</h1>
                         <!-- Breadcrumb -->
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
@@ -102,16 +105,19 @@
                             <div class="col-md-4 text-center">
                                 <c:choose>
                                     <c:when test="${not empty product.image}">
-                                        <img src="${product.image}" alt="Product Image" class="product-img"/>
+                                        <!-- Khi click vào hình, mở modal với ảnh phóng to -->
+                                        <img src="${product.image}" alt="Product Image" class="product-img" data-toggle="modal" data-target="#productModal"/>
                                     </c:when>
                                     <c:otherwise>
                                         <img src="image/noimage.jpg" alt="No Image" class="product-img"/>
                                     </c:otherwise>
                                 </c:choose>
                             </div>
+
                             <div class="col-md-8 product-info">
                                 <p><strong>Product ID:</strong> ${product.productId}</p>
                                 <p><strong>Product Name:</strong> ${product.productName}</p>
+                                <p><strong>Category Name:</strong> ${categoryName}</p>
                                 <p><strong>Description:</strong> ${product.detailDesc}</p>
                                 <p><strong>Price:</strong> ${product.price}</p>
                                 <p><strong>Discount:</strong> ${product.discount}%</p>
@@ -129,6 +135,26 @@
                         </div>
                     </div>
 
+
+                    <!-- Modal cho ảnh phóng to -->
+                    <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Product Image</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Ảnh trong modal sẽ được hiển thị to hơn -->
+                                    <img src="${product.image}" alt="Product Image" class="img-fluid" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <!-- Optionally, add more sections like related products, etc. -->
                 </main>
             </div>
@@ -138,9 +164,18 @@
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
         <script src="https://unpkg.com/feather-icons"></script>
+
+        <!-- jQuery Zoom for image zoom -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js"></script>
         <script>
             feather.replace();
+
+            // Initialize zoom effect on the image
+            $(document).ready(function () {
+                $('#productImage').zoom();
+            });
         </script>
     </body>
 </html>
