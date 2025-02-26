@@ -6,7 +6,9 @@ package dal;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import model.Category;
 
 /**
@@ -20,9 +22,7 @@ public class CategoryDAO extends DBContext {
         List<Category> categories = new ArrayList<>();
         String sql = "SELECT category_id, category_name, description, image, status, created_at, updated_at FROM categories";
 
-        try (Connection con = getConnection(); 
-             PreparedStatement ps = con.prepareStatement(sql); 
-             ResultSet rs = ps.executeQuery()) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Category category = new Category(
@@ -49,11 +49,10 @@ public class CategoryDAO extends DBContext {
         String categoryName = null;
         String sql = "SELECT category_name FROM categories WHERE category_id = ?";
 
-        try (Connection con = getConnection(); 
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, categoryId);
 
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     categoryName = rs.getString("category_name");
                 }
@@ -64,5 +63,25 @@ public class CategoryDAO extends DBContext {
         }
 
         return categoryName;
+    }
+
+    // Lấy tổng số lượng sản phẩm theo danh mục
+    public Map<String, Integer> getProductCountByCategory() {
+        Map<String, Integer> productCountMap = new HashMap<>();
+        String sql = "SELECT c.category_name, COUNT(p.product_id) AS product_count FROM categories c "
+                + "LEFT JOIN products p ON c.category_id = p.category_id "
+                + "GROUP BY c.category_name";
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                productCountMap.put(rs.getString("category_name"), rs.getInt("product_count"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return productCountMap;
     }
 }

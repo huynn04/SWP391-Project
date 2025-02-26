@@ -4,7 +4,17 @@ INSERT INTO categories (category_name, description)
 VALUES 
     ('Anime', 'Figures and merchandise from various anime series'),
     ('Pokemon', 'Figures and collectibles from the Pokémon universe'),
-    ('Gundam', 'Scale models and figures from the Gundam franchise');
+    ('Gundam', 'Scale models and figures from the Gundam franchise'),
+    ('One Piece', 'Figures and collectibles from the One Piece universe'),
+    ('Marvel', 'Superhero figures and merchandise from the Marvel universe'),
+    ('DC Comics', 'Figures and collectibles featuring DC superheroes and villains'),
+    ('Star Wars', 'Action figures, models, and memorabilia from Star Wars'),
+    ('Dragon Ball', 'Figures and collectibles from the Dragon Ball series'),
+    ('Naruto', 'Figures and merchandise from the Naruto anime and manga'),
+    ('Demon Slayer', 'Figures and merchandise from Kimetsu no Yaiba (Demon Slayer)'),
+    ('Video Games', 'Figures and collectibles from popular video games'),
+    ('Harry Potter', 'Magical collectibles and figures from the Harry Potter universe');
+
 
 -- Thêm dữ liệu vào bảng `products` với đường dẫn hình ảnh
 INSERT INTO products (category_id, product_name, detail_desc, image, price, quantity)

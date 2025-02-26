@@ -45,7 +45,7 @@
 
         <div class="container-fluid">
             <div class="row">
-                
+
                 <!-- Gắn file sidebar.jsp ở đây -->
                 <jsp:include page="sidebar.jsp" />
 
@@ -131,11 +131,27 @@
                                                 <td>
                                                     <a href="DetailCustomer?id=${customer.userId}" class="btn btn-sm btn-info">View</a>
                                                     <a href="EditCustomer?id=${customer.userId}" class="btn btn-sm btn-primary">Edit</a>
-                                                    <a href="DeleteCustomer?id=${customer.userId}" 
-                                                       class="btn btn-sm btn-danger"
-                                                       onclick="return confirm('Bạn có chắc chắn muốn xóa khách hàng này không?');">
-                                                        Delete
-                                                    </a>
+
+                                                    <c:choose>
+                                                        <c:when test="${customer.status == 1}">
+                                                            <!-- When status is Active, show the Disable button -->
+                                                            <a href="ChangeStatusCustomer?id=${customer.userId}" 
+                                                               class="btn btn-sm btn-danger"
+                                                               onclick="return confirm('Are you sure you want to disable this account?');">
+                                                                Disable
+                                                            </a>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <!-- When status is Inactive, show the Restore button -->
+                                                            <a href="ChangeStatusCustomer?id=${customer.userId}" 
+                                                               class="btn btn-sm btn-success"
+                                                               onclick="return confirm('Are you sure you want to restore this account?');">
+                                                                Restore
+                                                            </a>
+                                                        </c:otherwise>
+                                                    </c:choose>
+
+
                                                 </td>
                                             </tr>
                                         </c:forEach>
@@ -154,7 +170,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
         <script src="https://unpkg.com/feather-icons"></script>
         <script>
-            feather.replace();
+                                                                   feather.replace();
         </script>
     </body>
 </html>

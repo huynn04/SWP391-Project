@@ -19,28 +19,29 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 public class DeleteStaffServlet extends HttpServlet {
    
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Lấy userId từ query string
+        // Get the userId from query string
         String userIdParam = request.getParameter("id");
         if (userIdParam != null) {
             int userId = Integer.parseInt(userIdParam);
 
-            // Tạo đối tượng UserDAO để thực hiện xóa
+            // Create UserDAO object to perform role change
             UserDAO userDAO = new UserDAO();
 
-            // Xóa nhân viên khỏi cơ sở dữ liệu
-            boolean isDeleted = userDAO.deleteUser(userId);
+            // Change staff role to customer (role_id = 3 for customer)
+            boolean isUpdated = userDAO.changeRoleToCustomer(userId);
 
-            // Kiểm tra kết quả và chuyển hướng đến trang StaffManager
-            if (isDeleted) {
-                response.sendRedirect("StaffManager"); // Chuyển hướng lại trang StaffManager nếu xóa thành công
+            // Check result and redirect to Staff Manager page
+            if (isUpdated) {
+                response.sendRedirect("StaffManager"); // Redirect back to StaffManager if successful
             } else {
-                // Nếu xóa thất bại, có thể hiển thị thông báo lỗi
-                request.setAttribute("errorMessage", "Unable to delete the staff member.");
+                // If update fails, show an error message
+                request.setAttribute("errorMessage", "Unable to change the staff role to customer.");
                 request.getRequestDispatcher("StaffManager.jsp").forward(request, response);
             }
         } else {
-            response.sendRedirect("StaffManager"); // Nếu không có id, chuyển hướng về trang StaffManager
+            response.sendRedirect("StaffManager"); // If no id is provided, redirect back to StaffManager
         }
     }
 

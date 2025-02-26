@@ -1,19 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import dal.OrderDAO;
+import dal.CategoryDAO;
+import dal.UserDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
 import model.Order;
 
 /**
@@ -22,24 +20,30 @@ import model.Order;
  */
 public class SalesStatisticsServlet extends HttpServlet {
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Tính tổng doanh thu
-        OrderDAO orderDAO = new OrderDAO();
-        BigDecimal totalRevenue = orderDAO.getTotalRevenue();
+@Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    // Existing DAO for order and category statistics
+    OrderDAO orderDAO = new OrderDAO();
+    CategoryDAO categoryDAO = new CategoryDAO();
+    
+    // Get product count by category and total revenue
+    Map<String, Integer> productCountByCategory = categoryDAO.getProductCountByCategory();
+    BigDecimal totalRevenue = orderDAO.getTotalRevenue();
 
-        // Lấy thông tin về đơn hàng trong tuần qua
-        List<Order> recentOrders = orderDAO.getOrdersByDateRange(LocalDate.now().minusWeeks(1), LocalDate.now());
+    // Get user counts for customers and staff
+    UserDAO userDAO = new UserDAO();
+    int customerCount = userDAO.countUsersByRole(3); // 3 represents customers
+    int staffCount = userDAO.countUsersByRole(2); // 2 represents staff
 
-        // Số đơn hàng đang chờ
-        int pendingOrders = orderDAO.getPendingOrdersCount();
+    // Set attributes for JSP
+    request.setAttribute("productCountByCategory", productCountByCategory);
+    request.setAttribute("totalRevenue", totalRevenue);
+    request.setAttribute("customerCount", customerCount);
+    request.setAttribute("staffCount", staffCount);
 
-        // Chuyển thông tin vào request
-        request.setAttribute("totalRevenue", totalRevenue);
-        request.setAttribute("recentOrders", recentOrders);
-        request.setAttribute("pendingOrders", pendingOrders);
+    // Forward to JSP
+    request.getRequestDispatcher("salesStatistics.jsp").forward(request, response);
+}
 
-        // Chuyển hướng đến trang dashboard
-        request.getRequestDispatcher("dashboard.jsp").forward(request, response);
-    }
 
 }

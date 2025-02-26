@@ -37,12 +37,14 @@ public class ManageProductServlet extends HttpServlet {
             searchBy = "id"; // Tìm kiếm theo tên mặc định
         }
         if (sortBy == null) {
-            sortBy = "id"; // Sắp xếp theo tên mặc định
+            sortBy = "id"; // Sắp xếp theo id mặc định
         }
+
+        // Kiểm tra và cập nhật tham số sortBy nếu cần
         ProductDAO productDAO = new ProductDAO();
         List<Product> products = productDAO.searchProducts(searchQuery, searchBy, sortBy);
 
-// Lấy danh sách tên danh mục
+        // Lấy danh sách tên danh mục
         CategoryDAO categoryDao = new CategoryDAO();
         Map<Integer, String> categoryNames = new HashMap<>();
         for (Product product : products) {
@@ -50,7 +52,7 @@ public class ManageProductServlet extends HttpServlet {
             categoryNames.put(product.getProductId(), categoryName);
         }
 
-// Lưu danh sách sản phẩm và danh mục vào request để hiển thị
+        // Lưu danh sách sản phẩm và danh mục vào request để hiển thị
         request.setAttribute("productList", products);
         request.setAttribute("categoryNames", categoryNames);
         request.getRequestDispatcher("/ManageProduct.jsp").forward(request, response);

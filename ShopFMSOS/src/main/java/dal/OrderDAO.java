@@ -12,7 +12,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import model.Order;
 
 /**
@@ -24,10 +26,9 @@ public class OrderDAO extends DBContext {
     // Tính tổng doanh thu từ tất cả các đơn hàng
     public BigDecimal getTotalRevenue() {
         BigDecimal revenue = BigDecimal.ZERO;
-        String sql = "SELECT SUM(total_price) FROM [orders]";
+        String sql = "SELECT SUM(total_price) FROM orders WHERE status = 1"; // status = 1 cho đơn hàng đã hoàn thành
 
         try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
-
             if (rs.next()) {
                 revenue = rs.getBigDecimal(1);
                 if (revenue == null) {
@@ -149,28 +150,27 @@ public class OrderDAO extends DBContext {
         }
         return pendingOrders;
     }
-        public ArrayList<Order> getTrackedOrders() {
+
+    public ArrayList<Order> getTrackedOrders() {
         ArrayList<Order> trackedOrders = new ArrayList<>();
         String sql = "SELECT * FROM orders WHERE status = 1";
-        try (Connection con = getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Order order = new Order(
-                    rs.getInt("order_id"),
-                    rs.getInt("user_id"),
-                    rs.getBigDecimal("total_price"),
-                    rs.getTimestamp("order_date"),
-                    rs.getInt("status"),
-                    rs.getString("note"),
-                    rs.getString("receiver_name"),
-                    rs.getString("receiver_address"),
-                    rs.getString("receiver_phone"),
-                    rs.getString("payment_method"),
-                    rs.getString("discount_code"),
-                    rs.getTimestamp("delivered_at"),
-                    rs.getTimestamp("canceled_at")
+                        rs.getInt("order_id"),
+                        rs.getInt("user_id"),
+                        rs.getBigDecimal("total_price"),
+                        rs.getTimestamp("order_date"),
+                        rs.getInt("status"),
+                        rs.getString("note"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_address"),
+                        rs.getString("receiver_phone"),
+                        rs.getString("payment_method"),
+                        rs.getString("discount_code"),
+                        rs.getTimestamp("delivered_at"),
+                        rs.getTimestamp("canceled_at")
                 );
                 trackedOrders.add(order);
             }
@@ -179,16 +179,17 @@ public class OrderDAO extends DBContext {
         }
         return trackedOrders;
     }
-        public void confirmOrder(int orderId) {
-    String sql = "UPDATE orders SET status = 1 WHERE order_id = ?";
-    try (Connection con = getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
-        ps.setInt(1, orderId);
-        ps.executeUpdate();
-        System.out.println("Order ID " + orderId + " has been confirmed.");
-    } catch (SQLException e) {
-        e.printStackTrace();
+
+    public void confirmOrder(int orderId) {
+        String sql = "UPDATE orders SET status = 1 WHERE order_id = ?";
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ps.executeUpdate();
+            System.out.println("Order ID " + orderId + " has been confirmed.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
-}
+
 
 }

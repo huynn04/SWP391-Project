@@ -387,5 +387,47 @@ public class UserDAO extends DBContext {
         }
         return false;
     }
-    
+
+    public boolean changeStatus(int userId) {
+        String sql = "UPDATE users SET status = CASE WHEN status = 1 THEN 0 ELSE 1 END WHERE user_id = ?";
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean changeRoleToCustomer(int userId) {
+        String sql = "UPDATE users SET role_id = 3 WHERE user_id = ?"; // 3 represents the customer role
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+// In UserDAO.java
+
+    public int countUsersByRole(int roleId) {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM users WHERE role_id = ?";
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, roleId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
 }

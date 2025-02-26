@@ -48,7 +48,7 @@
         <div class="container-fluid">
             <div class="row">
                 <jsp:include page="sidebar.jsp" />
-                
+
                 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                     <div class="pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2">Staff Management</h1>
@@ -165,9 +165,11 @@
                                                 <td>
                                                     <a href="DetailStaff?id=${staff.userId}" class="btn btn-sm btn-info">View</a>
                                                     <a href="EditStaff?id=${staff.userId}" class="btn btn-sm btn-primary">Edit</a>
-                                                    <a href="DeleteStaff?id=${staff.userId}" class="btn btn-sm btn-danger"
-                                                       onclick="return confirm('Are you sure you want to delete this staff member?');">
-                                                        Delete
+
+                                                    <a href="DeleteStaff?id=${staff.userId}" 
+                                                       class="btn btn-sm btn-warning"
+                                                       onclick="return confirm('Are you sure you want to convert this staff member to a regular customer?');">
+                                                        Convert to Customer
                                                     </a>
                                                 </td>
                                             </tr>
@@ -186,7 +188,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
         <script src="https://unpkg.com/feather-icons"></script>
         <script>
-                                                           feather.replace();
+           feather.replace();
         </script>
     </body>
 </html>

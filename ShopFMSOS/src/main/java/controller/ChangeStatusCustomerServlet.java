@@ -17,9 +17,9 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Nguyễn Ngoc Huy CE180178
  */
-public class DeleteCustomerServlet extends HttpServlet {
+public class ChangeStatusCustomerServlet extends HttpServlet {
    
-    @Override
+     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Lấy tham số id từ request
@@ -32,11 +32,12 @@ public class DeleteCustomerServlet extends HttpServlet {
         
         int userId = Integer.parseInt(idStr);
         
-        // Gọi DAO để xóa khách hàng
+        // Gọi DAO để lấy thông tin người dùng
         UserDAO userDAO = new UserDAO();
-        boolean success = userDAO.deleteUser(userId);
+        boolean success = userDAO.changeStatus(userId);
         
-        // Sau khi xóa, chuyển hướng về trang quản lý khách hàng
+        // Sau khi cập nhật trạng thái, chuyển hướng về trang quản lý khách hàng
         response.sendRedirect("CustomerManager");
     }
+
 }

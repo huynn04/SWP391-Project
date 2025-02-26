@@ -3,265 +3,105 @@
 <html>
     <head>
         <title>Login</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-        <!-- Particles.js -->
-        <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-
-        <style>
-            /* Reset CSS */
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-
-            /* Body Styling with Animated Background */
-            body {
-                font-family: Arial, sans-serif;
-                background: linear-gradient(-45deg, #32CD32, #00BFFF, #2E8B57, #1E90FF); /* Xanh lá và xanh lam */
-                background-size: 400% 400%;
-                animation: gradientBG 10s ease infinite;
-                min-height: 100vh;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                overflow: hidden;
-                position: relative;
-            }
-
-            /* Keyframes for Background Animation */
-            @keyframes gradientBG {
-                0% {
-                    background-position: 0% 50%;
-                }
-                50% {
-                    background-position: 100% 50%;
-                }
-                100% {
-                    background-position: 0% 50%;
-                }
-            }
-
-            /* Particles Background */
-            #particles-js {
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                z-index: 0; /* Đặt phía sau header và login container */
-            }
-
-            /* Header Fixed */
-            #header {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                background-color: rgba(0, 0, 0, 0.8);
-                color: #fff;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-                z-index: 10; /* Header nổi trên background */
-            }
-
-            /* Login Container with Glass Effect */
-            .login-container {
-                width: 400px;
-                padding: 30px;
-                background: rgba(255, 255, 255, 0.15); /* Semi-transparent */
-                border-radius: 10px;
-                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-                backdrop-filter: blur(10px); /* Glassmorphism effect */
-                -webkit-backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.18);
-                text-align: center;
-                color: #fff;
-                z-index: 1;
-            }
-
-            /* Input Fields */
-            .login-container input[type="email"],
-            .login-container input[type="password"] {
-                width: 100%;
-                padding: 12px;
-                margin: 12px 0;
-                border: none;
-                border-radius: 5px;
-                outline: none;
-            }
-
-            .login-container input:focus {
-                outline: 2px solid #00BFFF; /* Xanh lam */
-            }
-
-            /* Submit Button */
-            .login-container button {
-                width: 100%;
-                padding: 12px;
-                background-color: #32CD32; /* Xanh lá */
-                border: none;
-                color: white;
-                border-radius: 5px;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            }
-
-            .login-container button:hover {
-                background-color: #228B22; /* Đậm hơn */
-            }
-
-            /* Link Styling */
-            .login-container p {
-                margin-top: 15px;
-            }
-
-            .login-container a {
-                color: #FFD700;
-                text-decoration: none;
-            }
-
-            .login-container a:hover {
-                text-decoration: underline;
-            }
-
-            /* Social Login Buttons */
-            .social-login {
-                margin-top: 20px;
-            }
-
-            .social-login button {
-                width: 100%;
-                padding: 12px;
-                border: none;
-                border-radius: 5px;
-                margin-bottom: 10px;
-                color: white;
-                font-weight: bold;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            }
-
-            .google-login {
-                background-color: #db4437;
-            }
-
-            .google-login:hover {
-                background-color: #c1351d;
-            }
-
-            .facebook-login {
-                background-color: #4267B2;
-            }
-
-            .facebook-login:hover {
-                background-color: #365899;
-            }
-
-            /* Logo Styling */
-            .social-login img {
-                width: 24px;
-                height: 24px;
-                border-radius: 50%;
-                background-color: white;
-                padding: 2px;
-            }
-
-            /* Footer */
-            #footer {
-                background-color: rgba(0, 0, 0, 0.8);
-                color: #fff;
-                text-align: center;
-                padding: 15px 0;
-                margin-top: auto;
-                z-index: 10;
-            }
-
-            /* Responsive */
-            @media (max-width: 576px) {
-                .login-container {
-                    width: 90%;
-                    padding: 20px;
-                }
-
-            }
-            .login-container {
-                width: 400px;
-                padding: 30px;
-                background: rgba(255, 255, 255, 0.15);
-                border-radius: 10px;
-                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.18);
-                text-align: center;
-                color: #fff;
-                z-index: 1;
-                transition: opacity 0.5s ease-out;  /* Thêm chuyển tiếp */
-            }
-
-            .fade-out {
-                opacity: 0;  /* Khi lớp này được thêm vào, khối sẽ mờ dần */
-            }
-
-        </style>
+        <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     </head>
     <body>
 
         <%@ include file="header.jsp" %>
-
-        <!-- Particles Background -->
-        <div id="particles-js"></div>
-
-        <div class="login-container">
-            <h2>Login</h2>
-            <form action="home.jsp" method="post">
-                <input type="hidden" name="action" value="login">
-                <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <button type="submit">Login</button>
-            </form>
-
-            <div class="social-login">
-                <p>Or login with</p>
-                <!-- Google Login -->
-                <button class="google-login" onclick="location.href = 'https://accounts.google.com/o/oauth2/v2/auth'">
-                    <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" alt="Google Logo">
-                    Login with Google
-                </button>
-
-                <!-- Facebook Login -->
-                <button class="facebook-login" onclick="location.href = 'https://www.facebook.com/v12.0/dialog/oauth'">
-                    <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook Logo">
-                    Login with Facebook
-                </button>
+        <!-- Login 11 - Bootstrap Brain Component -->
+        <section class="py-3 py-md-5 py-xl-8">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mb-5">
+                            <h2 class="display-5 fw-bold text-center">Log In</h2>
+                            <p class="text-center m-0">Don't have an account? <a href="register.jsp">Register</a></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-10 col-xl-8">
+                        <div class="row gy-5 justify-content-center">
+                            <div class="col-12 col-lg-5">
+                                <form action="#!">
+                                    <div class="row gy-3 overflow-hidden">
+                                        <div class="col-12">
+                                            <div class="form-floating mb-3">
+                                                <input type="email" class="form-control border-0 border-bottom rounded-0" name="email" id="email" placeholder="name@example.com" required>
+                                                <label for="email" class="form-label">Email</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-floating mb-3">
+                                                <input type="password" class="form-control border-0 border-bottom rounded-0" name="password" id="password" value="" placeholder="Password" required>
+                                                <label for="password" class="form-label">Password</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="row justify-content-between">
+                                                <div class="col-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" value="" name="remember_me" id="remember_me">
+                                                        <label class="form-check-label text-secondary" for="remember_me">
+                                                            Remember me
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="text-end">
+                                                        <a href="#!" class="link-secondary text-decoration-none">Forgot password?</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-grid">
+                                                <button class="btn btn-primary btn-lg" type="submit">Log in</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-12 col-lg-2 d-flex align-items-center justify-content-center gap-3 flex-lg-column">
+                                <div class="bg-dark h-100 d-none d-lg-block" style="width: 1px; --bs-bg-opacity: .1;"></div>
+                                <div class="bg-dark w-100 d-lg-none" style="height: 1px; --bs-bg-opacity: .1;"></div>
+                                <div>or</div>
+                                <div class="bg-dark h-100 d-none d-lg-block" style="width: 1px; --bs-bg-opacity: .1;"></div>
+                                <div class="bg-dark w-100 d-lg-none" style="height: 1px; --bs-bg-opacity: .1;"></div>
+                            </div>
+                            <div class="col-12 col-lg-5 d-flex align-items-center">
+                                <div class="d-flex gap-3 flex-column w-100 ">
+                                    <a href="#!" class="btn btn-lg btn-danger">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-google" viewBox="0 0 16 16">
+                                        <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z" />
+                                        </svg>
+                                        <span class="ms-2 fs-6">Sign in with Google</span>
+                                    </a>
+                                    <a href="#!" class="btn btn-lg btn-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
+                                        <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z" />
+                                        </svg>
+                                        <span class="ms-2 fs-6">Sign in with Facebook</span>
+                                    </a>
+                                    <a href="#!" class="btn btn-lg btn-dark">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-apple" viewBox="0 0 16 16">
+                                        <path d="M11.182.008C11.148-.03 9.923.023 8.857 1.18c-1.066 1.156-.902 2.482-.878 2.516.024.034 1.52.087 2.475-1.258.955-1.345.762-2.391.728-2.43Zm3.314 11.733c-.048-.096-2.325-1.234-2.113-3.422.212-2.189 1.675-2.789 1.698-2.854.023-.065-.597-.79-1.254-1.157a3.692 3.692 0 0 0-1.563-.434c-.108-.003-.483-.095-1.254.116-.508.139-1.653.589-1.968.607-.316.018-1.256-.522-2.267-.665-.647-.125-1.333.131-1.824.328-.49.196-1.422.754-2.074 2.237-.652 1.482-.311 3.83-.067 4.56.244.729.625 1.924 1.273 2.796.576.984 1.34 1.667 1.659 1.899.319.232 1.219.386 1.843.067.502-.308 1.408-.485 1.766-.472.357.013 1.061.154 1.782.539.571.197 1.111.115 1.652-.105.541-.221 1.324-1.059 2.238-2.758.347-.79.505-1.217.473-1.282Z" />
+                                        <path d="M11.182.008C11.148-.03 9.923.023 8.857 1.18c-1.066 1.156-.902 2.482-.878 2.516.024.034 1.52.087 2.475-1.258.955-1.345.762-2.391.728-2.43Zm3.314 11.733c-.048-.096-2.325-1.234-2.113-3.422.212-2.189 1.675-2.789 1.698-2.854.023-.065-.597-.79-1.254-1.157a3.692 3.692 0 0 0-1.563-.434c-.108-.003-.483-.095-1.254.116-.508.139-1.653.589-1.968.607-.316.018-1.256-.522-2.267-.665-.647-.125-1.333.131-1.824.328-.49.196-1.422.754-2.074 2.237-.652 1.482-.311 3.83-.067 4.56.244.729.625 1.924 1.273 2.796.576.984 1.34 1.667 1.659 1.899.319.232 1.219.386 1.843.067.502-.308 1.408-.485 1.766-.472.357.013 1.061.154 1.782.539.571.197 1.111.115 1.652-.105.541-.221 1.324-1.059 2.238-2.758.347-.79.505-1.217.473-1.282Z" />
+                                        </svg>
+                                        <span class="ms-2 fs-6">Sign in with Apple</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <p>Don't have an account? <a href="register.jsp">Register here</a></p>
-        </div>
+        </section>
 
         <%@ include file="footer.jsp" %>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
 
     </body>
 </html>
-<script>
-    // Lắng nghe sự kiện submit của form
-    document.querySelector('.login-container form').addEventListener('submit', function(event) {
-        event.preventDefault(); // Ngăn submit mặc định để chạy hiệu ứng trước
 
-        const container = document.querySelector('.login-container');
-        container.classList.add('fade-out'); // Thêm lớp để kích hoạt hiệu ứng fade-out
-
-        // Sau khi hiệu ứng hoàn tất (0.5s), tiếp tục submit form
-        setTimeout(() => {
-            event.target.submit();
-        }, 500); // Thời gian delay phù hợp với transition
-    });
-</script>
