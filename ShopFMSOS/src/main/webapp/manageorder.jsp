@@ -3,6 +3,11 @@
     Created on : Feb 24, 2025, 10:58:44 PM
     Author     : Dang Chi Vi CE182507
 --%>
+<%-- 
+    Document   : manageorder
+    Created on : Feb 24, 2025, 10:58:44 PM
+    Author     : Dang Chi Vi CE182507
+--%>
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
@@ -53,12 +58,12 @@
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                 <div class="pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Manage Orders</h1>
-                                <!-- Breadcrumb hiển thị đường dẫn -->
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb breadcrumb-custom">
-                    <li class="breadcrumb-item active" aria-current="page">Order Management</li>
-                </ol>
-            </nav>
+                    <!-- Breadcrumb hiển thị đường dẫn -->
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb breadcrumb-custom">
+                            <li class="breadcrumb-item active" aria-current="page">Order Management</li>
+                        </ol>
+                    </nav>
                 </div>
 
                 <!-- Buttons to navigate to Track Orders and Pending -->
@@ -163,12 +168,5 @@
     </script>
 
 </body>
-<!-- Bootstrap and required scripts -->
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-        <script src="https://unpkg.com/feather-icons"></script>
-        <script>
-            feather.replace();
-        </script>
 </html>
+
