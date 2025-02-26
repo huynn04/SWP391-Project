@@ -24,27 +24,6 @@ import model.Order;
  */
 public class OrderDAO extends DBContext {
 
-<<<<<<< Updated upstream
-=======
-    // Tính tổng doanh thu từ tất cả các đơn hàng
-    public BigDecimal getTotalRevenue() {
-        BigDecimal revenue = BigDecimal.ZERO;
-        String sql = "SELECT SUM(total_price) FROM orders";
-
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                revenue = rs.getBigDecimal(1);
-                if (revenue == null) {
-                    revenue = BigDecimal.ZERO;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return revenue;
-    }
-
->>>>>>> Stashed changes
     public List<Order> getOrdersByUserId(int userId) {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders WHERE user_id = ?";
@@ -194,9 +173,7 @@ public class OrderDAO extends DBContext {
             e.printStackTrace();
         }
     }
-// Tính tổng doanh thu theo tháng và năm
 
-<<<<<<< Updated upstream
     public List<Order> searchOrders(String filterType, String filterValue) throws SQLException {
         List<Order> orders = new ArrayList<>();
         String sql = "";
@@ -264,8 +241,6 @@ public class OrderDAO extends DBContext {
     }
 // Tính tổng doanh thu theo tháng và năm
 
-=======
->>>>>>> Stashed changes
     public BigDecimal getTotalRevenueByMonth(int year, int month) {
         BigDecimal revenue = BigDecimal.ZERO;
         String sql = "SELECT SUM(total_price) FROM orders WHERE YEAR(order_date) = ? AND MONTH(order_date) = ?";
@@ -286,7 +261,6 @@ public class OrderDAO extends DBContext {
         return revenue;
     }
 
-<<<<<<< Updated upstream
 // Lấy tổng doanh thu từ tất cả các đơn hàng
     public BigDecimal getTotalRevenue() {
         BigDecimal revenue = BigDecimal.ZERO;
@@ -318,30 +292,11 @@ public class OrderDAO extends DBContext {
                 if (revenue == null) {
                     revenue = BigDecimal.ZERO;
                 }
-=======
-// Lấy số lượng sản phẩm theo từng danh mục trong tháng và năm
-    public List<Map.Entry<String, Integer>> getProductCountByCategoryAndMonth(int year, int month) {
-        List<Map.Entry<String, Integer>> productCount = new ArrayList<>();
-        String sql = "SELECT category, COUNT(*) FROM orders WHERE YEAR(order_date) = ? AND MONTH(order_date) = ? GROUP BY category";
-
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, year);
-            ps.setInt(2, month);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                String category = rs.getString(1);
-                int count = rs.getInt(2);
-                productCount.add(new AbstractMap.SimpleEntry<>(category, count));
->>>>>>> Stashed changes
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-<<<<<<< Updated upstream
         return revenue;
-=======
-        return productCount;
->>>>>>> Stashed changes
     }
 
 }

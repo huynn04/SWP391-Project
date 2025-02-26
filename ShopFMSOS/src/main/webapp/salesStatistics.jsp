@@ -43,7 +43,6 @@
                 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                     <div class="pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2">Sales Statistics</h1>
-<<<<<<< Updated upstream
                         <!-- Breadcrumb hiển thị đường dẫn -->
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb breadcrumb-custom">
@@ -55,54 +54,11 @@
                     <div class="row">
                         <div class="col-md-6">
                             <h4>Product Count by Category</h4>
-=======
-                    </div>
-
-                    <!-- Form để người dùng chọn năm và tháng -->
-                    <form action="SalesStatistics" method="get">
-                        <div class="form-group">
-                            <label for="year">Year:</label>
-                            <select id="year" name="year" class="form-control">
-                                <option value="2024">2024</option>
-                                <option value="2025">2025</option>
-                                <option value="2026">2026</option>
-                                <option value="2027">2027</option>
-                                <option value="2028">2028</option>
-                                <option value="2029">2029</option>
-                                <option value="2030">2030</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="month">Month:</label>
-                            <select id="month" name="month" class="form-control">
-                                <option value="1">January</option>
-                                <option value="2">February</option>
-                                <option value="3">March</option>
-                                <option value="4">April</option>
-                                <option value="5">May</option>
-                                <option value="6">June</option>
-                                <option value="7">July</option>
-                                <option value="8">August</option>
-                                <option value="9">September</option>
-                                <option value="10">October</option>
-                                <option value="11">November</option>
-                                <option value="12">December</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </form>
-
-                    <!-- Product Count and Revenue Charts -->
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4>Product Count by Category </h4>
->>>>>>> Stashed changes
                             <div class="chart-container">
                                 <canvas id="productCategoryChart"></canvas>
                             </div>
                         </div>
                         <div class="col-md-6">
-<<<<<<< Updated upstream
                             <form action="SalesStatistics" method="get" class="form-inline">
                                 <div class="form-group mx-2">
                                     <label for="year" class="mr-2">Year:</label>
@@ -139,28 +95,18 @@
                             </form>
                             <h4>Total Revenue for ${year} - ${month}:</h4>
                             <h4><fmt:formatNumber value="${totalRevenue}" type="currency" currencySymbol="USD" /></h4>
-=======
-                            <h4>Total Revenue: <fmt:formatNumber value="${totalRevenue}" type="currency" currencySymbol="USD" /></h4>
->>>>>>> Stashed changes
                             <div class="chart-container">
                                 <canvas id="revenueChart"></canvas>
                             </div>
                         </div>
                     </div>
 
-<<<<<<< Updated upstream
                     <!-- Customer and Staff Chart -->
                     <div class="row mt-4">
                         <div class="col-md-6">
                             <h4>Customer & Staff</h4>
                             <h6>Customers: ${customerCount}</h6>
                             <h6>Staff: ${staffCount}</h6>
-=======
-                    <!-- New Users Chart (Customer and Staff) -->
-                    <div class="row mt-4">
-                        <div class="col-md-6">
-                            <h4>Customer & Staff</h4>
->>>>>>> Stashed changes
                             <div class="chart-container">
                                 <canvas id="userCountChart"></canvas>
                             </div>
@@ -169,7 +115,6 @@
                 </main>
             </div>
         </div>
-<<<<<<< Updated upstream
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 var ctxRevenue = document.getElementById("revenueChart").getContext("2d");
@@ -178,17 +123,6 @@
 
                 var totalRevenue = parseFloat("${totalRevenue}") || 0;
 
-=======
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                var ctxRevenue = document.getElementById("revenueChart").getContext("2d");
-                var ctxProduct = document.getElementById("productCategoryChart").getContext("2d");
-                var ctxUser = document.getElementById("userCountChart").getContext("2d");
-
-                var totalRevenue = parseFloat("${totalRevenue}");
-
->>>>>>> Stashed changes
                 var categories = [];
                 var productCounts = [];
 
@@ -197,16 +131,11 @@
                 productCounts.push(${entry.value});
             </c:forEach>
 
-<<<<<<< Updated upstream
                 // Biểu đồ doanh thu - Bar Chart với số hiển thị trên cột
-=======
-                // Revenue Chart with animation
->>>>>>> Stashed changes
                 var revenueChart = new Chart(ctxRevenue, {
                     type: "bar",
                     data: {
                         labels: ["Total Revenue"],
-<<<<<<< Updated upstream
                         datasets: [{
                                 label: "Revenue",
                                 data: [totalRevenue],
@@ -214,44 +143,17 @@
                                 borderColor: "rgba(54, 162, 235, 1)",
                                 borderWidth: 2
                             }]
-=======
-                        datasets: [
-                            {
-                                label: "Revenue",
-                                data: [totalRevenue],
-                                backgroundColor: "rgba(54, 162, 235, 0.5)",
-                                borderColor: "rgba(54, 162, 235, 1)",
-                                borderWidth: 1
-                            }
-                        ]
->>>>>>> Stashed changes
                     },
                     options: {
                         responsive: true,
                         animation: {
                             duration: 1500,
-<<<<<<< Updated upstream
                             easing: 'easeInOutQuad'
-=======
-                            easing: 'easeInOutQuad',
-                            onComplete: function () {
-                                var chartInstance = this.chart;
-                                var ctx = chartInstance.ctx;
-                                ctx.textAlign = 'center';
-                                ctx.fillStyle = 'black';
-                                Chart.helpers.each(this.data.datasets[0].data, function (value, index) {
-                                    var x = chartInstance.getDatasetMeta(0).data[index]._model.x;
-                                    var y = chartInstance.getDatasetMeta(0).data[index]._model.y;
-                                    ctx.fillText('$' + value.toFixed(2), x, y - 10);
-                                });
-                            }
->>>>>>> Stashed changes
                         },
                         scales: {
                             y: {
                                 beginAtZero: true
                             }
-<<<<<<< Updated upstream
                         },
                         plugins: {
                             tooltip: {
@@ -266,27 +168,20 @@
                                     weight: 'bold'
                                 }
                             }
-=======
->>>>>>> Stashed changes
                         }
                     }
                 });
 
-<<<<<<< Updated upstream
                 // Gradient màu cho Line Chart
                 var gradientStroke = ctxProduct.createLinearGradient(0, 0, 0, 400);
                 gradientStroke.addColorStop(0, "rgba(75, 192, 192, 1)");
                 gradientStroke.addColorStop(1, "rgba(153, 102, 255, 0.5)");
 
-=======
-                // Product Count by Category Chart
->>>>>>> Stashed changes
                 var productCategoryChart = new Chart(ctxProduct, {
                     type: "line",
                     data: {
                         labels: categories,
                         datasets: [{
-<<<<<<< Updated upstream
                                 label: "Product Count by Category",
                                 data: productCounts,
                                 fill: true, // Tô màu dưới đường biểu đồ
@@ -298,22 +193,10 @@
                                 pointBorderColor: "#fff",
                                 pointRadius: 5, // Kích thước điểm
                                 pointHoverRadius: 8 // Phóng to điểm khi hover
-=======
-                                label: "Product Count",
-                                data: productCounts,
-                                borderColor: "rgba(75, 192, 192, 1)",
-                                backgroundColor: "rgba(75, 192, 192, 0.2)",
-                                borderWidth: 2,
-                                tension: 0.4,
-                                fill: true,
-                                pointRadius: 5,
-                                pointHoverRadius: 7
->>>>>>> Stashed changes
                             }]
                     },
                     options: {
                         responsive: true,
-<<<<<<< Updated upstream
                         maintainAspectRatio: false,
                         scales: {
                             y: {
@@ -352,34 +235,17 @@
                         animation: {
                             duration: 1500,
                             easing: "easeInOutQuart"
-=======
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        },
-                        animation: {
-                            duration: 1000,
-                            easing: 'easeOutBounce'
->>>>>>> Stashed changes
                         }
                     }
                 });
 
-<<<<<<< Updated upstream
                 // Biểu đồ số lượng người dùng - Pie Chart với hiệu ứng đẹp
                 var userCountChart = new Chart(ctxUser, {
                     type: 'pie',
-=======
-                // User Count Chart (Customers vs Staff)
-                var userCountChart = new Chart(ctxUser, {
-                    type: 'bar',
->>>>>>> Stashed changes
                     data: {
                         labels: ['Customers', 'Staff'],
                         datasets: [{
                                 label: 'User Count',
-<<<<<<< Updated upstream
                                 data: [${customerCount}, ${staffCount}],
                                 backgroundColor: [
                                     'rgba(54, 162, 235, 0.7)',
@@ -390,17 +256,10 @@
                                     'rgba(255, 99, 132, 1)'
                                 ],
                                 borderWidth: 2
-=======
-                                data: [${customerCount}, ${staffCount}], // Fetch from request
-                                backgroundColor: ['rgba(54, 162, 235, 0.5)', 'rgba(75, 192, 192, 0.5)'],
-                                borderColor: ['rgba(54, 162, 235, 1)', 'rgba(75, 192, 192, 1)'],
-                                borderWidth: 1
->>>>>>> Stashed changes
                             }]
                     },
                     options: {
                         responsive: true,
-<<<<<<< Updated upstream
                         plugins: {
                             legend: {
                                 position: 'top',
@@ -423,20 +282,11 @@
                         animation: {
                             animateScale: true,
                             animateRotate: true
-=======
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
->>>>>>> Stashed changes
                         }
                     }
                 });
             });
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
         </script>
 
         <!-- Bootstrap and required scripts -->
