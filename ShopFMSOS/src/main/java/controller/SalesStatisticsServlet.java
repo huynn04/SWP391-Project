@@ -1,21 +1,28 @@
 package controller;
 
 import dal.OrderDAO;
-import dal.CategoryDAO;
-import dal.UserDAO;
 import java.io.IOException;
 import java.math.BigDecimal;
+<<<<<<< Updated upstream
+=======
+import java.util.List;
+import java.util.Map;
+>>>>>>> Stashed changes
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+<<<<<<< Updated upstream
 import model.Order;
 import java.util.Map;
+=======
+>>>>>>> Stashed changes
 
 public class SalesStatisticsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+<<<<<<< Updated upstream
         // Lấy tham số từ yêu cầu
         String yearParam = request.getParameter("year");
         String monthParam = request.getParameter("month");
@@ -32,6 +39,38 @@ public class SalesStatisticsServlet extends HttpServlet {
             // Khai báo các biến năm và tháng
             int year = 0;
             int month = 1;
+=======
+        String yearParam = request.getParameter("year");
+        String monthParam = request.getParameter("month");
+
+        // Kiểm tra xem year và month có tồn tại trong request không
+        if (yearParam == null || monthParam == null) {
+            // Nếu không có tham số, trả về lỗi 400
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Year or month parameter is missing");
+            return;
+        }
+
+        try {
+            // Chuyển đổi các tham số thành kiểu số nguyên
+            int year = Integer.parseInt(yearParam);
+            int month = Integer.parseInt(monthParam);
+
+            // Tiến hành lấy thông tin thống kê doanh thu từ DAO
+            OrderDAO orderDAO = new OrderDAO();
+            BigDecimal totalRevenue = orderDAO.getTotalRevenueByMonth(year, month);
+            List<Map.Entry<String, Integer>> productCountByCategory = orderDAO.getProductCountByCategoryAndMonth(year, month);
+
+            // Set attributes cho JSP
+            request.setAttribute("productCountByCategory", productCountByCategory);
+            request.setAttribute("totalRevenue", totalRevenue);
+
+            // Forward tới JSP
+            request.getRequestDispatcher("salesStatistics.jsp").forward(request, response);
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid year or month format");
+        }
+    }
+>>>>>>> Stashed changes
 
             // Chuyển year thành số nếu không phải "all"
             if (!"all".equals(yearParam)) {
