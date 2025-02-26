@@ -29,7 +29,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" href="/Pending">
+                <a class="nav-link active" href="ManageOrder">
                     <span data-feather="clipboard"></span>
                     Manage Orders
                 </a>

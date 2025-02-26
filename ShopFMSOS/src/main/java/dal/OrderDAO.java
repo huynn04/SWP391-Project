@@ -19,11 +19,11 @@ import model.Order;
 
 /**
  *
- * @author Nguyễn Ngoc Huy CE180178
+ * @author Dang Chi Vi CE182507
  */
 public class OrderDAO extends DBContext {
 
-    // Tính tổng doanh thu từ tất cả các đơn hàng
+    // Tính tổng doanh thu từ tất cả các đơn hàng 
     public BigDecimal getTotalRevenue() {
         BigDecimal revenue = BigDecimal.ZERO;
         String sql = "SELECT SUM(total_price) FROM orders WHERE status = 1"; // status = 1 cho đơn hàng đã hoàn thành
@@ -191,5 +191,70 @@ public class OrderDAO extends DBContext {
         }
     }
 
+    public List<Order> searchOrders(String filterType, String filterValue) throws SQLException {
+        List<Order> orders = new ArrayList<>();
+        String sql = "";
+
+        if ("byCustomerId".equals(filterType)) {
+            sql = "SELECT * FROM orders WHERE user_id = ? ORDER BY order_date DESC";
+        } else if ("byDate".equals(filterType)) {
+            sql = "SELECT * FROM orders WHERE CAST(order_date AS DATE) = ? ORDER BY order_date DESC";
+        }
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, filterValue);  // Gán giá trị filterValue vào SQL query
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                orders.add(new Order(
+                        rs.getInt("order_id"),
+                        rs.getInt("user_id"),
+                        rs.getBigDecimal("total_price"),
+                        rs.getDate("order_date"),
+                        rs.getInt("status"),
+                        rs.getString("note"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_address"),
+                        rs.getString("receiver_phone"),
+                        rs.getString("payment_method"),
+                        rs.getString("discount_code"),
+                        rs.getTimestamp("delivered_at"),
+                        rs.getTimestamp("canceled_at")
+                ));
+            }
+        }
+
+        return orders;
+    }
+// Lấy tất cả đơn hàng
+
+    public List<Order> getAllOrders() throws SQLException {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT * FROM orders ORDER BY order_date DESC";
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                orders.add(new Order(
+                        rs.getInt("order_id"),
+                        rs.getInt("user_id"),
+                        rs.getBigDecimal("total_price"),
+                        rs.getDate("order_date"),
+                        rs.getInt("status"),
+                        rs.getString("note"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_address"),
+                        rs.getString("receiver_phone"),
+                        rs.getString("payment_method"),
+                        rs.getString("discount_code"),
+                        rs.getTimestamp("delivered_at"),
+                        rs.getTimestamp("canceled_at")
+                ));
+            }
+        }
+
+        return orders;
+    }
 
 }

@@ -112,6 +112,18 @@
         <servlet-name>ChangeStatusCustomerServlet</servlet-name>
         <servlet-class>controller.ChangeStatusCustomerServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ManageOrderServlet</servlet-name>
+        <servlet-class>controller.ManageOrderServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>PendingServlet</servlet-name>
+        <servlet-class>controller.PendingServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>TrackOrderServlet</servlet-name>
+        <servlet-class>controller.TrackOrderServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -219,6 +231,18 @@
     <servlet-mapping>
         <servlet-name>ChangeStatusCustomerServlet</servlet-name>
         <url-pattern>/ChangeStatusCustomer</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManageOrderServlet</servlet-name>
+        <url-pattern>/ManageOrder</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PendingServlet</servlet-name>
+        <url-pattern>/Pending</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TrackOrderServlet</servlet-name>
+        <url-pattern>/TrackOrder</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>
