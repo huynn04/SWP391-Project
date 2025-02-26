@@ -53,6 +53,12 @@
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                 <div class="pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Manage Orders</h1>
+                                <!-- Breadcrumb hiển thị đường dẫn -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-custom">
+                    <li class="breadcrumb-item active" aria-current="page">Order Management</li>
+                </ol>
+            </nav>
                 </div>
 
                 <!-- Buttons to navigate to Track Orders and Pending -->

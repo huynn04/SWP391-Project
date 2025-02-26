@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,24 +23,6 @@ import model.Order;
  * @author Dang Chi Vi CE182507
  */
 public class OrderDAO extends DBContext {
-
-    // Tính tổng doanh thu từ tất cả các đơn hàng 
-    public BigDecimal getTotalRevenue() {
-        BigDecimal revenue = BigDecimal.ZERO;
-        String sql = "SELECT SUM(total_price) FROM orders WHERE status = 1"; // status = 1 cho đơn hàng đã hoàn thành
-
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                revenue = rs.getBigDecimal(1);
-                if (revenue == null) {
-                    revenue = BigDecimal.ZERO;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return revenue;
-    }
 
     public List<Order> getOrdersByUserId(int userId) {
         List<Order> orders = new ArrayList<>();
@@ -255,6 +238,65 @@ public class OrderDAO extends DBContext {
         }
 
         return orders;
+    }
+// Tính tổng doanh thu theo tháng và năm
+
+    public BigDecimal getTotalRevenueByMonth(int year, int month) {
+        BigDecimal revenue = BigDecimal.ZERO;
+        String sql = "SELECT SUM(total_price) FROM orders WHERE YEAR(order_date) = ? AND MONTH(order_date) = ?";
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, year);
+            ps.setInt(2, month);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                revenue = rs.getBigDecimal(1);
+                if (revenue == null) {
+                    revenue = BigDecimal.ZERO;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return revenue;
+    }
+
+// Lấy tổng doanh thu từ tất cả các đơn hàng
+    public BigDecimal getTotalRevenue() {
+        BigDecimal revenue = BigDecimal.ZERO;
+        String sql = "SELECT SUM(total_price) FROM orders"; // Lấy tổng doanh thu từ tất cả đơn hàng
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                revenue = rs.getBigDecimal(1);
+                if (revenue == null) {
+                    revenue = BigDecimal.ZERO;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return revenue;
+    }
+
+// Tính tổng doanh thu theo năm (không quan tâm đến tháng)
+    public BigDecimal getTotalRevenueByYear(int year) {
+        BigDecimal revenue = BigDecimal.ZERO;
+        String sql = "SELECT SUM(total_price) FROM orders WHERE YEAR(order_date) = ?";
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, year);  // Truyền năm
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                revenue = rs.getBigDecimal(1);
+                if (revenue == null) {
+                    revenue = BigDecimal.ZERO;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return revenue;
     }
 
 }

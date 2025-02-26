@@ -413,14 +413,28 @@ public class UserDAO extends DBContext {
         }
         return false;
     }
-// In UserDAO.java
 
-    public int countUsersByRole(int roleId) {
+    // Đếm số lượng Customer (role = 3)
+    public int countCustomers() {
         int count = 0;
-        String sql = "SELECT COUNT(*) FROM users WHERE role_id = ?";
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, roleId);
-            ResultSet rs = ps.executeQuery();
+        String sql = "SELECT COUNT(*) FROM users WHERE role_id = 3"; // Giả sử role_id = 3 là Customer
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    // Đếm số lượng Staff (role = 2)
+    public int countStaff() {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM users WHERE role_id = 2"; // Giả sử role_id = 2 là Staff
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 count = rs.getInt(1);
             }
