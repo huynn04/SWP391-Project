@@ -7,12 +7,14 @@
 
 /* Thiết lập chung */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    font-family: 'Roboto', Arial, sans-serif; /* Font hiện đại hơn */
+    background: linear-gradient(135deg, #f4f4f4, #e0e0e0); /* Gradient nền nhẹ */
     line-height: 1.6;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;  /* Đảm bảo chiều cao của trang chiếm đầy màn hình */
+    min-height: 100vh;
+    overflow-x: hidden; /* Ngăn tràn ngang */
+    transition: background 0.5s ease; /* Hiệu ứng chuyển nền */
 }
 
 /* Container chung */
@@ -21,110 +23,233 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    transition: padding 0.3s ease; /* Hiệu ứng khi thay đổi padding */
 }
 
 /* ===== HEADER ===== */
 #header {
-    position: fixed; /* Giữ header cố định khi cuộn */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    background-color: #333;
+    background: linear-gradient(to right, #1e1e1e, #333); /* Gradient header */
     color: #fff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    z-index: 1000; /* Đảm bảo header luôn nằm trên */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: transform 0.3s ease, background 0.5s ease; /* Hiệu ứng cuộn */
+}
+
+#header.scrolled {
+    transform: translateY(-10px); /* Hiệu ứng khi cuộn */
+    background: linear-gradient(to right, #2c2c2c, #444); /* Đổi màu khi cuộn */
 }
 
 #header .container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 0;
+    padding: 15px 20px;
+    transition: padding 0.3s ease;
 }
 
 #header .logo a {
     color: #fff;
     text-decoration: none;
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+#header .logo a:hover {
+    color: #00d4ff; /* Màu sáng nổi bật */
+    transform: scale(1.05); /* Phóng to nhẹ khi hover */
 }
 
 #header nav ul {
     list-style: none;
     display: flex;
+    gap: 25px; /* Khoảng cách đều hơn */
 }
 
 #header nav ul li {
-    margin-left: 20px;
+    position: relative;
 }
 
 #header nav ul li a {
     color: #fff;
     text-decoration: none;
     font-size: 16px;
-    padding: 6px 10px;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+    padding: 8px 15px;
+    border-radius: 25px;
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 #header nav ul li a:hover {
-    background-color: #575757;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px); /* Nâng nhẹ khi hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* ===== CONTENT ===== */
 #content {
-    flex-grow: 1; /* Giúp phần nội dung mở rộng tối đa chiều cao */
-    padding: 100px 0 40px; /* Tạo khoảng trống dưới header */
+    flex-grow: 1;
+    padding: 120px 0 60px; /* Khoảng cách lớn hơn để tránh overlap header */
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s ease forwards; /* Hiệu ứng khi load trang */
+}
+
+/* Hiệu ứng fade-in khi xuất hiện */
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Breadcrumb */
 .breadcrumb {
-    background-color: #e9ecef;
-    padding: 10px 15px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-    font-size: 0.9rem;
+    background: rgba(233, 236, 239, 0.9);
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.breadcrumb:hover {
+    transform: scale(1.02); /* Phóng to nhẹ khi hover */
+    background: rgba(233, 236, 239, 1);
 }
 
 /* ===== FOOTER ===== */
 #footer {
-    background-color: #333;
+    background: linear-gradient(to right, #1e1e1e, #333); /* Gradient footer */
     color: #fff;
     text-align: center;
-    padding: 15px 0;
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
-    width: 100%; /* Đảm bảo footer chiếm toàn bộ chiều rộng */
+    padding: 20px 0;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    transition: transform 0.3s ease;
+}
+
+#footer.scrolled-up {
+    transform: translateY(10px); /* Hiệu ứng khi cuộn lên */
+}
+
+/* Footer navigation */
+.footer-nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.footer-nav a {
+    color: #ddd;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.footer-nav a:hover {
+    color: #00d4ff;
+    transform: scale(1.1); /* Phóng to nhẹ khi hover */
 }
 
 /* ===== FORM LOGIN ===== */
 .login-container {
-    width: 350px;
-    margin: 120px auto 40px; /* Tạo khoảng cách với header */
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin: 140px auto 60px; /* Khoảng cách phù hợp */
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     text-align: center;
+    transform: translateY(20px);
+    opacity: 0;
+    animation: fadeInUp 0.8s ease 0.2s forwards; /* Hiệu ứng xuất hiện */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-container:hover {
+    transform: translateY(0); /* Nâng lên khi hover */
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
 
 .login-container input {
     width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 12px;
+    margin: 15px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-container input:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+    outline: none;
 }
 
 .login-container button {
     width: 100%;
-    padding: 10px;
-    background: #007BFF;
+    padding: 12px;
+    background: linear-gradient(45deg, #007BFF, #00d4ff); /* Gradient nút */
     border: none;
     color: white;
-    border-radius: 5px;
+    border-radius: 8px;
+    font-size: 16px;
     cursor: pointer;
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .login-container button:hover {
-    background: #0056b3;
+    background: linear-gradient(45deg, #0056b3, #00b4d8);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    #header .container {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    #header nav ul {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .login-container {
+        max-width: 90%;
+        margin: 100px auto 40px; /* Giảm margin khi màn hình nhỏ */
+        padding: 20px;
+    }
+
+    .footer-nav {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+}
+
+/* Hiệu ứng khi cuộn */
+body.scrolled #header {
+    transform: translateY(0);
+}
+
+body.scrolled #footer {
+    transform: translateY(0);
 }

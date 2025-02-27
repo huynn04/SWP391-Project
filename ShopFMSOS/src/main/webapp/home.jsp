@@ -13,11 +13,30 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Home - FMSOS</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/style.css">
         <style> 
+            /* Đảm bảo toàn bộ trang có chiều cao tối thiểu */
+            html, body {
+                height: 100%;
+                margin: 0;
+            }
+
+            #wrapper {
+                min-height: 100vh; /* Chiều cao tối thiểu bằng toàn bộ viewport */
+                display: flex;
+                flex-direction: column;
+            }
+
+            main {
+                flex: 1; /* Phần main sẽ mở rộng để đẩy footer xuống dưới */
+                padding-bottom: 50px; /* Khoảng cách dưới để tránh nội dung sát footer */
+            }
+
             /* CSS cho phần nội dung bên trái */
             .welcome-section {
                 margin-bottom: 30px;
             }
+
             /* CSS cho phần bài viết sản phẩm bên phải */
             .product-post {
                 margin-bottom: 20px;
@@ -46,25 +65,28 @@
         </style>
     </head>
     <body>
-        <%@ include file="header.jsp" %>
+        <div id="wrapper">
+            <%@ include file="header.jsp" %>
 
-        <div class="container mt-5">
-            <div class="row">
-                <!-- Cột bên trái: Nội dung chính -->
-                <div class="col-md-8">
-                    <div class="welcome-section">
-                        <h1>Welcome to FMSOS</h1>
-                        <p class="lead">Your ultimate destination for Anime, Pokemon, and Gundam collections.</p>
-                        <p>
-                            Tại FMSOS, chúng tôi cung cấp những sản phẩm chất lượng cao, cập nhật những xu hướng mới nhất và luôn cảnh báo cho quý khách hàng về những rủi ro lừa đảo trong giao dịch trực tuyến.
-                        </p>
+            <main>
+                <div class="container mt-5">
+                    <div class="row">
+                        <!-- Cột bên trái: Nội dung chính -->
+                        <div class="col-md-8">
+                            <div class="welcome-section">
+                                <h1>Welcome to FMSOS</h1>
+                                <p class="lead">Your ultimate destination for Anime, Pokemon, and Gundam collections.</p>
+                                <p>
+                                    Tại FMSOS, chúng tôi cung cấp những sản phẩm chất lượng cao, cập nhật những xu hướng mới nhất và luôn cảnh báo cho quý khách hàng về những rủi ro lừa đảo trong giao dịch trực tuyến.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </main>
 
-            </div>
+            <%@ include file="footer.jsp" %>
         </div>
-
-        <%@ include file="footer.jsp" %>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
