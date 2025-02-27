@@ -9,24 +9,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.Order;
 import java.util.Map;
 
 public class SalesStatisticsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Lấy tham số từ yêu cầu
-        String yearParam = request.getParameter("year");
-        String monthParam = request.getParameter("month");
-
-        // Nếu year hoặc month không có giá trị, gán "all"
-        if (yearParam == null || "all".equals(yearParam)) {
-            yearParam = "all"; 
-        }
-        if (monthParam == null || "all".equals(monthParam)) {
-            monthParam = "all"; 
-        }
+        // Lấy tham số từ yêu cầu, mặc định là "all" nếu không có giá trị
+        String yearParam = request.getParameter("year") != null ? request.getParameter("year") : "all";
+        String monthParam = request.getParameter("month") != null ? request.getParameter("month") : "all";
 
         try {
             // Khai báo các biến năm và tháng
@@ -35,12 +26,12 @@ public class SalesStatisticsServlet extends HttpServlet {
 
             // Chuyển year thành số nếu không phải "all"
             if (!"all".equals(yearParam)) {
-                year = Integer.parseInt(yearParam); 
+                year = Integer.parseInt(yearParam);
             }
 
             // Chuyển month thành số nếu không phải "all"
             if (!"all".equals(monthParam)) {
-                month = Integer.parseInt(monthParam); 
+                month = Integer.parseInt(monthParam);
             }
 
             // Tiến hành lấy thông tin thống kê doanh thu từ DAO
@@ -49,13 +40,11 @@ public class SalesStatisticsServlet extends HttpServlet {
 
             // Xử lý các trường hợp doanh thu
             if ("all".equals(yearParam) && "all".equals(monthParam)) {
-                totalRevenue = orderDAO.getTotalRevenue();  // Lấy tổng doanh thu từ tất cả các đơn hàng
+                totalRevenue = orderDAO.getTotalRevenue();
             } else if (!"all".equals(yearParam) && "all".equals(monthParam)) {
-                totalRevenue = orderDAO.getTotalRevenueByYear(year);  // Lấy tổng doanh thu theo năm
-            } else if (!"all".equals(yearParam) && !"all".equals(monthParam)) {
-                totalRevenue = orderDAO.getTotalRevenueByMonth(year, month);  // Lấy tổng doanh thu theo tháng và năm
+                totalRevenue = orderDAO.getTotalRevenueByYear(year);
             } else {
-                totalRevenue = BigDecimal.ZERO;  // Trường hợp không hợp lệ
+                totalRevenue = orderDAO.getTotalRevenueByMonth(year, month);
             }
 
             // Lấy số lượng Customer và Staff từ UserDAO
@@ -72,8 +61,8 @@ public class SalesStatisticsServlet extends HttpServlet {
             request.setAttribute("customerCount", customerCount);
             request.setAttribute("staffCount", staffCount);
             request.setAttribute("productCountByCategory", productCountByCategory);
-            request.setAttribute("year", yearParam); 
-            request.setAttribute("month", month);    
+            request.setAttribute("year", yearParam);
+            request.setAttribute("month", monthParam);
 
             // Forward tới JSP
             request.getRequestDispatcher("salesStatistics.jsp").forward(request, response);

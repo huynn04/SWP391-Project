@@ -10,6 +10,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -344,5 +346,34 @@ public class OrderDAO extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    public int createOrder(Order order) {
+        String sql = "INSERT INTO orders (user_id, total_price, order_date, status, receiver_name, receiver_address, receiver_phone, payment_method, discount_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        int orderId = -1;
+
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            ps.setInt(1, order.getUserId());
+            ps.setBigDecimal(2, order.getTotalPrice());
+            ps.setTimestamp(3, new Timestamp(order.getOrderDate().getTime()));
+            ps.setInt(4, order.getStatus());
+            ps.setString(5, order.getReceiverName());
+            ps.setString(6, order.getReceiverAddress());
+            ps.setString(7, order.getReceiverPhone());
+            ps.setString(8, order.getPaymentMethod());
+            ps.setString(9, order.getDiscountCode());
+
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    orderId = rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orderId;
     }
 }
