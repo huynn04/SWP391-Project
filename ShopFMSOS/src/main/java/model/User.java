@@ -1,16 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.util.Date;
 
-
-/**
- *
- * @author Nguyễn Ngoc Huy CE180178
- */
 public class User {
     private int userId;
     private int roleId;
@@ -39,7 +30,15 @@ public class User {
     }
     
     public User() {}
-    
+
+    public int getId() { // Thêm phương thức này để giữ nguyên cách gọi trong code cũ
+        return userId;
+    }
+
+    public void setId(int userId) { // Thêm setter tương ứng
+        this.userId = userId;
+    }
+
     public int getUserId() {
         return userId;
     }
@@ -47,7 +46,7 @@ public class User {
     public void setUserId(int userId) {
         this.userId = userId;
     }
-    
+
     public int getRoleId() {
         return roleId;
     }
