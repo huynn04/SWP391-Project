@@ -67,13 +67,6 @@
                 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                     <div class="pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2">Pending Orders</h1>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="ManageOrder">Order Management</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Pending Orders</li>
-                            </ol>
-                        </nav>
-
                     </div>
 
                     <!-- Switch Button -->
@@ -98,11 +91,29 @@
                                     <td>${order.receiverAddress}</td>
                                     <td>${order.receiverPhone}</td>
                                     <td>${order.totalPrice}</td>
-                                    <td>
-                                        <form action="Pending" method="post">
-                                            <input type="hidden" name="orderId" value="${order.orderId}" />
-                                            <button type="submit" class="btn btn-success btn-sm">Confirm</button>
-                                        </form>
+                                     <td>
+                                        <c:choose>
+                                            <c:when test="${order.status == 0}">
+                                                <!-- Nút xác nhận đơn hàng -->
+                                                <form action="Pending" method="post" style="display:inline;">
+                                                    <input type="hidden" name="orderId" value="${order.orderId}" />
+                                                    <button type="submit" name="action" value="confirm" class="btn btn-success btn-sm">Confirm</button>
+                                                </form>
+                                                <!-- Nút hủy đơn hàng -->
+                                                <form action="Pending" method="post" style="display:inline;">
+                                                    <input type="hidden" name="orderId" value="${order.orderId}" />
+                                                    <button type="submit" name="action" value="cancel" class="btn btn-danger btn-sm">Cancel</button>
+                                                </form>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <!-- Đơn hàng đã được xác nhận hoặc hủy -->
+                                                <c:choose>
+                                                    <c:when test="${order.status == 1}">Confirmed</c:when>
+                                                    <c:when test="${order.status == -1}">Cancelled</c:when>
+                                                    <c:otherwise>Completed</c:otherwise>
+                                                </c:choose>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </td>
                                 </tr>
                             </c:forEach>

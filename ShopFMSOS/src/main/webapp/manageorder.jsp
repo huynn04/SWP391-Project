@@ -3,11 +3,6 @@
     Created on : Feb 24, 2025, 10:58:44 PM
     Author     : Dang Chi Vi CE182507
 --%>
-<%-- 
-    Document   : manageorder
-    Created on : Feb 24, 2025, 10:58:44 PM
-    Author     : Dang Chi Vi CE182507
---%>
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
@@ -118,6 +113,7 @@
                                     <c:choose>
                                         <c:when test="${order.status == 0}">Pending</c:when>
                                         <c:when test="${order.status == 1}">Confirmed</c:when>
+                                        <c:when test="${order.status == -1}">Cancelled</c:when>
                                         <c:otherwise>Completed</c:otherwise>
                                     </c:choose>
                                 </td>
@@ -169,4 +165,3 @@
 
 </body>
 </html>
-
