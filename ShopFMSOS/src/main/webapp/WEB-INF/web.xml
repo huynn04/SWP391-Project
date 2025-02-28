@@ -124,6 +124,10 @@
         <servlet-name>TrackOrderServlet</servlet-name>
         <servlet-class>controller.TrackOrderServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CancelOrderServlet</servlet-name>
+        <servlet-class>controller.CancelOrderServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -243,6 +247,10 @@
     <servlet-mapping>
         <servlet-name>TrackOrderServlet</servlet-name>
         <url-pattern>/TrackOrder</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CancelOrderServlet</servlet-name>
+        <url-pattern>/CancelOrder</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>
