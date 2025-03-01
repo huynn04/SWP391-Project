@@ -298,37 +298,51 @@ public class OrderDAO extends DBContext {
         }
         return revenue;
     }
+
     //Lay don hang da huy in vao bang cancelled order
     public List<Order> getCancelledOrders() {
         List<Order> cancelledOrders = new ArrayList<>();
         String sql = "SELECT * FROM orders WHERE status = -1";
-        
-        try (Connection con = getConnection(); 
-             PreparedStatement ps = con.prepareStatement(sql); 
-             ResultSet rs = ps.executeQuery()) {
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Order order = new Order(
-                    rs.getInt("order_id"),
-                    rs.getInt("user_id"),
-                    rs.getBigDecimal("total_price"),
-                    rs.getTimestamp("order_date"),
-                    rs.getInt("status"),
-                    rs.getString("note"),
-                    rs.getString("receiver_name"),
-                    rs.getString("receiver_address"),
-                    rs.getString("receiver_phone"),
-                    rs.getString("payment_method"),
-                    rs.getString("discount_code"),
-                    rs.getTimestamp("delivered_at"),
-                    rs.getTimestamp("canceled_at")
+                        rs.getInt("order_id"),
+                        rs.getInt("user_id"),
+                        rs.getBigDecimal("total_price"),
+                        rs.getTimestamp("order_date"),
+                        rs.getInt("status"),
+                        rs.getString("note"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_address"),
+                        rs.getString("receiver_phone"),
+                        rs.getString("payment_method"),
+                        rs.getString("discount_code"),
+                        rs.getTimestamp("delivered_at"),
+                        rs.getTimestamp("canceled_at")
                 );
                 cancelledOrders.add(order);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return cancelledOrders;
+    }
+
+    public void cancelOrder(int orderId) {
+        String sql = "UPDATE orders SET status = -1, canceled_at = GETDATE() WHERE order_id = ? AND status = 0";
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Order ID " + orderId + " has been canceled.");
+            } else {
+                System.out.println("Order ID " + orderId + " could not be canceled (maybe already processed).");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -19,6 +19,7 @@ import model.Order;
  * @author Dang Chi Vi CE182507
  */
 public class CancelOrderServlet extends HttpServlet {
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -38,7 +39,7 @@ public class CancelOrderServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet CancelOrderServlet</title>");            
+            out.println("<title>Servlet CancelOrderServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet CancelOrderServlet at " + request.getContextPath() + "</h1>");
@@ -59,13 +60,13 @@ public class CancelOrderServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-// Lấy các đơn hàng đã bị hủy
+        // Lấy tất cả các đơn hàng đã hủy
         OrderDAO orderDAO = new OrderDAO();
         List<Order> cancelledOrders = orderDAO.getCancelledOrders();
 
-        // Gửi danh sách đơn hàng đến JSP
+        // Gửi danh sách đơn hàng đã hủy đến JSP
         request.setAttribute("cancelledOrders", cancelledOrders);
-        
+
         // Chuyển hướng đến trang cancelOrder.jsp
         request.getRequestDispatcher("/cancelOrder.jsp").forward(request, response);
     }
@@ -81,7 +82,21 @@ public class CancelOrderServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+         // Lấy orderId từ request
+        int orderId = Integer.parseInt(request.getParameter("orderId"));
+
+        // Gọi OrderDAO để hủy đơn hàng
+        OrderDAO orderDAO = new OrderDAO();
+        orderDAO.cancelOrder(orderId);
+
+        // Lấy tất cả các đơn hàng đã hủy (status = -1)
+        List<Order> cancelledOrders = orderDAO.getCancelledOrders();
+
+        // Gửi danh sách đơn hàng đã hủy đến JSP
+        request.setAttribute("cancelledOrders", cancelledOrders);
+
+        // Chuyển hướng đến trang cancelOrder.jsp
+        request.getRequestDispatcher("/cancelOrder.jsp").forward(request, response);
     }
 
     /**
