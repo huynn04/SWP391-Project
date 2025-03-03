@@ -18,35 +18,46 @@ import java.util.Date;
 public class UserDAO extends DBContext {
 
     public Optional<User> getUserByEmail(String email) {
-        String query = "SELECT * FROM Users WHERE email = ?";
-        try ( Connection conn = getConnection();  PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                User user = new User(
-                        rs.getInt("userId"),
-                        rs.getInt("roleId"),
-                        rs.getString("fullName"),
-                        rs.getString("email"),
-                        rs.getString("phoneNumber"),
-                        rs.getString("address"),
-                        rs.getString("password"),
-                        rs.getString("avatar"),
-                        rs.getInt("status"),
-                        rs.getDate("createdAt"),
-                        rs.getDate("updatedAt")
-                );
-                return Optional.of(user);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    String sql = "SELECT user_id, full_name, email FROM users WHERE email = ?";
+    try (Connection conn = getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setString(1, email);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            User user = new User();
+            user.setUserId(rs.getInt("user_id")); // 🛠 FIX: Đổi từ "userId" thành "user_id"
+            user.setFullName(rs.getString("full_name"));
+            user.setEmail(rs.getString("email"));
+            
+            System.out.println("📌 Found user: " + user.getFullName() + " (ID: " + user.getUserId() + ")");
+            
+            return Optional.of(user);
         }
-        return Optional.empty();
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return Optional.empty();
+}
 
-    public boolean insertUser(User user) {
-        String query = "INSERT INTO Users (full_name, email, phone_number, address, password, avatar, status, role_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try ( Connection conn = getConnection();  PreparedStatement stmt = conn.prepareStatement(query)) {
+
+
+public boolean insertUser(User user) {
+        String query = "INSERT INTO users (full_name, email, phone_number, address, password, avatar, status, role_id, created_at, updated_at) "
+                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            // Debugging - Print values being inserted
+            System.out.println("Executing insertUser...");
+            System.out.println("Full Name: " + user.getFullName());
+            System.out.println("Email: " + user.getEmail());
+            System.out.println("Phone: " + user.getPhoneNumber());
+            System.out.println("Address: " + user.getAddress());
+            System.out.println("Password: " + user.getPassword());
+            System.out.println("Role ID: " + user.getRoleId());
+            System.out.println("Status: " + user.getStatus());
+            System.out.println("Created At: " + user.getCreatedAt());
+            System.out.println("Updated At: " + user.getUpdatedAt());
+            
             stmt.setString(1, user.getFullName());
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getPhoneNumber());
@@ -55,29 +66,48 @@ public class UserDAO extends DBContext {
             stmt.setString(6, user.getAvatar());
             stmt.setInt(7, user.getStatus());
             stmt.setInt(8, user.getRoleId());
-            stmt.setTimestamp(9, new Timestamp(user.getCreatedAt().getTime()));
-            stmt.setTimestamp(10, new Timestamp(user.getUpdatedAt().getTime()));
-
+            stmt.setTimestamp(9, user.getCreatedAt() != null ? new Timestamp(user.getCreatedAt().getTime()) : new Timestamp(System.currentTimeMillis()));
+            stmt.setTimestamp(10, user.getUpdatedAt() != null ? new Timestamp(user.getUpdatedAt().getTime()) : new Timestamp(System.currentTimeMillis()));
+            
             int rowsAffected = stmt.executeUpdate();
+            System.out.println("Rows affected: " + rowsAffected);
             return rowsAffected > 0;
         } catch (SQLException e) {
+            System.err.println("SQL Error: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
     }
 
-    public boolean validateUser(String email, String password) {
-        String query = "SELECT * FROM Users WHERE email = ? AND password = ?";
-        try ( Connection conn = getConnection();  PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, email);
-            stmt.setString(2, password);
-            ResultSet rs = stmt.executeQuery();
-            return rs.next();
-        } catch (SQLException e) {
-            e.printStackTrace();
+public Optional<User> validateUser(String email, String password) {
+    String query = "SELECT * FROM Users WHERE email = ? AND password = ?";
+    try (Connection conn = getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setString(1, email);
+        stmt.setString(2, password);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            User user = new User(
+                rs.getInt("user_id"),
+                rs.getInt("role_id"),
+                rs.getString("full_name"),
+                rs.getString("email"),
+                rs.getString("phone_number"),
+                rs.getString("address"),
+                rs.getString("password"),
+                rs.getString("avatar"),
+                rs.getInt("status"),
+                rs.getDate("created_at"),
+                rs.getDate("updated_at")
+            );
+            return Optional.of(user);
         }
-        return false;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return Optional.empty();
+}
+
 
     public int countAllUsers() {
         int count = 0;
@@ -443,5 +473,18 @@ public class UserDAO extends DBContext {
         }
         return count;
     }
+    public boolean updateUserPassword(int userId, String newPassword) {
+    String sql = "UPDATE users SET password = ? WHERE user_id = ?";
+    try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, newPassword); // Mật khẩu chưa mã hóa (mã hóa sau)
+        ps.setInt(2, userId);
+        int rowsAffected = ps.executeUpdate();
+        return rowsAffected > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
 
 }
