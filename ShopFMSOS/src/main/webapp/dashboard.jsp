@@ -6,6 +6,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ page import="model.User" %>
+<%
+User loggedInUser = (User) session.getAttribute("loggedInUser");
+if (loggedInUser == null || loggedInUser.getRoleId() != 1 || loggedInUser.getRoleId() != 2) {
+    response.sendRedirect("home.jsp"); // Chuyển hướng nếu không phải admin
+    return;
+}
+%>
 <!DOCTYPE html>
 <html lang="en">
     <head>

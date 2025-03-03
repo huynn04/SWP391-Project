@@ -6,6 +6,10 @@
 
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List, model.Product" %>
+<!-- chỉ có account mới vào đc -->
+<%@ page import="model.User" %>
+<% User loggedInUser = (User) session.getAttribute("loggedInUser"); if (loggedInUser == null) { response.sendRedirect("login.jsp"); // Nếu chưa đăng nhập, chuyển hướng return; } %>
+
 <!DOCTYPE html>
 <html>
 <head>
