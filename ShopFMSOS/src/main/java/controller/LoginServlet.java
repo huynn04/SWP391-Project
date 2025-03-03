@@ -31,7 +31,7 @@ public class LoginServlet extends HttpServlet {
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             
-            if (user.getStatus() == 2) { // Nếu tài khoản bị khóa
+            if (user.getStatus() == 0) { // Nếu tài khoản bị khóa
                 request.setAttribute("errorMessage", "Your account has been blocked.");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
                 return;
