@@ -159,4 +159,13 @@ CREATE TABLE news_comments (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
+-- tạo bảng để lưu token reset password 
+CREATE TABLE password_reset_tokens (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    expires_at DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
 GO

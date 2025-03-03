@@ -58,18 +58,11 @@
         
         <!-- JavaMail -->
         <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-            <version>1.6.0</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>all</artifactId>
-            <version>1.6.0</version>
-            <scope>runtime</scope>
-            <type>pom</type>
-        </dependency>
+    <groupId>com.sun.mail</groupId>
+    <artifactId>jakarta.mail</artifactId>
+    <version>2.0.1</version>
+</dependency>
+
         
         <!-- JavaEE API -->
         <dependency>
