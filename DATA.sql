@@ -168,49 +168,4 @@ CREATE TABLE password_reset_tokens (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- T?o b?ng addresses ?? l?u nhi?u ??a ch? c?a user
-CREATE TABLE addresses (
-    address_id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT NOT NULL,
-    full_name VARCHAR(255) NOT NULL,
-    phone VARCHAR(15) NOT NULL,
-    city VARCHAR(100) NOT NULL,
-    district VARCHAR(100) NOT NULL,
-    ward VARCHAR(100) NOT NULL,
-    specific_address VARCHAR(255) NOT NULL,
-    address_type VARCHAR(50) NOT NULL CHECK (address_type IN ('home', 'office')),
-    is_default BIT DEFAULT 0,
-    created_at DATETIME DEFAULT GETDATE(),
-    updated_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-);
-
--- T?o b?ng discounts ?? l?u mã gi?m giá
-CREATE TABLE discounts (
-    discount_id INT IDENTITY(1,1) PRIMARY KEY,
-    code VARCHAR(50) UNIQUE NOT NULL,
-    discount_value DECIMAL(10,2) NOT NULL,
-    discount_type VARCHAR(10) CHECK (discount_type IN ('percent', 'fixed')),
-    min_order_value DECIMAL(10,2) DEFAULT 0,
-    expiry_date DATE NOT NULL,
-    status SMALLINT DEFAULT 1 -- 1: còn hi?u l?c, 0: h?t h?n ho?c vô hi?u
-);
 GO
-
--- Kiểm tra và thêm cột discount_id vào bảng orders nếu chưa có
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'orders' AND COLUMN_NAME = 'discount_id')
-BEGIN
-    ALTER TABLE orders ADD discount_id INT NULL;
-    ALTER TABLE orders ADD discount_amount DECIMAL(10,2) DEFAULT 0;
-    ALTER TABLE orders ADD CONSTRAINT FK_orders_discounts FOREIGN KEY (discount_id) REFERENCES discounts(discount_id);
-END
-
--- Thêm dữ liệu mẫu nếu chưa có
-IF NOT EXISTS (SELECT * FROM discounts WHERE code = 'SALE10')
-BEGIN
-    INSERT INTO discounts (code, discount_value, discount_type, min_order_value, expiry_date, status)
-    VALUES 
-        ('SALE10', 10, 'percent', 100, '2025-12-31', 1), 
-        ('FIXED50', 50, 'fixed', 200, '2025-06-30', 1),
-        ('FREESHIP', 30, 'fixed', 150, '2025-09-30', 1);
-END
