@@ -77,7 +77,7 @@
                                 <h1>Welcome to FMSOS</h1>
                                 <p class="lead">Your ultimate destination for Anime, Pokemon, and Gundam collections.</p>
                                 <p>
-                                    Tại FMSOS, chúng tôi cung cấp những sản phẩm chất lượng cao, cập nhật những xu hướng mới nhất và luôn cảnh báo cho quý khách hàng về những rủi ro lừa đảo trong giao dịch trực tuyến.
+                                    At FMSOS, we provide high-quality products, stay updated with the latest trends, and always alert our customers about the risks of online scams.
                                 </p>
                             </div>
                         </div>
