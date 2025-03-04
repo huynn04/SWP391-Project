@@ -61,7 +61,7 @@ public class RegisterServlet extends HttpServlet {
             // Đăng nhập tự động sau khi đăng ký thành công
             HttpSession session = request.getSession();
             session.setAttribute("loggedInUser", user);
-            response.sendRedirect("login.jsp?success=1");
+            response.sendRedirect("home.jsp?success=1");
         } else {
             request.setAttribute("errorMessage", "Registration failed. Email might already be in use.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
