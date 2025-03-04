@@ -68,31 +68,37 @@ public class AddressDAO extends DBContext {
     }
 
     // Cập nhật địa chỉ (Dùng để cập nhật thông tin hoặc đặt làm mặc định)
-    public void updateAddress(Address address) {
-        String sql = "UPDATE addresses SET full_name = ?, phone = ?, city = ?, district = ?, ward = ?, specific_address = ?, address_type = ?, is_default = ? WHERE address_id = ? AND user_id = ?";
+   public void updateAddress(Address address) {
+    String sql = "UPDATE addresses SET full_name = ?, phone = ?, city = ?, district = ?, ward = ?, specific_address = ?, address_type = ?, is_default = ?, updated_at = GETDATE() WHERE address_id = ? AND user_id = ?";
 
-        try {
-            connection = getConnection();
-            statement = connection.prepareStatement(sql);
+    try {
+        connection = getConnection();
+        statement = connection.prepareStatement(sql);
 
-            statement.setString(1, address.getFullName());
-            statement.setString(2, address.getPhone());
-            statement.setString(3, address.getCity());
-            statement.setString(4, address.getDistrict());
-            statement.setString(5, address.getWard());
-            statement.setString(6, address.getSpecificAddress());
-            statement.setString(7, address.getAddressType());
-            statement.setBoolean(8, address.isDefault());
-            statement.setInt(9, address.getId());
-            statement.setInt(10, address.getUserId());
+        statement.setString(1, address.getFullName());
+        statement.setString(2, address.getPhone());
+        statement.setString(3, address.getCity());
+        statement.setString(4, address.getDistrict());
+        statement.setString(5, address.getWard());
+        statement.setString(6, address.getSpecificAddress());
+        statement.setString(7, address.getAddressType());
+        statement.setBoolean(8, address.isDefault());
+        statement.setInt(9, address.getId());
+        statement.setInt(10, address.getUserId());
 
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            closeConnection();
+        statement.executeUpdate();
+
+        // Nếu cập nhật địa chỉ thành mặc định thì gọi phương thức setDefaultAddress
+        if (address.isDefault()) {
+            setDefaultAddress(address.getUserId(), address.getId());
         }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } finally {
+        closeConnection();
     }
+}
 
     // Đặt địa chỉ mặc định cho người dùng
     public void setDefaultAddress(int userId, int addressId) {
@@ -135,4 +141,5 @@ public class AddressDAO extends DBContext {
             closeConnection();
         }
     }
+    
 }

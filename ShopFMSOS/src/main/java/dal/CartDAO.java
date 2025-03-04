@@ -40,14 +40,11 @@ public class CartDAO extends DBContext {
     }
 
     /**
-     * Lấy tổng giá trị giỏ hàng mà không áp dụng mã giảm giá
-     */
-    public BigDecimal getTotalPrice(int cartId) {
-        return getTotalPrice(cartId, null);
-    }
+    
 
+   
     /**
-     * Lấy tổng giá trị giỏ hàng dựa trên cartId (Có hỗ trợ mã giảm giá)
+     * Lấy tổng giá trị giỏ hàng dựa trên cartId và mã giảm giá
      */
     public BigDecimal getTotalPrice(int cartId, Discount discount) {
         BigDecimal total = BigDecimal.ZERO;
@@ -66,8 +63,23 @@ public class CartDAO extends DBContext {
             return BigDecimal.ZERO;
         }
 
-        // Áp dụng mã giảm giá nếu có
         return applyDiscount(total, discount);
+    }
+
+    /**
+     * Lấy tổng giá trị giỏ hàng dựa trên userId và mã giảm giá
+     */
+    public BigDecimal getTotalPrice(int userId, String discountCode) {
+        Cart cart = getCartByUserId(userId);
+        if (cart == null) {
+            return BigDecimal.ZERO;
+        }
+
+        // Lấy thông tin mã giảm giá nếu có
+        DiscountDAO discountDAO = new DiscountDAO();
+        Discount discount = discountCode != null ? discountDAO.getDiscountByCode(discountCode) : null;
+
+        return getTotalPrice(cart.getCartId(), discount);
     }
 
     /**
@@ -88,5 +100,8 @@ public class CartDAO extends DBContext {
 
         return total.subtract(discountAmount);
     }
-    
+
+    public BigDecimal getTotalPrice(int cartId) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

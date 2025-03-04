@@ -1,30 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import dal.CartDAO;
 import dal.OrderDAO;
 import dal.OrderDetailDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
 import model.Order;
 import model.OrderDetail;
 import model.Product;
 
-/**
- *
- * @author Nguyễn Ngoc Huy CE180178
- */
 public class CheckoutServlet extends HttpServlet {
 
     @Override
@@ -68,9 +59,9 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
 
-        // Tính tổng tiền giỏ hàng
-        CartDAO cartDAO = new CartDAO();
-        BigDecimal totalPrice = cartDAO.getTotalPrice(userId, null); // Áp dụng mã giảm giá nếu có
+        // Tính tổng tiền giỏ hàng (có áp dụng mã giảm giá nếu có)
+       CartDAO cartDAO = new CartDAO();
+        BigDecimal totalPrice = cartDAO.getTotalPrice(userId, discountCode);
 
         // Tạo đơn hàng
         Order order = new Order();
@@ -104,7 +95,7 @@ public class CheckoutServlet extends HttpServlet {
             session.removeAttribute("cart");
             session.removeAttribute("discountCode");
 
-            response.sendRedirect("thongbao.jsp?message=success");
+            response.sendRedirect("thongbao.jsp?message=success"); // Chuyển sang trang thông báo
         } else {
             response.sendRedirect("checkoutInfo.jsp?error=checkout_failed");
         }
