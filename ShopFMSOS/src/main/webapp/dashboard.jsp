@@ -9,7 +9,7 @@
 <%@ page import="model.User" %>
 <%
 User loggedInUser = (User) session.getAttribute("loggedInUser");
-if (loggedInUser == null || loggedInUser.getRoleId() != 1 || loggedInUser.getRoleId() != 2) {
+if (loggedInUser == null || loggedInUser.getRoleId() != 1 && loggedInUser.getRoleId() != 2) {
     response.sendRedirect("home.jsp"); // Chuyển hướng nếu không phải admin
     return;
 }

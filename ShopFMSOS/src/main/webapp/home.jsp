@@ -14,7 +14,7 @@
         <title>Home - FMSOS</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="css/style.css">
-        <style> 
+        <style>
             /* Đảm bảo toàn bộ trang có chiều cao tối thiểu */
             html, body {
                 height: 100%;
@@ -89,5 +89,20 @@
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Chatra {literal} -->
+        <script>
+            (function (d, w, c) {
+                w.ChatraID = '6ttM7t2hWx4ta8j2Z';
+                var s = d.createElement('script');
+                w[c] = w[c] || function () {
+                    (w[c].q = w[c].q || []).push(arguments);
+                };
+                s.async = true;
+                s.src = 'https://call.chatra.io/chatra.js';
+                if (d.head)
+                    d.head.appendChild(s);
+            })(document, window, 'Chatra');
+        </script>
+        <!-- /Chatra {/literal} -->
     </body>
 </html>
