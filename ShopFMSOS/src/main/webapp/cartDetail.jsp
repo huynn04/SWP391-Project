@@ -104,5 +104,57 @@
         }
         updateTotalPrice();
     </script>
-</body>
+    <script>
+        function doDiscount(e) {
+            e.preventDefault();
+            const input = document.querySelector('#discountCode');
+            let url = "ApplyDiscount?" + "data=" + input.value;
+            fetch(url, {
+                method: 'post'
+            }).then(response => response.text()).then(data => {
+                const discountVal = Number(data);
+                const itemTotal = document.querySelector('.item-total');
+                let currentVal = Number(itemTotal.textContent.replace(/[^0-9]/g, ''));
+                currentVal = (currentVal - (currentVal * discountVal / 100)).toLocaleString('vi-VN');
+                itemTotal.innerHTML = `$\${currentVal}`;
+                
+            }).catch(err => console.log(err));
+        }
+        
+        function changeQuantity(input) {
+            const cart_total = document.querySelector('#cart-total');
+            const itemPrice = input.parentElement.parentElement.querySelector('.item-price');
+            const currPrice = input.parentElement.parentElement.querySelector('.item-total');
+            let initPriceVal = Number(itemPrice.textContent.replace(/[^0-9]/g, ''));
+            let currPriceVal = Number(currPrice.textContent.replace(/[^0-9]/g, ''));
+            let cart_totalVal = Number(cart_total.textContent.replace(/[^0-9]/g, ''));
+            
+            let quantity = Number(input.value);
+            let newPrice = initPriceVal * quantity;
+          
+            newPrice = newPrice.toLocaleString('vi-VN');
+            currPrice.innerHTML = `$\${newPrice}`;
+            
+            updateTotalPrice();
+        }
+        
+        function updateTotalPrice() {
+            const getAllInputs = document.querySelectorAll('.item-total');
+            const cart_total = document.querySelector('#cart-total');
+            let totalPrice = 0;
+            if(getAllInputs) {
+                
+                Array.from(getAllInputs).forEach(input => {
+                    let currentVal = Number(input.textContent.replace(/[^0-9]/g, ''));
+                    totalPrice += currentVal;
+                });
+                totalPrice = totalPrice.toLocaleString('vi-VN');
+                cart_total.innerHTML = `$\${totalPrice}`;
+            }
+        }
+        
+        updateTotalPrice();
+    </script>
+
+    </body>
 </html>

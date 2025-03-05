@@ -22,7 +22,7 @@ public class DiscountDAO extends DBContext {
                     rs.getString("code"),
                     rs.getDouble("discount_value"),
                     rs.getString("discount_type"),
-                    rs.getDouble("min_order_value"), // Bổ sung lấy min_order_value
+                    rs.getDouble("min_order_value"),
                     rs.getDate("expiry_date"),
                     rs.getInt("status")
                 );
