@@ -25,7 +25,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <form action="#!">
+                            <form action="RegisterServlet" method="POST">
                                 <div class="row gy-3 gy-md-4 overflow-hidden">
                                     <div class="col-12">
                                         <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
