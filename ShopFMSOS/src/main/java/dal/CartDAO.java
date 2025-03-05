@@ -20,16 +20,15 @@ public class CartDAO extends DBContext {
         Cart cart = null;
         String sql = "SELECT cart_id, user_id, created_at, updated_at FROM cart WHERE user_id = ?";
 
-        try (Connection con = getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, userId);
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     cart = new Cart(
-                        rs.getInt("cart_id"),
-                        rs.getInt("user_id"),
-                        rs.getDate("created_at"),
-                        rs.getDate("updated_at")
+                            rs.getInt("cart_id"),
+                            rs.getInt("user_id"),
+                            rs.getDate("created_at"),
+                            rs.getDate("updated_at")
                     );
                 }
             }
@@ -40,20 +39,19 @@ public class CartDAO extends DBContext {
     }
 
     /**
-    
-
-   
-    /**
+     *
+     *
+     *
+     * /**
      * Lấy tổng giá trị giỏ hàng dựa trên cartId và mã giảm giá
      */
     public BigDecimal getTotalPrice(int cartId, Discount discount) {
         BigDecimal total = BigDecimal.ZERO;
         String sql = "SELECT SUM(cd.quantity * cd.price) FROM cart_details cd WHERE cd.cart_id = ?";
 
-        try (Connection con = getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, cartId);
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 if (rs.next() && rs.getBigDecimal(1) != null) {
                     total = rs.getBigDecimal(1);
                 }
@@ -104,4 +102,17 @@ public class CartDAO extends DBContext {
     public BigDecimal getTotalPrice(int cartId) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
+
+    public void applyDiscountToCart(int cartId, String discountCode, BigDecimal discountAmount) {
+        String sql = "UPDATE carts SET discount_code = ?, discount_amount = ? WHERE cart_id = ?";
+        try ( Connection conn = getConnection();  PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, discountCode);
+            stmt.setBigDecimal(2, discountAmount);
+            stmt.setInt(3, cartId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

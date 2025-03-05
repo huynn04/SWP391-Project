@@ -1,3 +1,4 @@
+package controller;
 
 import dal.CartDAO;
 import dal.DiscountDAO;
@@ -7,10 +8,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.io.IOException;
-import java.math.BigDecimal;
-import model.Cart;
 import model.Discount;
+import model.Cart;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigDecimal;
 
 @WebServlet(name = "ApplyDiscountServlet", urlPatterns = {"/ApplyDiscount"})
 public class ApplyDiscountServlet extends HttpServlet {
@@ -18,65 +20,82 @@ public class ApplyDiscountServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        response.setContentType("text/plain");
+        response.setCharacterEncoding("UTF-8");
+
         HttpSession session = request.getSession();
         Integer userId = (Integer) session.getAttribute("userId");
 
-        if (userId == null) {
-            response.sendRedirect("login.jsp");
-            return;
+        // Debug để kiểm tra session có userId không
+        System.out.println("Session userId: " + session.getAttribute("userId"));
+
+        try ( PrintWriter out = response.getWriter()) {
+            if (userId == null) {
+                out.print("LOGIN_REQUIRED"); // Thông báo đăng nhập
+                return;
+            }
+
+            String discountCode = request.getParameter("discountCode");
+            if (discountCode == null || discountCode.trim().isEmpty()) {
+                out.print("EMPTY_CODE");
+                return;
+            }
+
+            CartDAO cartDAO = new CartDAO();
+            DiscountDAO discountDAO = new DiscountDAO();
+
+            Cart cart = cartDAO.getCartByUserId(userId);
+            if (cart == null) {
+                out.print("CART_EMPTY");
+                return;
+            }
+
+            BigDecimal totalPrice = cartDAO.getTotalPrice(cart.getCartId());
+            if (totalPrice == null || totalPrice.compareTo(BigDecimal.ZERO) == 0) {
+                out.print("NO_ITEMS");
+                return;
+            }
+
+            Discount discount = discountDAO.getDiscountByCode(discountCode);
+            if (discount == null || discount.getStatus() != 1) {
+                out.print("INVALID_CODE");
+                return;
+            }
+
+            if (totalPrice.compareTo(BigDecimal.valueOf(discount.getMinOrderValue())) < 0) {
+                out.print("MIN_ORDER_" + discount.getMinOrderValue()); // Mã lỗi kèm giá trị tối thiểu
+                return;
+            }
+
+            // Tính toán giá trị giảm giá
+            BigDecimal discountAmount;
+            if ("percent".equalsIgnoreCase(discount.getDiscountType())) {
+                discountAmount = totalPrice.multiply(BigDecimal.valueOf(discount.getDiscountValue())).divide(BigDecimal.valueOf(100));
+            } else {
+                discountAmount = BigDecimal.valueOf(discount.getDiscountValue());
+            }
+
+            BigDecimal newTotal = totalPrice.subtract(discountAmount);
+            if (newTotal.compareTo(BigDecimal.ZERO) < 0) {
+                newTotal = BigDecimal.ZERO;
+            }
+
+            // Lưu mã giảm giá vào giỏ hàng
+            cartDAO.applyDiscountToCart(cart.getCartId(), discountCode, discountAmount);
+
+            // Trả về số phần trăm hoặc số tiền giảm giá để cập nhật trên giao diện
+            out.print(discount.getDiscountValue() + "|" + discount.getDiscountType());
+
+            // Debug để kiểm tra session sau khi cập nhật
+            System.out.println("New total after discount: " + newTotal);
+            System.out.println("Applied discount code: " + discountCode);
+        } catch (Exception e) {
+            e.printStackTrace(); // Ghi lỗi vào console server
+            response.getWriter().print("ERROR");
         }
+        // Lưu mã giảm giá vào giỏ hàng
+        cartDAO.applyDiscountToCart(cart.getCartId(), discountCode, discountAmount);
 
-        String discountCode = request.getParameter("discountCode").trim();
-        
-        if (discountCode.isEmpty()) {
-            session.setAttribute("error", "Vui lòng nhập mã giảm giá.");
-            response.sendRedirect("cartDetail.jsp");
-            return;
-        }
-
-        CartDAO cartDAO = new CartDAO();
-        DiscountDAO discountDAO = new DiscountDAO();
-
-        Cart cart = cartDAO.getCartByUserId(userId);
-        BigDecimal totalPrice = cartDAO.getTotalPrice(cart.getCartId());
-
-        if (cart == null || totalPrice.compareTo(BigDecimal.ZERO) == 0) {
-            session.setAttribute("error", "Giỏ hàng của bạn đang trống!");
-            response.sendRedirect("cartDetail.jsp");
-            return;
-        }
-
-        Discount discount = discountDAO.getDiscountByCode(discountCode);
-        if (discount == null || discount.getStatus() != 1) {
-            session.setAttribute("error", "Mã giảm giá không hợp lệ hoặc đã hết hạn.");
-            response.sendRedirect("cartDetail.jsp");
-            return;
-        }
-
-        // Kiểm tra đơn hàng tối thiểu
-        if (totalPrice.compareTo(BigDecimal.valueOf(discount.getMinOrderValue())) < 0) {
-            session.setAttribute("error", "Mã giảm giá chỉ áp dụng cho đơn hàng trên $" + discount.getMinOrderValue());
-            response.sendRedirect("cartDetail.jsp");
-            return;
-        }
-
-        // Áp dụng giảm giá
-        BigDecimal discountAmount;
-        if ("percent".equalsIgnoreCase(discount.getDiscountType())) {
-            discountAmount = totalPrice.multiply(BigDecimal.valueOf(discount.getDiscountValue())).divide(BigDecimal.valueOf(100));
-        } else {
-            discountAmount = BigDecimal.valueOf(discount.getDiscountValue());
-        }
-
-        BigDecimal newTotal = totalPrice.subtract(discountAmount);
-        if (newTotal.compareTo(BigDecimal.ZERO) < 0) {
-            newTotal = BigDecimal.ZERO; // Đảm bảo tổng tiền không âm
-        }
-
-        session.setAttribute("totalPrice", newTotal);
-        session.setAttribute("discountCode", discountCode);
-        session.setAttribute("success", "Mã giảm giá đã được áp dụng!");
-
-        response.sendRedirect("cartDetail.jsp");
     }
 }
