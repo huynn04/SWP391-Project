@@ -64,4 +64,8 @@ public class Cart {
     public void setDiscount(Discount discount) { // Setter cho discount
         this.discount = discount;
     }
+
+    public Object getItems() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

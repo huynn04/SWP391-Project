@@ -7,7 +7,7 @@ public class Discount {
     private String code;
     private double discountValue;
     private String discountType;
-    private double minOrderValue; // Thêm thuộc tính này
+    private double minOrderValue;
     private Date expiryDate;
     private int status;
 
@@ -16,7 +16,7 @@ public class Discount {
         this.code = code;
         this.discountValue = discountValue;
         this.discountType = discountType;
-        this.minOrderValue = minOrderValue; // Gán giá trị
+        this.minOrderValue = minOrderValue;
         this.expiryDate = expiryDate;
         this.status = status;
     }
@@ -25,56 +25,28 @@ public class Discount {
         return discountId;
     }
 
-    public void setDiscountId(int discountId) {
-        this.discountId = discountId;
-    }
-
     public String getCode() {
         return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public double getDiscountValue() {
         return discountValue;
     }
 
-    public void setDiscountValue(double discountValue) {
-        this.discountValue = discountValue;
-    }
-
     public String getDiscountType() {
         return discountType;
     }
 
-    public void setDiscountType(String discountType) {
-        this.discountType = discountType;
-    }
-
-    public double getMinOrderValue() { // Thêm phương thức này
+    public double getMinOrderValue() {
         return minOrderValue;
-    }
-
-    public void setMinOrderValue(double minOrderValue) {
-        this.minOrderValue = minOrderValue;
     }
 
     public Date getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(Date expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
     public int getStatus() {
         return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
     }
 
     @Override
