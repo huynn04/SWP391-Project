@@ -31,7 +31,7 @@ public class RegisterServlet extends HttpServlet {
         if (firstName == null || lastName == null || email == null || password == null ||
             firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
             request.setAttribute("errorMessage", "First Name, Last Name, Email, and Password are required.");
-            request.getRequestDispatcher("register.jsp").forward(request, response);
+            request.getRequestDispatcher("home.jsp").forward(request, response);
             return;
         }
         
