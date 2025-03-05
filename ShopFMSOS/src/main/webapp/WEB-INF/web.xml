@@ -156,6 +156,10 @@
         <servlet-name>UpdateAddressServlet</servlet-name>
         <servlet-class>controller.UpdateAddressServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ProductControllerServlet</servlet-name>
+        <servlet-class>controller.ProductControllerServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -307,6 +311,10 @@
     <servlet-mapping>
         <servlet-name>UpdateAddressServlet</servlet-name>
         <url-pattern>/UpdateAddressServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ProductControllerServlet</servlet-name>
+        <url-pattern>/ProductController</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>
