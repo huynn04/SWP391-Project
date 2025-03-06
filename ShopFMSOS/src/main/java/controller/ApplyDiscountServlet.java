@@ -30,7 +30,7 @@ public class ApplyDiscountServlet extends HttpServlet {
         // Debug để kiểm tra session có userId không
         System.out.println("Session userId: " + session.getAttribute("userId"));
 
-        try ( PrintWriter out = response.getWriter()) {
+        try (PrintWriter out = response.getWriter()) {
             if (userId == null) {
                 out.print("LOGIN_REQUIRED"); // Thông báo đăng nhập
                 return;
@@ -94,8 +94,5 @@ public class ApplyDiscountServlet extends HttpServlet {
             e.printStackTrace(); // Ghi lỗi vào console server
             response.getWriter().print("ERROR");
         }
-        // Lưu mã giảm giá vào giỏ hàng
-        cartDAO.applyDiscountToCart(cart.getCartId(), discountCode, discountAmount);
-
     }
 }
