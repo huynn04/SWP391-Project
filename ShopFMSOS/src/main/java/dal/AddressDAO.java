@@ -37,36 +37,48 @@ public class AddressDAO extends DBContext {
         return addresses;
     }
 
-    // Lưu địa chỉ mới vào database
     public boolean saveAddress(Address address) {
-        String sql = "INSERT INTO addresses (user_id, full_name, phone, city, district, ward, specific_address, address_type, created_at) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+    String sql = "INSERT INTO addresses (user_id, full_name, phone, city, district, ward, specific_address, address_type, created_at) " +
+                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
 
-        try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setInt(1, address.getUserId());
-            statement.setString(2, address.getFullName());
-            statement.setString(3, address.getPhone());
-            statement.setString(4, address.getCity());
-            statement.setString(5, address.getDistrict());
-            statement.setString(6, address.getWard());
-            statement.setString(7, address.getSpecificAddress());
-            statement.setString(8, address.getAddressType());
+    try (Connection connection = getConnection();
+         PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        
+        // In ra các giá trị trước khi thực hiện insert
+        System.out.println("Inserting Address: ");
+        System.out.println("User ID: " + address.getUserId());
+        System.out.println("Full Name: " + address.getFullName());
+        System.out.println("Phone: " + address.getPhone());
+        System.out.println("City: " + address.getCity());
+        System.out.println("District: " + address.getDistrict());
+        System.out.println("Ward: " + address.getWard());
+        System.out.println("Specific Address: " + address.getSpecificAddress());
+        System.out.println("Address Type: " + address.getAddressType());
+        
+        statement.setInt(1, address.getUserId());
+        statement.setString(2, address.getFullName());
+        statement.setString(3, address.getPhone());
+        statement.setString(4, address.getCity());
+        statement.setString(5, address.getDistrict());
+        statement.setString(6, address.getWard());
+        statement.setString(7, address.getSpecificAddress());
+        statement.setString(8, address.getAddressType());
 
-            int rowsAffected = statement.executeUpdate();
-            if (rowsAffected > 0) {
-                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        address.setId(generatedKeys.getInt(1));
-                    }
+        int rowsAffected = statement.executeUpdate();
+        
+        if (rowsAffected > 0) {
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    address.setId(generatedKeys.getInt(1));
                 }
             }
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return false;
+        return rowsAffected > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return false;
+}
 
     // Cập nhật địa chỉ
     public boolean updateAddress(Address address) {
