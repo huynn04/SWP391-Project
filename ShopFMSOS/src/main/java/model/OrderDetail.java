@@ -18,6 +18,7 @@ public class OrderDetail {
     private BigDecimal price;
     private BigDecimal subtotal;
     private BigDecimal tax;
+    private Product product;
 
     public OrderDetail(int orderDetailId, int orderId, int productId, int quantity, BigDecimal price, BigDecimal subtotal, BigDecimal tax) {
         this.orderDetailId = orderDetailId;
@@ -27,6 +28,17 @@ public class OrderDetail {
         this.price = price;
         this.subtotal = subtotal;
         this.tax = tax;
+    }
+    public OrderDetail(int orderDetailId, int orderId, int productId, int quantity, 
+                       BigDecimal price, BigDecimal subtotal, BigDecimal tax, Product product) {
+        this.orderDetailId = orderDetailId;
+        this.orderId = orderId;
+        this.productId = productId;
+        this.quantity = quantity;
+        this.price = price;
+        this.subtotal = subtotal;
+        this.tax = tax;
+        this.product = product;
     }
     
     public OrderDetail() {}
@@ -85,5 +97,13 @@ public class OrderDetail {
     
     public void setTax(BigDecimal tax) {
         this.tax = tax;
+    }
+    // Getter & Setter cho Product
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 }

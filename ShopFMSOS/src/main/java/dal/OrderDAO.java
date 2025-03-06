@@ -17,6 +17,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import model.Order;
+import model.OrderDetail;
+import model.Product;
 
 /**
  *
@@ -330,6 +332,7 @@ public class OrderDAO extends DBContext {
 
         return cancelledOrders;
     }
+//Huy don
 
     public void cancelOrder(int orderId) {
         String sql = "UPDATE orders SET status = -1, canceled_at = GETDATE() WHERE order_id = ? AND status = 0";
@@ -345,4 +348,75 @@ public class OrderDAO extends DBContext {
             e.printStackTrace();
         }
     }
+//Lay Order Detail
+    public List<OrderDetail> getOrderDetailsByOrderId(int orderId) {
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        String sql = "SELECT od.order_detail_id, od.order_id, od.product_id, od.quantity, od.price, od.subtotal, od.tax, "
+                + "p.product_id, p.product_name, p.image "
+                + "FROM order_details od "
+                + "JOIN products p ON od.product_id = p.product_id "
+                + "WHERE od.order_id = ?";
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                // Tạo đối tượng Product
+                Product product = new Product(
+                        rs.getInt("product_id"),
+                        rs.getString("product_name"),
+                        rs.getString("image")
+                );
+
+                // Tạo đối tượng OrderDetail có Product
+                OrderDetail orderDetail = new OrderDetail(
+                        rs.getInt("order_detail_id"),
+                        rs.getInt("order_id"),
+                        rs.getInt("product_id"),
+                        rs.getInt("quantity"),
+                        rs.getBigDecimal("price"),
+                        rs.getBigDecimal("subtotal"),
+                        rs.getBigDecimal("tax"),
+                        product // Truyền đối tượng Product vào
+                );
+
+                orderDetails.add(orderDetail);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orderDetails;
+    }
+    public Order getOrderById(int orderId) {
+    Order order = null;
+    String sql = "SELECT * FROM orders WHERE order_id = ?";
+
+    try (Connection con = getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, orderId);
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            order = new Order(
+                rs.getInt("order_id"),
+                rs.getInt("user_id"),
+                rs.getBigDecimal("total_price"),
+                rs.getTimestamp("order_date"),
+                rs.getInt("status"),
+                rs.getString("note"),
+                rs.getString("receiver_name"),
+                rs.getString("receiver_address"),
+                rs.getString("receiver_phone"),
+                rs.getString("payment_method"),
+                rs.getString("discount_code"),
+                rs.getTimestamp("delivered_at"),
+                rs.getTimestamp("canceled_at")
+            );
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return order;
+}
 }

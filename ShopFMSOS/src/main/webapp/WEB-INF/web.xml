@@ -156,6 +156,10 @@
         <servlet-name>CustomerOrderHistoryServlet</servlet-name>
         <servlet-class>controller.CustomerOrderHistoryServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ViewOrderDetailServlet</servlet-name>
+        <servlet-class>controller.ViewOrderDetailServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -307,6 +311,10 @@
     <servlet-mapping>
         <servlet-name>CustomerOrderHistoryServlet</servlet-name>
         <url-pattern>/CustomerOrderHistory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ViewOrderDetailServlet</servlet-name>
+        <url-pattern>/ViewOrderDetail</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>
