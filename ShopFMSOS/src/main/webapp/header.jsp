@@ -37,6 +37,7 @@
 
         <!-- Nếu đã đăng nhập, hiển thị menu cài đặt -->
         <!-- Nếu đã đăng nhập, hiển thị menu cài đặt -->
+        <!-- Nếu đã đăng nhập, hiển thị menu cài đặt -->
         <% if (loggedInUser != null) {%>
         <div class="dropdown">
             <button 
