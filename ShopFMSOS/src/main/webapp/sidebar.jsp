@@ -67,8 +67,6 @@
         </ul>
     </div>
 </nav>
-<<<<<<< Updated upstream
-=======
 
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
@@ -78,4 +76,3 @@
 <script>
     feather.replace();
 </script>
->>>>>>> Stashed changes

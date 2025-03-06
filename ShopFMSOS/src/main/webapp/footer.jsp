@@ -1,14 +1,13 @@
 <%-- 
     Document   : footer
-    Created on : Feb 12, 2025, 3:00:00 PM
-    Author     : Nguy?n Ng?c Huy CE180178
+    Created on : Feb 26, 2025
+    Author     : Nguyễn Ngọc Huy CE180178
 --%>
-<link rel="stylesheet" href="css/style.css">
+<%@ page contentType="text/html; charset=UTF-8" %>
 
-<<<<<<< Updated upstream
-<footer>
-</footer>
-=======
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
 <footer id="footer">
     <div class="container">
         <nav>
@@ -86,4 +85,3 @@
         color: #666;
     }
 </style>
->>>>>>> Stashed changes

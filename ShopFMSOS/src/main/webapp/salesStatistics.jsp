@@ -43,14 +43,12 @@
                 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                     <div class="pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2">Sales Statistics</h1>
-                        <!-- Breadcrumb hiển thị đường dẫn -->
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb breadcrumb-custom">
                                 <li class="breadcrumb-item active" aria-current="page">Statistics</li>
                             </ol>
                         </nav>
                     </div>
-                    <!-- Product Count and Revenue Charts -->
                     <div class="row">
                         <div class="col-md-6">
                             <h4>Product Count by Category</h4>
@@ -93,7 +91,20 @@
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-sm mx-2">Submit</button>
                             </form>
-                            <h4>Total Revenue for ${year} - ${month}:</h4>
+                            <c:choose>
+                                <c:when test="${'all'.equals(year) && 'all'.equals(month)}">
+                                    <h4>Total Revenue For All:</h4>
+                                </c:when>
+                                    <c:when test="${'all'.equals(year) && !'all'.equals(month)}">
+                                    <h4>Total Revenue For Month ${month}:</h4>
+                                </c:when>
+                                <c:when test="${!'all'.equals(year) && 'all'.equals(month)}">
+                                    <h4>Total Revenue For ${year}:</h4>
+                                </c:when>
+                                <c:otherwise>
+                                    <h4>Total Revenue For ${month} ${year}:</h4>
+                                </c:otherwise>
+                            </c:choose>
                             <h4><fmt:formatNumber value="${totalRevenue}" type="currency" currencySymbol="USD" /></h4>
                             <div class="chart-container">
                                 <canvas id="revenueChart"></canvas>
@@ -101,7 +112,6 @@
                         </div>
                     </div>
 
-                    <!-- Customer and Staff Chart -->
                     <div class="row mt-4">
                         <div class="col-md-6">
                             <h4>Customer & Staff</h4>
@@ -115,6 +125,7 @@
                 </main>
             </div>
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 var ctxRevenue = document.getElementById("revenueChart").getContext("2d");
@@ -131,7 +142,10 @@
                 productCounts.push(${entry.value});
             </c:forEach>
 
-                // Biểu đồ doanh thu - Bar Chart với số hiển thị trên cột
+                var revenueGradient = ctxRevenue.createLinearGradient(0, 0, 0, 400);
+                revenueGradient.addColorStop(0, "rgba(54, 162, 235, 0.9)");
+                revenueGradient.addColorStop(1, "rgba(54, 162, 235, 0.3)");
+
                 var revenueChart = new Chart(ctxRevenue, {
                     type: "bar",
                     data: {
@@ -139,43 +153,53 @@
                         datasets: [{
                                 label: "Revenue",
                                 data: [totalRevenue],
-                                backgroundColor: "rgba(54, 162, 235, 0.7)",
+                                backgroundColor: revenueGradient,
                                 borderColor: "rgba(54, 162, 235, 1)",
-                                borderWidth: 2
+                                borderWidth: 2,
+                                borderRadius: 10,
+                                borderSkipped: false
                             }]
                     },
                     options: {
                         responsive: true,
+                        maintainAspectRatio: false,
                         animation: {
-                            duration: 1500,
-                            easing: 'easeInOutQuad'
+                            duration: 2000,
+                            easing: "easeOutBounce",
                         },
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                grid: {color: "rgba(200, 200, 200, 0.2)"},
+                                ticks: {font: {size: 12}, color: "#666"}
+                            },
+                            x: {
+                                grid: {display: false},
+                                ticks: {font: {size: 12}, color: "#666"}
                             }
                         },
                         plugins: {
                             tooltip: {
-                                enabled: true
+                                backgroundColor: "rgba(0, 0, 0, 0.8)",
+                                titleFont: {size: 14},
+                                bodyFont: {size: 12},
+                                padding: 12,
+                                cornerRadius: 8
                             },
                             datalabels: {
-                                anchor: 'end',
-                                align: 'top',
-                                formatter: (value) => "$" + value.toFixed(2),
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                }
+                                anchor: "end",
+                                align: "top",
+                                formatter: (value) => "$" + value.toLocaleString("en-US", {minimumFractionDigits: 2}),
+                                font: {size: 16, weight: "bold"},
+                                color: "#333"
                             }
                         }
                     }
                 });
 
-                // Gradient màu cho Line Chart
-                var gradientStroke = ctxProduct.createLinearGradient(0, 0, 0, 400);
-                gradientStroke.addColorStop(0, "rgba(75, 192, 192, 1)");
-                gradientStroke.addColorStop(1, "rgba(153, 102, 255, 0.5)");
+                var productGradient = ctxProduct.createLinearGradient(0, 0, 0, 400);
+                productGradient.addColorStop(0, "rgba(75, 192, 192, 1)");
+                productGradient.addColorStop(1, "rgba(75, 192, 192, 0.2)");
 
                 var productCategoryChart = new Chart(ctxProduct, {
                     type: "line",
@@ -184,118 +208,114 @@
                         datasets: [{
                                 label: "Product Count by Category",
                                 data: productCounts,
-                                fill: true, // Tô màu dưới đường biểu đồ
-                                backgroundColor: "rgba(75, 192, 192, 0.1)", // Màu nền mờ
-                                borderColor: gradientStroke, // Gradient viền
-                                borderWidth: 3,
-                                tension: 0.4, // Làm mềm đường
-                                pointBackgroundColor: "rgba(75, 192, 192, 1)", // Màu điểm
+                                fill: true,
+                                backgroundColor: productGradient,
+                                borderColor: "rgba(75, 192, 192, 1)",
+                                borderWidth: 4,
+                                tension: 0.4,
+                                pointBackgroundColor: "rgba(75, 192, 192, 1)",
                                 pointBorderColor: "#fff",
-                                pointRadius: 5, // Kích thước điểm
-                                pointHoverRadius: 8 // Phóng to điểm khi hover
+                                pointRadius: 6,
+                                pointHoverRadius: 10,
+                                pointStyle: "circle"
                             }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        animation: {
+                            duration: 2000,
+                            easing: "easeInOutCubic"
+                        },
                         scales: {
                             y: {
                                 beginAtZero: true,
-                                grid: {
-                                    color: "rgba(200, 200, 200, 0.2)"
-                                }
+                                grid: {color: "rgba(200, 200, 200, 0.2)"},
+                                ticks: {font: {size: 12}, color: "#666"}
                             },
                             x: {
-                                grid: {
-                                    display: false
-                                }
+                                grid: {display: false},
+                                ticks: {font: {size: 12}, color: "#666"}
                             }
                         },
                         plugins: {
                             legend: {
                                 labels: {
-                                    font: {
-                                        size: 14
-                                    },
-                                    color: "#555"
-                                }
-                            },
-                            tooltip: {
-                                backgroundColor: "rgba(0,0,0,0.7)",
-                                titleFont: {
-                                    size: 14
-                                },
-                                bodyFont: {
-                                    size: 12
-                                },
-                                padding: 10,
-                                cornerRadius: 5
-                            }
-                        },
-                        animation: {
-                            duration: 1500,
-                            easing: "easeInOutQuart"
-                        }
-                    }
-                });
-
-                // Biểu đồ số lượng người dùng - Pie Chart với hiệu ứng đẹp
-                var userCountChart = new Chart(ctxUser, {
-                    type: 'pie',
-                    data: {
-                        labels: ['Customers', 'Staff'],
-                        datasets: [{
-                                label: 'User Count',
-                                data: [${customerCount}, ${staffCount}],
-                                backgroundColor: [
-                                    'rgba(54, 162, 235, 0.7)',
-                                    'rgba(255, 99, 132, 0.7)'
-                                ],
-                                borderColor: [
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 99, 132, 1)'
-                                ],
-                                borderWidth: 2
-                            }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                                labels: {
-                                    font: {
-                                        size: 14
-                                    },
+                                    font: {size: 14, weight: "bold"},
                                     color: "#444"
                                 }
                             },
                             tooltip: {
-                                backgroundColor: "rgba(0,0,0,0.8)",
-                                bodyFont: {
-                                    size: 14
-                                },
-                                padding: 10,
-                                cornerRadius: 5
+                                backgroundColor: "rgba(0, 0, 0, 0.8)",
+                                titleFont: {size: 14},
+                                bodyFont: {size: 12},
+                                padding: 12,
+                                cornerRadius: 8,
+                                boxPadding: 5
                             }
-                        },
+                        }
+                    }
+                });
+
+                var customerGradient = ctxUser.createLinearGradient(0, 0, 0, 400);
+                customerGradient.addColorStop(0, "rgba(54, 162, 235, 0.9)");
+                customerGradient.addColorStop(1, "rgba(54, 162, 235, 0.5)");
+
+                var staffGradient = ctxUser.createLinearGradient(0, 0, 0, 400);
+                staffGradient.addColorStop(0, "rgba(255, 99, 132, 0.9)");
+                staffGradient.addColorStop(1, "rgba(255, 99, 132, 0.5)");
+
+                var userCountChart = new Chart(ctxUser, {
+                    type: "pie",
+                    data: {
+                        labels: ["Customers", "Staff"],
+                        datasets: [{
+                                label: "User Count",
+                                data: [${customerCount}, ${staffCount}],
+                                backgroundColor: [customerGradient, staffGradient],
+                                borderColor: ["rgba(54, 162, 235, 1)", "rgba(255, 99, 132, 1)"],
+                                borderWidth: 2,
+                                hoverOffset: 10
+                            }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
                         animation: {
                             animateScale: true,
-                            animateRotate: true
+                            animateRotate: true,
+                            duration: 1500,
+                            easing: "easeOutElastic"
+                        },
+                        plugins: {
+                            legend: {
+                                position: "top",
+                                labels: {
+                                    font: {size: 14, weight: "bold"},
+                                    color: "#444",
+                                    padding: 20
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: "rgba(0, 0, 0, 0.8)",
+                                titleFont: {size: 14},
+                                bodyFont: {size: 12},
+                                padding: 12,
+                                cornerRadius: 8
+                            },
+                            datalabels: {
+                                formatter: (value, ctx) => {
+                                    let sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                    let percentage = (value * 100 / sum).toFixed(1) + "%";
+                                    return percentage;
+                                },
+                                color: "#fff",
+                                font: {size: 14, weight: "bold"}
+                            }
                         }
                     }
                 });
             });
-
-        </script>
-
-        <!-- Bootstrap and required scripts -->
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-        <script src="https://unpkg.com/feather-icons"></script>
-        <script>
-            feather.replace();
         </script>
     </body>
 </html>
