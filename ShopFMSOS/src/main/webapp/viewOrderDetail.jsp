@@ -106,6 +106,25 @@
             border-radius: 5px;
         }
 
+        /* Link xem chi tiết sản phẩm */
+        .view-product {
+            display: block;
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .view-product a {
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .view-product a:hover {
+            color: var(--highlight-color);
+            text-decoration: underline;
+        }
+
         /* Bảng thông tin đơn hàng */
         .order-card {
             background: white;
@@ -174,6 +193,10 @@
                             <td>$<%= detail.getTax() %></td>
                         </tr>
                     </table>
+                    <!-- Link xem chi tiết sản phẩm -->
+                    <div class="view-product">
+                        <a href="ProductDetail?productId=<%= detail.getProductId() %>">🔍 View Product Detail</a>
+                    </div>
                 </div>
             </div>
         <% } %>
