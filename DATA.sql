@@ -1,171 +1,117 @@
-﻿GO
-CREATE DATABASE ShopFMSOS;
-GO
-USE ShopFMSOS;
-GO
-
--- Tạo bảng roles
-CREATE TABLE roles (
-    role_id INT IDENTITY(1,1) PRIMARY KEY,
-    role_name VARCHAR(50) NOT NULL UNIQUE,
-    description VARCHAR(MAX)
-);
-
--- Insert các vai trò mặc định
-INSERT INTO roles (role_name, description)
+﻿-- Thêm dữ liệu vào bảng `categories`
+INSERT INTO categories (category_name, description)
 VALUES 
-    ('admin', 'Administrator with full access to the system'),
-    ('staff', 'Staff with limited access to manage the shop'),
-    ('customer', 'Registered user with the ability to browse and purchase products'),
-    ('guest', 'Unregistered user with limited browsing access');
+    ('Anime', 'Figures and merchandise from various anime series'),
+    ('Pokemon', 'Figures and collectibles from the Pokémon universe'),
+    ('Gundam', 'Scale models and figures from the Gundam franchise'),
+    ('One Piece', 'Figures and collectibles from the One Piece universe'),
+    ('Marvel', 'Superhero figures and merchandise from the Marvel universe'),
+    ('DC Comics', 'Figures and collectibles featuring DC superheroes and villains'),
+    ('Star Wars', 'Action figures, models, and memorabilia from Star Wars'),
+    ('Dragon Ball', 'Figures and collectibles from the Dragon Ball series'),
+    ('Naruto', 'Figures and merchandise from the Naruto anime and manga'),
+    ('Demon Slayer', 'Figures and merchandise from Kimetsu no Yaiba (Demon Slayer)'),
+    ('Video Games', 'Figures and collectibles from popular video games'),
+    ('Harry Potter', 'Magical collectibles and figures from the Harry Potter universe');
 
--- Tạo bảng users
-CREATE TABLE users (
-    user_id INT IDENTITY(1,1) PRIMARY KEY,
-    role_id INT NOT NULL DEFAULT 3,
-    full_name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    phone_number VARCHAR(15),
-    address VARCHAR(MAX),
-    password VARCHAR(255) NOT NULL,
-    avatar VARCHAR(255),
-    status SMALLINT DEFAULT 1,
-    created_at DATETIME DEFAULT GETDATE(),
-    updated_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (role_id) REFERENCES roles(role_id)
-);
+-- Thêm dữ liệu vào bảng `products`
+INSERT INTO products (category_id, product_name, detail_desc, image, price, quantity)
+VALUES 
+    (1, 'Naruto Figure', 'A detailed Naruto figure with swirling elemental effects.', '/image/cuuvi.jpg', 100.00, 6),
+    (2, 'Charizard Figure', 'A Charizard collectible figure with flame effects.', '/image/charizaRDY.jpg', 35.99, 10),
+    (2, 'Ash Greninja Figure', 'A highly detailed Greninja figure from Pokémon.', '/image/greninja2.jpg', 25.99, 8),
+    (3, 'Strike Freedom Gundam', 'A Gundam model with stunning gold and blue details.', '/image/gundam1.jpg', 150.00, 5);
 
--- Tạo bảng categories
-CREATE TABLE categories (
-    category_id INT IDENTITY(1,1) PRIMARY KEY,
-    category_name VARCHAR(255) NOT NULL,
-    description VARCHAR(MAX),
-    image VARCHAR(255),
-    status SMALLINT DEFAULT 1,
-    created_at DATETIME DEFAULT GETDATE(),
-    updated_at DATETIME DEFAULT GETDATE()
-);
+-- Thêm dữ liệu vào bảng `users`
+INSERT INTO users (role_id, full_name, email, password, phone_number, avatar, status)
+VALUES 
+    (1, 'Admin User', 'admin@example.com', 'admin', '1234567890', NULL, 1),
+    (2, 'Staff User', 'staff@example.com', '123456', '0987654321', NULL, 1),
+    (3, 'Normal User', 'user@example.com', '123456', '0123456789', NULL, 1),
+    (3, 'Alice Johnson', 'alice@example.com', 'alice123', '1112223333', NULL, 1),
+    (3, 'Bob Smith', 'bob@example.com', 'bob123', '2223334444', NULL, 1),
+    (3, 'Carol Lee', 'carol@example.com', 'carol123', '3334445555', NULL, 1);
 
--- Tạo bảng products
-CREATE TABLE products (
-    product_id INT IDENTITY(1,1) PRIMARY KEY,
-    category_id INT NOT NULL,
-    product_name VARCHAR(255) NOT NULL,
-    detail_desc VARCHAR(MAX),
-    image VARCHAR(255),
-    price DECIMAL(10,2) NOT NULL,
-    discount DECIMAL(5,2) DEFAULT 0,
-    quantity INT NOT NULL,
-    sold INT DEFAULT 0,
-    target VARCHAR(255),
-    factory VARCHAR(255),
-    status SMALLINT DEFAULT 1,
-    created_at DATETIME DEFAULT GETDATE(),
-    updated_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (category_id) REFERENCES categories(category_id)
-);
+-- Thêm địa chỉ cho từng user vào bảng `addresses`
+INSERT INTO addresses (user_id, full_name, phone, city, district, ward, specific_address, address_type, is_default)
+VALUES 
+    ((SELECT user_id FROM users WHERE email = 'admin@example.com'), 'Admin User', '1234567890', 'Vinh Long', 'Long Ho', 'Ward 1', '123 Main St', 'home', 1),
+    ((SELECT user_id FROM users WHERE email = 'staff@example.com'), 'Staff User', '0987654321', 'Ben Tre', 'Mo Cay', 'Ward 2', '456 Street Ave', 'home', 1),
+    ((SELECT user_id FROM users WHERE email = 'user@example.com'), 'Normal User', '0123456789', 'Bac Lieu', 'Gia Rai', 'Ward 3', '789 House Lane', 'home', 1),
+    ((SELECT user_id FROM users WHERE email = 'alice@example.com'), 'Alice Johnson', '1112223333', 'Ho Chi Minh', 'District 1', 'Ward 5', '101 Alice St', 'home', 1),
+    ((SELECT user_id FROM users WHERE email = 'bob@example.com'), 'Bob Smith', '2223334444', 'Ha Noi', 'Ba Dinh', 'Ward 8', '202 Bob Ave', 'home', 1),
+    ((SELECT user_id FROM users WHERE email = 'carol@example.com'), 'Carol Lee', '3334445555', 'Da Nang', 'Son Tra', 'Ward 9', '303 Carol Lane', 'home', 1);
 
--- Tạo bảng cart
-CREATE TABLE cart (
-    cart_id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT NOT NULL,
-    created_at DATETIME DEFAULT GETDATE(),
-    updated_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
+-- Cập nhật `address_id` trong bảng `users`
+UPDATE users
+SET address_id = (SELECT address_id FROM addresses WHERE addresses.user_id = users.user_id AND is_default = 1)
+WHERE EXISTS (SELECT 1 FROM addresses WHERE addresses.user_id = users.user_id);
 
--- Tạo bảng cart_details
-CREATE TABLE cart_details (
-    cart_detail_id INT IDENTITY(1,1) PRIMARY KEY,
-    cart_id INT NOT NULL,
-    product_id INT NOT NULL,
-    quantity INT NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (cart_id) REFERENCES cart(cart_id),
-    FOREIGN KEY (product_id) REFERENCES products(product_id)
-);
+-- Thêm dữ liệu vào bảng `cart`
+INSERT INTO cart (user_id)
+VALUES
+    ((SELECT user_id FROM users WHERE email = 'admin@example.com')),
+    ((SELECT user_id FROM users WHERE email = 'staff@example.com')),
+    ((SELECT user_id FROM users WHERE email = 'user@example.com'));
 
--- Tạo bảng orders
-CREATE TABLE orders (
-    order_id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT NOT NULL,
-    total_price DECIMAL(10,2) NOT NULL,
-    order_date DATETIME DEFAULT GETDATE(),
-    status SMALLINT DEFAULT 0,
-    note VARCHAR(MAX),
-    receiver_name VARCHAR(255) NOT NULL,
-    receiver_address VARCHAR(MAX) NOT NULL,
-    receiver_phone VARCHAR(15) NOT NULL,
-    payment_method VARCHAR(50) DEFAULT 'COD',
-    discount_code VARCHAR(50),
-    delivered_at DATETIME NULL,
-    canceled_at DATETIME NULL,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
+-- Thêm dữ liệu vào bảng `orders`
+INSERT INTO orders (user_id, total_price, note, receiver_name, receiver_address_id, receiver_phone, payment_method, discount_code)
+VALUES 
+    (
+        (SELECT user_id FROM users WHERE email = 'user@example.com'),
+        200.00,
+        'Please deliver ASAP.',
+        'Normal User',
+        (SELECT address_id FROM addresses WHERE user_id = (SELECT user_id FROM users WHERE email = 'user@example.com') AND is_default = 1),
+        '0123456789',
+        'COD',
+        NULL
+    ),
+    (
+        (SELECT user_id FROM users WHERE email = 'staff@example.com'),
+        300.00,
+        'Call before delivery.',
+        'Staff User',
+        (SELECT address_id FROM addresses WHERE user_id = (SELECT user_id FROM users WHERE email = 'staff@example.com') AND is_default = 1),
+        '0987654321',
+        'COD',
+        'DISCOUNT5'
+    );
 
--- Tạo bảng order_details
-CREATE TABLE order_details (
-    order_detail_id INT IDENTITY(1,1) PRIMARY KEY,
-    order_id INT NOT NULL,
-    product_id INT NOT NULL,
-    quantity INT NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    subtotal DECIMAL(10,2) NOT NULL,
-    tax DECIMAL(5,2) DEFAULT 0,
-    FOREIGN KEY (order_id) REFERENCES orders(order_id),
-    FOREIGN KEY (product_id) REFERENCES products(product_id)
-);
+-- Thêm dữ liệu vào bảng `order_details`
+INSERT INTO order_details (order_id, product_id, quantity, price, subtotal, tax)
+VALUES
+    (
+        (SELECT TOP 1 order_id FROM orders WHERE user_id = (SELECT user_id FROM users WHERE email = 'user@example.com') ORDER BY order_date DESC),
+        (SELECT product_id FROM products WHERE product_name = 'Naruto Figure'),
+        2,
+        100.00,
+        200.00,
+        10.00
+    ),
+    (
+        (SELECT TOP 1 order_id FROM orders WHERE user_id = (SELECT user_id FROM users WHERE email = 'user@example.com') ORDER BY order_date DESC),
+        (SELECT product_id FROM products WHERE product_name = 'Charizard Figure'),
+        1,
+        35.99,
+        35.99,
+        2.00
+    ),
+    (
+        (SELECT TOP 1 order_id FROM orders WHERE user_id = (SELECT user_id FROM users WHERE email = 'staff@example.com') ORDER BY order_date DESC),
+        (SELECT product_id FROM products WHERE product_name = 'Strike Freedom Gundam'),
+        1,
+        150.00,
+        150.00,
+        7.50
+    );
 
--- Tạo bảng product_reviews
-CREATE TABLE product_reviews (
-    review_id INT IDENTITY(1,1) PRIMARY KEY,
-    order_detail_id INT NOT NULL,
-    product_id INT NOT NULL,
-    user_id INT NOT NULL,
-    review_content VARCHAR(MAX),
-    rating SMALLINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
-    title VARCHAR(255),
-    likes INT DEFAULT 0,
-    status SMALLINT DEFAULT 1,
-    created_at DATETIME DEFAULT GETDATE(),
-    updated_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (order_detail_id) REFERENCES order_details(order_detail_id),
-    FOREIGN KEY (product_id) REFERENCES products(product_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
-
--- Tạo bảng news
-CREATE TABLE news (
-    news_id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    content VARCHAR(MAX) NOT NULL,
-    image VARCHAR(255),
-    status SMALLINT DEFAULT 1,
-    created_at DATETIME DEFAULT GETDATE(),
-    updated_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
-
--- Tạo bảng news_comments
-CREATE TABLE news_comments (
-    comment_id INT IDENTITY(1,1) PRIMARY KEY,
-    news_id INT NOT NULL,
-    user_id INT NOT NULL,
-    content VARCHAR(MAX) NOT NULL,
-    created_at DATETIME DEFAULT GETDATE(),
-    updated_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (news_id) REFERENCES news(news_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
-
--- tạo bảng để lưu token reset password 
-CREATE TABLE password_reset_tokens (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT NOT NULL,
-    token VARCHAR(255) NOT NULL UNIQUE,
-    expires_at DATETIME NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-);
-
-GO
+-- Kiểm tra dữ liệu sau khi thêm
+SELECT * FROM categories;
+SELECT * FROM products;
+SELECT * FROM roles;
+SELECT * FROM cart;
+SELECT * FROM users;
+SELECT * FROM addresses;
+SELECT * FROM orders;
+SELECT * FROM order_details;
