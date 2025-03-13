@@ -1,8 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
-
 package controller;
 
 import dal.UserDAO;
@@ -46,7 +41,6 @@ public class CreateStaffServlet extends HttpServlet {
         String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phoneNumber");
-        String address = request.getParameter("address");
         String password = request.getParameter("password");
         int status = Integer.parseInt(request.getParameter("status"));
         // Role mặc định cho staff là 2
@@ -88,7 +82,6 @@ public class CreateStaffServlet extends HttpServlet {
         newStaff.setFullName(fullName);
         newStaff.setEmail(email);
         newStaff.setPhoneNumber(phoneNumber);
-        newStaff.setAddress(address);
         newStaff.setPassword(password);
         newStaff.setAvatar(avatarPath);
         newStaff.setStatus(status);

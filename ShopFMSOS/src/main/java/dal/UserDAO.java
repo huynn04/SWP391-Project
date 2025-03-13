@@ -42,42 +42,48 @@ public class UserDAO extends DBContext {
 
 
 public boolean insertUser(User user) {
-        String query = "INSERT INTO users (full_name, email, phone_number, address, password, avatar, status, role_id, created_at, updated_at) "
-                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    String query = "INSERT INTO [ShopFMSOS].[dbo].[users] "
+                 + "([role_id], [full_name], [email], [phone_number], [password], [avatar], [status], [created_at], [updated_at]) "
+                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
+    try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        // Debugging - In các giá trị đang được thêm vào
+        System.out.println("Executing insertUser...");
+        System.out.println("Full Name: " + user.getFullName());
+        System.out.println("Email: " + user.getEmail());
+        System.out.println("Phone: " + user.getPhoneNumber());
+        System.out.println("Password: " + user.getPassword());
+        System.out.println("Avatar: " + user.getAvatar());
+        System.out.println("Status: " + user.getStatus());
+        System.out.println("Role ID: " + user.getRoleId());
+        System.out.println("Created At: " + user.getCreatedAt());
+        System.out.println("Updated At: " + user.getUpdatedAt());
         
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            // Debugging - Print values being inserted
-            System.out.println("Executing insertUser...");
-            System.out.println("Full Name: " + user.getFullName());
-            System.out.println("Email: " + user.getEmail());
-            System.out.println("Phone: " + user.getPhoneNumber());
-            System.out.println("Address: " + user.getAddress());
-            System.out.println("Password: " + user.getPassword());
-            System.out.println("Role ID: " + user.getRoleId());
-            System.out.println("Status: " + user.getStatus());
-            System.out.println("Created At: " + user.getCreatedAt());
-            System.out.println("Updated At: " + user.getUpdatedAt());
-            
-            stmt.setString(1, user.getFullName());
-            stmt.setString(2, user.getEmail());
-            stmt.setString(3, user.getPhoneNumber());
-            stmt.setString(4, user.getAddress());
-            stmt.setString(5, user.getPassword());
-            stmt.setString(6, user.getAvatar());
-            stmt.setInt(7, user.getStatus());
-            stmt.setInt(8, user.getRoleId());
-            stmt.setTimestamp(9, user.getCreatedAt() != null ? new Timestamp(user.getCreatedAt().getTime()) : new Timestamp(System.currentTimeMillis()));
-            stmt.setTimestamp(10, user.getUpdatedAt() != null ? new Timestamp(user.getUpdatedAt().getTime()) : new Timestamp(System.currentTimeMillis()));
-            
-            int rowsAffected = stmt.executeUpdate();
-            System.out.println("Rows affected: " + rowsAffected);
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            System.err.println("SQL Error: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return false;
+        // Gán các giá trị vào PreparedStatement
+        stmt.setInt(1, user.getRoleId()); // role_id
+        stmt.setString(2, user.getFullName()); // full_name
+        stmt.setString(3, user.getEmail()); // email
+        stmt.setString(4, user.getPhoneNumber()); // phone_number
+        stmt.setString(5, user.getPassword()); // password
+        stmt.setString(6, user.getAvatar()); // avatar
+        stmt.setInt(7, user.getStatus()); // status
+        stmt.setTimestamp(8, user.getCreatedAt() != null ? new Timestamp(user.getCreatedAt().getTime()) : new Timestamp(System.currentTimeMillis())); // created_at
+        stmt.setTimestamp(9, user.getUpdatedAt() != null ? new Timestamp(user.getUpdatedAt().getTime()) : new Timestamp(System.currentTimeMillis())); // updated_at
+        
+        // Thực thi câu lệnh insert
+        int rowsAffected = stmt.executeUpdate();
+        System.out.println("Rows affected: " + rowsAffected);
+        
+        return rowsAffected > 0;
+    } catch (SQLException e) {
+        System.err.println("SQL Error: " + e.getMessage());
+        e.printStackTrace();
     }
+    
+    return false;
+}
+
+
 
 public Optional<User> validateUser(String email, String password) {
     String query = "SELECT * FROM Users WHERE email = ? AND password = ?";
@@ -93,7 +99,7 @@ public Optional<User> validateUser(String email, String password) {
                 rs.getString("full_name"),
                 rs.getString("email"),
                 rs.getString("phone_number"),
-                rs.getString("address"),
+                // Không lấy giá trị address nữa, bỏ hẳn nó đi
                 rs.getString("password"),
                 rs.getString("avatar"),
                 rs.getInt("status"),
@@ -107,6 +113,7 @@ public Optional<User> validateUser(String email, String password) {
     }
     return Optional.empty();
 }
+
 
 
     public int countAllUsers() {
@@ -123,32 +130,32 @@ public Optional<User> validateUser(String email, String password) {
     }
 
     public List<User> getAllCustomers() {
-        List<User> customers = new ArrayList<>();
-        String sql = "SELECT * FROM [users] WHERE role_id = 3";
+    List<User> customers = new ArrayList<>();
+    String sql = "SELECT * FROM [users] WHERE role_id = 3";
 
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+    try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
-            while (rs.next()) {
-                User user = new User(
-                        rs.getInt("user_id"),
-                        rs.getInt("role_id"),
-                        rs.getString("full_name"),
-                        rs.getString("email"),
-                        rs.getString("phone_number"),
-                        rs.getString("address"),
-                        rs.getString("password"),
-                        rs.getString("avatar"),
-                        rs.getInt("status"),
-                        rs.getDate("created_at"),
-                        rs.getDate("updated_at")
-                );
-                customers.add(user);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        while (rs.next()) {
+            User user = new User(
+                    rs.getInt("user_id"),
+                    rs.getInt("role_id"),
+                    rs.getString("full_name"),
+                    rs.getString("email"),
+                    rs.getString("phone_number"),
+                    rs.getString("password"),
+                    rs.getString("avatar"),
+                    rs.getInt("status"),
+                    rs.getDate("created_at"),
+                    rs.getDate("updated_at")
+            );
+            customers.add(user);
         }
-        return customers;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return customers;
+}
+
 
     public Optional<User> getUserById(int userId) {
         String sql = "SELECT * FROM users WHERE user_id = ?";
@@ -270,38 +277,39 @@ public Optional<User> validateUser(String email, String password) {
 
 // Phiên bản getAllCustomers cho trường hợp không có tìm kiếm, nhưng vẫn hỗ trợ sắp xếp
     public List<User> getAllCustomers(String sortBy) {
-        List<User> customers = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM [users] WHERE role_id = 3 ");
+    List<User> customers = new ArrayList<>();
+    StringBuilder sql = new StringBuilder("SELECT * FROM [users] WHERE role_id = 3 ");
 
-        if ("name".equalsIgnoreCase(sortBy)) {
-            sql.append("ORDER BY full_name ASC");
-        } else {
-            sql.append("ORDER BY user_id ASC");
-        }
-
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql.toString());  ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                User user = new User(
-                        rs.getInt("user_id"),
-                        rs.getInt("role_id"),
-                        rs.getString("full_name"),
-                        rs.getString("email"),
-                        rs.getString("phone_number"),
-                        rs.getString("address"),
-                        rs.getString("password"),
-                        rs.getString("avatar"),
-                        rs.getInt("status"),
-                        rs.getDate("created_at"),
-                        rs.getDate("updated_at")
-                );
-                customers.add(user);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return customers;
+    // Sắp xếp theo tên hoặc ID người dùng tùy thuộc vào giá trị của sortBy
+    if ("name".equalsIgnoreCase(sortBy)) {
+        sql.append("ORDER BY full_name ASC");
+    } else {
+        sql.append("ORDER BY user_id ASC");
     }
+
+    try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql.toString()); ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            // Tạo đối tượng User mà không bao gồm address
+            User user = new User(
+                rs.getInt("user_id"),
+                rs.getInt("role_id"),
+                rs.getString("full_name"),
+                rs.getString("email"),
+                rs.getString("phone_number"),
+                rs.getString("password"),
+                rs.getString("avatar"),
+                rs.getInt("status"),
+                rs.getDate("created_at"),
+                rs.getDate("updated_at")
+            );
+            customers.add(user);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return customers;
+}
+
 // Lấy danh sách Staff (không tìm kiếm, có sắp xếp)
 
     public List<User> getAllStaff(String sortBy) {

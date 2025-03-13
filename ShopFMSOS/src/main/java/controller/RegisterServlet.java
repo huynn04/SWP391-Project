@@ -4,6 +4,7 @@ import dal.UserDAO;
 import dal.EmailService; // Import lớp EmailService để gửi email
 import model.User;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Date;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -41,9 +42,15 @@ public class RegisterServlet extends HttpServlet {
         Date createdAt = new Date();
         Date updatedAt = new Date();
 
-        User user = new User(0, roleId, fullName, email, "", "", password, "default-avatar.png", status, createdAt, updatedAt);
-        UserDAO userDAO = new UserDAO();
+        // Chuyển đổi Date thành Timestamp để phù hợp với kiểu dữ liệu trong cơ sở dữ liệu
+        Timestamp createdAtTimestamp = new Timestamp(createdAt.getTime());
+        Timestamp updatedAtTimestamp = new Timestamp(updatedAt.getTime());
 
+        // Tạo đối tượng User (không có address)
+        User user = new User(0, roleId, fullName, email, "", password, "default-avatar.png", status, createdAtTimestamp, updatedAtTimestamp);
+        
+        // Khởi tạo UserDAO và chèn người dùng vào cơ sở dữ liệu
+        UserDAO userDAO = new UserDAO();
         boolean isInserted = userDAO.insertUser(user);
 
         if (isInserted) {

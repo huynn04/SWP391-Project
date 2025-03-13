@@ -8,20 +8,18 @@ public class User {
     private String fullName;
     private String email;
     private String phoneNumber;
-    private String address;
     private String password;
     private String avatar;
     private int status;
     private Date createdAt;
     private Date updatedAt;
 
-    public User(int userId, int roleId, String fullName, String email, String phoneNumber, String address, String password, String avatar, int status, Date createdAt, Date updatedAt) {
+    public User(int userId, int roleId, String fullName, String email, String phoneNumber, String password, String avatar, int status, Date createdAt, Date updatedAt) {
         this.userId = userId;
         this.roleId = roleId;
         this.fullName = fullName;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.address = address;
         this.password = password;
         this.avatar = avatar;
         this.status = status;
@@ -78,15 +76,7 @@ public class User {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-    
-    public String getAddress() {
-        return address;
-    }
-    
-    public void setAddress(String address) {
-        this.address = address;
-    }
-    
+
     public String getPassword() {
         return password;
     }
