@@ -33,7 +33,15 @@ public class CheckoutInfoServlet extends HttpServlet {
         }
 
         // Tính tổng tiền
-        double totalPrice = (double) session.getAttribute("totalPrice");
+        double totalPrice = 0.0;  // Khởi tạo totalPrice
+        if (session.getAttribute("totalPrice") == null) {
+            for (Product p : cart) {
+                // Chuyển giá trị BigDecimal của price và quantity thành double và tính tổng
+                totalPrice += p.getQuantity() * p.getPrice().doubleValue();  // Dùng doubleValue() để lấy giá trị double
+            }
+        } else {
+            totalPrice = (double) session.getAttribute("totalPrice");
+        }
 
         List<Address> addressList = null;
 
@@ -68,10 +76,10 @@ public class CheckoutInfoServlet extends HttpServlet {
         String specificAddress = request.getParameter("specificAddress");
         String addressType = request.getParameter("addressType");
 
-        if (fullName == null || phone == null || city == null || district == null || ward == null ||
-                specificAddress == null || addressType == null ||
-                fullName.isEmpty() || phone.isEmpty() || city.isEmpty() || district.isEmpty() ||
-                ward.isEmpty() || specificAddress.isEmpty() || addressType.isEmpty()) {
+        if (fullName == null || phone == null || city == null || district == null || ward == null
+                || specificAddress == null || addressType == null
+                || fullName.isEmpty() || phone.isEmpty() || city.isEmpty() || district.isEmpty()
+                || ward.isEmpty() || specificAddress.isEmpty() || addressType.isEmpty()) {
             request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin!");
             doGet(request, response);
             return;
