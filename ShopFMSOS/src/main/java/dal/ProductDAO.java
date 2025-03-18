@@ -1,29 +1,25 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dal;
 
 import model.Product;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import model.Order;
+import java.math.BigDecimal;
 
-/**
- *
- * @author Nguyễn Ngoc Huy CE180178
- */
 public class ProductDAO extends DBContext {
 
     public List<Product> getAllProducts() {
         List<Product> products = new ArrayList<>();
-        String sql = "SELECT p.product_id, p.category_id, p.product_name, p.detail_desc, p.image, p.price, p.discount, p.quantity, p.sold, p.target, p.factory, p.status, p.created_at, p.updated_at, c.category_name "
-                + "FROM products p "
-                + "JOIN categories c ON p.category_id = c.category_id";  // JOIN với bảng categories
+        String sql = "SELECT p.product_id, p.category_id, p.product_name, p.detail_desc, p.image, p.price, "
+                   + "       p.discount, p.quantity, p.sold, p.target, p.factory, p.status, "
+                   + "       p.created_at, p.updated_at, c.category_name "
+                   + "FROM products p "
+                   + "JOIN categories c ON p.category_id = c.category_id";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Product product = new Product(
                         rs.getInt("product_id"),
@@ -41,7 +37,6 @@ public class ProductDAO extends DBContext {
                         rs.getDate("created_at"),
                         rs.getDate("updated_at")
                 );
-                // Chỉ sử dụng category_name từ ResultSet và không cần thêm thuộc tính vào Product
                 products.add(product);
             }
         } catch (SQLException e) {
@@ -52,9 +47,10 @@ public class ProductDAO extends DBContext {
 
     public int countAllProducts() {
         int count = 0;
-        String sql = "SELECT COUNT(*) FROM [products]";
-
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+        String sql = "SELECT COUNT(*) FROM products";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             if (rs.next()) {
                 count = rs.getInt(1);
@@ -65,12 +61,15 @@ public class ProductDAO extends DBContext {
         return count;
     }
 
-    // Phương thức lấy chi tiết sản phẩm theo productId
     public Product getProductById(int productId) {
-        String sql = "SELECT product_id, category_id, product_name, detail_desc, image, price, discount, quantity, sold, target, factory, status, created_at, updated_at FROM [products] WHERE product_id = ?";
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+        String sql = "SELECT product_id, category_id, product_name, detail_desc, image, price, discount, quantity, "
+                   + "       sold, target, factory, status, created_at, updated_at "
+                   + "FROM products WHERE product_id = ?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setInt(1, productId);
-            try ( ResultSet rs = ps.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     Product product = new Product(
                             rs.getInt("product_id"),
@@ -98,40 +97,38 @@ public class ProductDAO extends DBContext {
     }
 
     public int getProductMaxQuantity(int productId) {
-        String sql = "SELECT quantity FROM [products] WHERE product_id = ?";
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+        String sql = "SELECT quantity FROM products WHERE product_id = ?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, productId);
-            try ( ResultSet rs = ps.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getInt("quantity");  // Lấy số lượng tồn kho của sản phẩm
+                    return rs.getInt("quantity");
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 0;  // Nếu không tìm thấy sản phẩm, trả về 0
+        return 0;
     }
 
-    //Ðung xoa nha anh em
+    // Demo
     public List<Order> searchOrders(String filterType, String filterValue) throws SQLException {
         List<Order> orders = new ArrayList<>();
         String sql = "";
 
-        // Kiểm tra filterType để chọn kiểu lọc
         if ("byCustomerId".equals(filterType)) {
             sql = "SELECT * FROM orders WHERE user_id = ? ORDER BY order_date DESC";
         } else if ("byDate".equals(filterType)) {
             sql = "SELECT * FROM orders WHERE CAST(order_date AS DATE) = ? ORDER BY order_date DESC";
         }
 
-        // Kết nối và truy vấn CSDL
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setString(1, filterValue); // Gán giá trị cho tham số ?
+            ps.setString(1, filterValue);
             ResultSet rs = ps.executeQuery();
-
             while (rs.next()) {
-                // Chuyển dữ liệu từ ResultSet thành đối tượng Order
                 orders.add(new Order(
                         rs.getInt("order_id"),
                         rs.getInt("user_id"),
@@ -153,21 +150,18 @@ public class ProductDAO extends DBContext {
     }
 
     public List<Order> getAllOrders() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    // ===========================
-    // Các hàm mới được bổ sung
-    // ===========================
-    // Kiểm tra trùng tên sản phẩm (BR1 - Product Name Uniqueness)
+    // Kiểm tra trùng tên sản phẩm
     public boolean checkProductNameExists(String productName) {
-        String sql = "SELECT COUNT(*) FROM [products] WHERE product_name = ?";
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
-
+        String sql = "SELECT COUNT(*) FROM products WHERE product_name = ?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, productName);
-            try ( ResultSet rs = ps.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next() && rs.getInt(1) > 0) {
-                    return true; // Tên sản phẩm đã tồn tại
+                    return true;
                 }
             }
         } catch (SQLException e) {
@@ -176,15 +170,17 @@ public class ProductDAO extends DBContext {
         return false;
     }
 
-    // Thêm sản phẩm mới (UC-26_Add Product)
+    // Thêm sản phẩm
     public boolean addProduct(Product product) {
-        String sql = "INSERT INTO [products] (category_id, product_name, detail_desc, image, price, discount, quantity, sold, target, factory, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE())";
-
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+        String sql = "INSERT INTO products (category_id, product_name, detail_desc, image, price, discount, "
+                   + "quantity, sold, target, factory, status, created_at, updated_at) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE())";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             if (checkProductNameExists(product.getProductName())) {
                 System.out.println("Product name already exists.");
-                return false; // Trùng tên sản phẩm
+                return false;
             }
 
             ps.setInt(1, product.getCategoryId());
@@ -200,18 +196,19 @@ public class ProductDAO extends DBContext {
             ps.setInt(11, product.getStatus());
 
             return ps.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    // Cập nhật sản phẩm (UC-27_Edit Product)
+    // Sửa sản phẩm
     public boolean updateProduct(Product product) {
-        String sql = "UPDATE [products] SET category_id = ?, product_name = ?, detail_desc = ?, image = ?, price = ?, discount = ?, quantity = ?, sold = ?, target = ?, factory = ?, status = ?, updated_at = GETDATE() WHERE product_id = ?";
-
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+        String sql = "UPDATE products SET category_id = ?, product_name = ?, detail_desc = ?, image = ?, "
+                   + "price = ?, discount = ?, quantity = ?, sold = ?, target = ?, factory = ?, status = ?, "
+                   + "updated_at = GETDATE() WHERE product_id = ?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, product.getCategoryId());
             ps.setString(2, product.getProductName());
@@ -227,46 +224,50 @@ public class ProductDAO extends DBContext {
             ps.setInt(12, product.getProductId());
 
             return ps.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    // Xóa sản phẩm (UC-28_Delete Product)
+    // Xoá sản phẩm
     public boolean deleteProduct(int productId) {
-        String sql = "DELETE FROM [products] WHERE product_id = ?";
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+        String sql = "DELETE FROM products WHERE product_id = ?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, productId);
             return ps.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
+    // Tìm kiếm sản phẩm
     public List<Product> searchProducts(String searchQuery, String searchBy, String sortBy) {
         List<Product> products = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM [products] WHERE LOWER(product_name) LIKE LOWER(?)");
+        StringBuilder sql = new StringBuilder("SELECT * FROM products WHERE 1=1");
 
-        // Thêm điều kiện tìm kiếm theo ID nếu cần
-        if ("id".equals(searchBy)) {
-            sql = new StringBuilder("SELECT * FROM [products] WHERE product_id LIKE ?");
+        if ("id".equalsIgnoreCase(searchBy)) {
+            // Tìm theo product_id
+            sql.append(" AND product_id LIKE ?");
+        } else {
+            // Mặc định tìm theo tên
+            sql.append(" AND LOWER(product_name) LIKE LOWER(?)");
         }
 
-        // Thêm phần sắp xếp
-        if ("name".equals(sortBy)) {
+        if ("name".equalsIgnoreCase(sortBy)) {
             sql.append(" ORDER BY product_name");
-        } else if ("id".equals(sortBy)) {
+        } else if ("id".equalsIgnoreCase(sortBy)) {
             sql.append(" ORDER BY product_id");
         }
 
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql.toString())) {
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql.toString())) {
+
             ps.setString(1, "%" + searchQuery + "%");
-            try ( ResultSet rs = ps.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Product product = new Product(
                             rs.getInt("product_id"),
@@ -293,7 +294,7 @@ public class ProductDAO extends DBContext {
         return products;
     }
 
-   public List<Product> getFilteredProducts(String searchQuery, String[] categoryIds) {
+    public List<Product> getFilteredProducts(String searchQuery, String[] categoryIds) {
         List<Product> products = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM products WHERE 1=1");
 
@@ -301,7 +302,9 @@ public class ProductDAO extends DBContext {
             sql.append(" AND LOWER(product_name) LIKE LOWER(?)");
         }
         if (categoryIds != null && categoryIds.length > 0) {
-            sql.append(" AND category_id IN (").append("?,".repeat(categoryIds.length - 1)).append("?)");
+            sql.append(" AND category_id IN (")
+               .append("?,".repeat(categoryIds.length - 1))
+               .append("?)");
         }
 
         try (Connection con = getConnection();
@@ -342,5 +345,37 @@ public class ProductDAO extends DBContext {
             e.printStackTrace();
         }
         return products;
+    }
+
+    // Quan trọng: Cập nhật tồn kho
+    public boolean updateProductStock(int productId, int quantityPurchased) {
+        String sql = "UPDATE products "
+                   + "SET quantity = quantity - ?, sold = sold + ? "
+                   + "WHERE product_id = ? AND quantity >= ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            conn.setAutoCommit(false);
+
+            ps.setInt(1, quantityPurchased);
+            ps.setInt(2, quantityPurchased);
+            ps.setInt(3, productId);
+            ps.setInt(4, quantityPurchased);
+
+            int rowsUpdated = ps.executeUpdate();
+            if (rowsUpdated > 0) {
+                conn.commit();
+                System.out.println("✅ Cập nhật tồn kho sản phẩm #" + productId
+                                   + " - Giảm " + quantityPurchased);
+                return true;
+            } else {
+                conn.rollback();
+                System.out.println("⚠️ Không thể cập nhật tồn kho sản phẩm #" + productId);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

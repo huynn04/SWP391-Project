@@ -79,7 +79,7 @@ public class CategoryDAO extends DBContext {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+e.printStackTrace();
         }
 
         return productCountMap;

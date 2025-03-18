@@ -129,10 +129,6 @@
         <servlet-class>controller.TrackOrderServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CategoryServlet</servlet-name>
-        <servlet-class>controller.CategoryServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>controller.LoginServlet</servlet-class>
     </servlet>
@@ -283,10 +279,6 @@
     <servlet-mapping>
         <servlet-name>TrackOrderServlet</servlet-name>
         <url-pattern>/TrackOrder</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CategoryServlet</servlet-name>
-        <url-pattern>/CategoryServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>

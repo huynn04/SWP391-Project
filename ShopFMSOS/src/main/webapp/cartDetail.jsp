@@ -1,5 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List, model.Product, java.math.BigDecimal" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -15,7 +17,7 @@
             <%
                 List<Product> cart = (List<Product>) session.getAttribute("cart");
                 Object totalPriceObj = session.getAttribute("totalPrice");
-                BigDecimal totalPrice = (totalPriceObj != null) ? (BigDecimal) totalPriceObj : BigDecimal.ZERO;
+                double totalPrice = (totalPriceObj != null) ? (double) totalPriceObj :0;
                 if (cart != null && !cart.isEmpty()) {
             %>
             <table class="table table-bordered">
@@ -44,7 +46,7 @@
                         <td><%= p.getProductName()%></td>
                         <td class="item-price">$<%= String.format("%.3f", p.getPrice().doubleValue())%></td>
                         <td>
-                            <input onchange="changeQuantity(this)" type="number" class="quantity-input form-control text-center" data-product-id="<%= p.getProductId()%>" 
+                            <input onchange="changeQuantity(this, <%= p.getProductId()%>)" type="number" class="quantity-input form-control text-center" data-product-id="<%= p.getProductId()%>" 
                                    data-max-quantity="<%= p.getQuantity()%>" value="<%= p.getQuantity()%>" min="1" style="width: 80px;">
                         </td>
                         <td class="item-total">$<%= String.format("%.3f", p.getPrice().doubleValue() * p.getQuantity())%></td>
@@ -113,16 +115,21 @@
         </div>
         <%@ include file="footer.jsp" %>
         <script>
-            function changeQuantity(input) {
+            function changeQuantity(input, id) {
                 const cart_total = document.querySelector('#cart-total');
                 const itemPrice = input.parentElement.parentElement.querySelector('.item-price');
                 const currPrice = input.parentElement.parentElement.querySelector('.item-total');
+
                 let initPriceVal = Number(itemPrice.textContent.replace(/[^0-9]/g, ''));
                 let quantity = Number(input.value);
                 let newPrice = initPriceVal * quantity;
                 newPrice = newPrice.toLocaleString('vi-VN');
                 currPrice.innerHTML = `$\${newPrice}`;
                 updateTotalPrice();
+                fetch(`AddToCart?action=changeQuantity&id=\${id}&quantity=\${quantity}`, {method: 'post'})
+                        .then(response => response.text())
+                        .then(data => console.log(data))
+                        .catch(err => console.log(err));
             }
             function updateTotalPrice() {
                 const getAllInputs = document.querySelectorAll('.item-total');
@@ -138,13 +145,13 @@
                 }
             }
             updateTotalPrice();
-        </script>
 
-        <script>
             function doDiscount(e) {
                 e.preventDefault();
+                const cartTotal = document.querySelector('#cart-total');
+                let currentTotal = parseFloat(cartTotal.textContent.replace(/[^0-9.]/g, ''));
                 const input = document.querySelector('#discountCode');
-                let url = "ApplyDiscount";
+                let url = `ApplyDiscount?currentTotal=\${currentTotal}`;
 
                 fetch(url, {
                     method: 'POST',
@@ -181,29 +188,20 @@
                                 return;
                             }
 
-                            // Lấy giá trị giảm giá và loại giảm giá từ response
-                            let [discountValue, discountType] = data.split("|");
-                            discountValue = parseFloat(discountValue);
-
                             // Cập nhật tổng giá trị giỏ hàng
-                            const cartTotal = document.querySelector('#cart-total');
-                            let currentTotal = parseFloat(cartTotal.textContent.replace(/[^0-9.]/g, ''));
 
-                            let newTotal;
-                            if (discountType === "percent") {
-                                newTotal = currentTotal - (currentTotal * discountValue / 100);
-                            } else {
-                                newTotal = currentTotal - discountValue;
-                            }
-
-                            if (newTotal < 0)
-                                newTotal = 0;
-
-                            cartTotal.textContent = "$" + newTotal.toFixed(2);
+                            cartTotal.textContent = "$" + data;
                             alert("Mã giảm giá đã được áp dụng!");
                         })
                         .catch(err => console.log("Lỗi:", err));
             }
         </script>
+        <c:if test="${not empty sessionScope.error}">
+            <script>
+                alert('${error}');
+            </script>
+            <c:remove var="error" scope="session"/>
+        </c:if>
+
     </body>
 </html>

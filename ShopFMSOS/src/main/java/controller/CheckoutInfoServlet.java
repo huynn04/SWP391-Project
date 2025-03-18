@@ -1,6 +1,8 @@
 package controller;
 
 import dal.AddressDAO;
+import dal.CartDAO;
+import dal.ProductDAO;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,10 +33,7 @@ public class CheckoutInfoServlet extends HttpServlet {
         }
 
         // Tính tổng tiền
-        BigDecimal totalPrice = BigDecimal.ZERO;
-        for (Product p : cart) {
-            totalPrice = totalPrice.add(p.getPrice().multiply(BigDecimal.valueOf(p.getQuantity())));
-        }
+        double totalPrice = (double) session.getAttribute("totalPrice");
 
         List<Address> addressList = null;
 
@@ -53,43 +52,58 @@ public class CheckoutInfoServlet extends HttpServlet {
     }
 
     @Override
-protected void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
-    HttpSession session = request.getSession();
-    User user = (User) session.getAttribute("user");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
 
-    int userId = (user != null) ? user.getUserId() : 0;
+        int userId = (user != null) ? user.getUserId() : 0;
 
-    // Lấy thông tin địa chỉ từ form
-    String fullName = request.getParameter("fullName");
-    String phone = request.getParameter("phone");
-    String city = request.getParameter("city");
-    String district = request.getParameter("district");
-    String ward = request.getParameter("ward");
-    String specificAddress = request.getParameter("specificAddress");
-    String addressType = request.getParameter("addressType");
+        // Lấy thông tin địa chỉ từ form
+        String fullName = request.getParameter("fullName");
+        String phone = request.getParameter("phone");
+        String city = request.getParameter("city");
+        String district = request.getParameter("district");
+        String ward = request.getParameter("ward");
+        String specificAddress = request.getParameter("specificAddress");
+        String addressType = request.getParameter("addressType");
 
-    if (fullName == null || phone == null || city == null || district == null || ward == null || 
-        specificAddress == null || addressType == null ||
-        fullName.isEmpty() || phone.isEmpty() || city.isEmpty() || district.isEmpty() ||
-        ward.isEmpty() || specificAddress.isEmpty() || addressType.isEmpty()) {
-        request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin!");
-        doGet(request, response);
-        return;
+        if (fullName == null || phone == null || city == null || district == null || ward == null ||
+                specificAddress == null || addressType == null ||
+                fullName.isEmpty() || phone.isEmpty() || city.isEmpty() || district.isEmpty() ||
+                ward.isEmpty() || specificAddress.isEmpty() || addressType.isEmpty()) {
+            request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin!");
+            doGet(request, response);
+            return;
+        }
+
+        // Nếu đăng nhập, lưu địa chỉ vào database
+        if (user != null) {
+            Address newAddress = new Address(0, userId, fullName, phone, city, district, ward, specificAddress, addressType, false);
+            AddressDAO addressDAO = new AddressDAO();
+            addressDAO.saveAddress(newAddress);
+        }
+
+        // Cập nhật số lượng sản phẩm trong kho
+        ProductDAO productDAO = new ProductDAO();
+        List<Product> cart = (List<Product>) session.getAttribute("cart");
+
+        if (cart != null) {
+            for (Product product : cart) {
+                productDAO.updateProductStock(product.getProductId(), product.getQuantity());
+            }
+        }
+
+        // Xóa giỏ hàng khỏi database
+        CartDAO cartDAO = new CartDAO();
+        if (user != null) {
+            cartDAO.clearCart(user.getUserId());
+        }
+
+        // Xóa giỏ hàng trong session
+        session.removeAttribute("cart");
+
+        // Chuyển hướng đến trang thông báo
+        response.sendRedirect("thongbao.jsp");
     }
-
-    // Nếu đăng nhập, lưu địa chỉ vào database
-    if (user != null) {
-        Address newAddress = new Address(0, userId, fullName, phone, city, district, ward, specificAddress, addressType, false);
-        AddressDAO addressDAO = new AddressDAO();
-        addressDAO.saveAddress(newAddress);
-    }
-
-    // Xóa giỏ hàng sau khi đặt hàng thành công
-    session.removeAttribute("cart");
-
-    // Chuyển hướng đến trang thông báo
-    response.sendRedirect("thongbao.jsp");
-}
-
 }
