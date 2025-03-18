@@ -41,6 +41,12 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="CategoryServlet">
+                    <span data-feather="shopping-cart"></span>
+                    Manage Categories
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link active" href="ManageOrder">
                     <span data-feather="clipboard"></span>
                     Manage Orders
