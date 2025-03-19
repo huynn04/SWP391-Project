@@ -6,24 +6,24 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Xác nhận thanh toán</title>
+    <title>Payment Confirmation</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
     <%@ include file="header.jsp" %>
 
     <div class="container mt-5">
-        <h2 class="mb-4">Xác nhận thanh toán</h2>
+        <h2 class="mb-4">Payment Confirmation</h2>
 
-        <h4 class="mb-3">Thông tin giao hàng</h4>
+        <h4 class="mb-3">Delivery information</h4>
         <c:choose>
             <c:when test="${not empty selectedAddress}">
-                <p><strong>Họ và tên:</strong> ${selectedAddress.fullName}</p>
-                <p><strong>Số điện thoại:</strong> ${selectedAddress.phone}</p>
-                <p><strong>Địa chỉ:</strong> ${selectedAddress.specificAddress}, ${selectedAddress.ward}, ${selectedAddress.district}, ${selectedAddress.city}</p>
+                <p><strong>Full name:</strong> ${selectedAddress.fullName}</p>
+                <p><strong>Phone number:</strong> ${selectedAddress.phone}</p>
+                <p><strong>Address:</strong> ${selectedAddress.specificAddress}, ${selectedAddress.ward}, ${selectedAddress.district}, ${selectedAddress.city}</p>
             </c:when>
             <c:otherwise>
-                <p class="text-danger">Không có địa chỉ giao hàng.</p>
+                <p class="text-danger">No shipping address.</p>
             </c:otherwise>
         </c:choose>
 
@@ -36,7 +36,7 @@
             <input type="hidden" name="district" value="${selectedAddress.district}">
             <input type="hidden" name="city" value="${selectedAddress.city}">
 
-            <button type="submit" class="btn btn-primary mt-3">Xác nhận đơn hàng</button>
+            <button type="submit" class="btn btn-primary mt-3">Purchase Confirmation</button>
         </form>
     </div>
 
