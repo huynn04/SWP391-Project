@@ -90,4 +90,30 @@ public class CategoryDAO extends DBContext {
             System.out.println(category); 
        }
     }
+    // Cập nhật thông tin danh mục
+public void updateCategory(Category category) {
+    String sql = "UPDATE categories SET category_name = ?, description = ?, image = ?, status = ?, updated_at = NOW() WHERE category_id = ?";
+    try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, category.getCategoryName());
+        ps.setString(2, category.getDescription());
+        ps.setString(3, category.getImage());
+        ps.setInt(4, category.getStatus());
+        ps.setInt(5, category.getCategoryId());
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
+// Xóa danh mục theo ID
+public void deleteCategory(int categoryId) {
+    String sql = "DELETE FROM categories WHERE category_id = ?";
+    try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, categoryId);
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
 }

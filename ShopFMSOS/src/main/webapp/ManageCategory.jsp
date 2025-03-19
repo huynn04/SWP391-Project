@@ -1,21 +1,42 @@
-<%-- 
-    Document   : ManageProduct
-    Created on : 25 thg 2, 2025, 13:21:45
-    Author     : Tran Huy Lam CE180899 
---%>
-
+<%@ page import="dal.CategoryDAO, model.Category, java.util.List" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<%
+    CategoryDAO categoryDAO = new CategoryDAO();
+    List<Category> categories = categoryDAO.getAllCategories();
+
+    String action = request.getParameter("action");
+    if ("add".equals(action)) {
+        String name = request.getParameter("name");
+        String desc = request.getParameter("description");
+        String image = request.getParameter("image");
+        int status = Integer.parseInt(request.getParameter("status"));
+        categoryDAO.addCategory(new Category(0, name, desc, image, status, null, null));
+        response.sendRedirect("ManageCategory.jsp");
+    } else if ("update".equals(action)) {
+        int id = Integer.parseInt(request.getParameter("id"));
+        String name = request.getParameter("name");
+        String desc = request.getParameter("description");
+        String image = request.getParameter("image");
+        int status = Integer.parseInt(request.getParameter("status"));
+        categoryDAO.updateCategory(new Category(id, name, desc, image, status, null, null));
+        response.sendRedirect("ManageCategory.jsp");
+    } else if ("delete".equals(action)) {
+        int id = Integer.parseInt(request.getParameter("id"));
+        categoryDAO.deleteCategory(id);
+        response.sendRedirect("ManageCategory.jsp");
+    }
+%>
+
 <!DOCTYPE html>
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
-        <title>Product Management</title>
+        <title>Category Management</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
         <style>
-            body {
-                padding-top: 56px;
-            }
+            body { padding-top: 56px; }
             .sidebar {
                 height: 100vh;
                 padding-top: 20px;
@@ -27,10 +48,8 @@
                 padding: 10px 15px;
                 text-decoration: none;
             }
-            .sidebar a:hover {
-                background-color: #ddd;
-            }
-            .product-img {
+            .sidebar a:hover { background-color: #ddd; }
+            .category-img {
                 width: 100px;
                 height: 100px;
                 object-fit: cover;
@@ -41,18 +60,12 @@
         <!-- Top Navigation Bar -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
             <a class="navbar-brand" href="dashboard">Admin Dashboard</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-                    aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
         </nav>
 
         <div class="container-fluid">
             <div class="row">
                 <jsp:include page="sidebar.jsp" />
 
-
-                <!-- Main content -->
                 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                     <div class="pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2">Category Management</h1>
@@ -62,35 +75,18 @@
                             </ol>
                         </nav>
 
-                        <a href="AddProduct" class="btn btn-success mb-3">Add New Category</a>
-                        <form action="ManageProduct" method="get" class="form-inline mb-3">
+                        <a href="#" class="btn btn-success mb-3" data-toggle="modal" data-target="#addCategoryModal">Add New Category</a>
+
+                        <form action="ManageCategory.jsp" method="get" class="form-inline mb-3">
                             <div class="form-group mr-2">
                                 <label for="searchQuery" class="mr-2">Search:</label>
                                 <input type="text" name="searchQuery" id="searchQuery" class="form-control" placeholder="Enter name or ID" value="${param.searchQuery}">
                             </div>
-                            <div class="form-group mr-2">
-                                <label for="searchBy" class="mr-2">Search By:</label>
-                                <select name="searchBy" id="searchBy" class="form-control">
-                                    <option value="id" ${param.searchBy == 'id' ? 'selected' : ''}>ID</option>
-                                    <option value="name" ${param.searchBy == 'name' ? 'selected' : ''}>Name</option>
-
-                                </select>
-                            </div>
-                            <div class="form-group mr-2">
-                                <label for="sortBy" class="mr-2">Sort By:</label>
-                                <select name="sortBy" id="sortBy" class="form-control">
-                                    <option value="id" ${param.sortBy == 'id' ? 'selected' : ''}>ID</option>
-                                    <option value="name" ${param.sortBy == 'name' ? 'selected' : ''}>Name</option>
-
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Search & Sort</button>
+                            <button type="submit" class="btn btn-primary">Search</button>
                         </form>
-
-
                     </div>
 
-                    <!-- Hiển thị danh sách category -->
+                    <!-- Hiển thị danh sách danh mục -->
                     <c:choose>
                         <c:when test="${empty categories}">
                             <div class="alert alert-warning">No category found.</div>
@@ -102,7 +98,7 @@
                                         <tr>
                                             <th>Image</th>
                                             <th>ID</th>
-                                            <th>Category Name</th> <!-- Cột mới cho tên danh mục -->
+                                            <th>Category Name</th>
                                             <th>Describe</th>
                                             <th>Status</th>
                                             <th>Create Date</th>
@@ -116,33 +112,25 @@
                                                 <td>
                                                     <c:choose>
                                                         <c:when test="${not empty c.image}">
-                                                            <img src="${c.image}" alt="Category Image" class="product-img"/>
+                                                            <img src="${c.image}" alt="Category Image" class="category-img"/>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <img src="image/noimage.jpg" alt="No Image" class="product-img"/>
+                                                            <img src="image/noimage.jpg" alt="No Image" class="category-img"/>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </td>
                                                 <td>${c.categoryId}</td>
                                                 <td>${c.categoryName}</td>
                                                 <td>${c.description}</td> 
-                                                <td>${c.status}</td>
+                                                <td>${c.status == 1 ? "Active" : "Inactive"}</td>
                                                 <td>${c.createdAt}</td>
                                                 <td>${c.updatedAt}</td>
                                                 <td>
-                                                    <c:choose>
-                                                        <c:when test="${c.status == 1}">Active</c:when>
-                                                        <c:otherwise>Inactive</c:otherwise>
-                                                    </c:choose>
-                                                </td>
-                                                <td>
-                                                    <a href="ViewProduct?id=${c.categoryId}" class="btn btn-info btn-sm">View</a>
-                                                    <a href="EditProduct?id=${c.categoryId}" class="btn btn-primary btn-sm">Edit</a>
-                                                    <a href="DeleteProduct?id=${c.categoryId}" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa sản category này?');">Delete</a>
+                                                    <a href="EditCategory.jsp?id=${c.categoryId}" class="btn btn-primary btn-sm">Edit</a>
+                                                    <a href="ManageCategory.jsp?action=delete&id=${c.categoryId}" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa danh mục này?');">Delete</a>
                                                 </td>
                                             </tr>
                                         </c:forEach>
-
                                     </tbody>
                                 </table>
                             </div>
@@ -152,13 +140,48 @@
             </div>
         </div>
 
+        <!-- Modal thêm danh mục -->
+        <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Category</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <form action="ManageCategory.jsp" method="post">
+                        <div class="modal-body">
+                            <input type="hidden" name="action" value="add">
+                            <div class="form-group">
+                                <label>Category Name</label>
+                                <input type="text" name="name" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <input type="text" name="description" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Image URL</label>
+                                <input type="text" name="image" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select name="status" class="form-control">
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <!-- Bootstrap JS -->
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-        <script src="https://unpkg.com/feather-icons"></script>
-        <script>
-//                feather.replace();
-        </script>
     </body>
 </html>
