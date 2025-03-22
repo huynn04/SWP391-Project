@@ -29,7 +29,6 @@ public class UpdateAddressServlet extends HttpServlet {
 
         try {
             // Lấy thông tin từ form
-            int addressId = parseInteger(request.getParameter("addressId"), 0);
             String fullName = request.getParameter("fullName");
             String phone = request.getParameter("phone");
             String city = request.getParameter("city");
@@ -47,33 +46,34 @@ public class UpdateAddressServlet extends HttpServlet {
                 return;
             }
 
+            // Tạo đối tượng Address và lưu vào bảng addresses
+            Address address = new Address(0, userId, fullName, phone, city, district, ward, specificAddress, addressType, isDefault);
             AddressDAO addressDAO = new AddressDAO();
+            boolean isAddressSaved = addressDAO.saveAddress(address);  // Lưu vào DB
 
-            // Kiểm tra quyền sở hữu địa chỉ
-            if (addressId > 0 && !addressDAO.isAddressOwnedByUser(userId, addressId)) {
-                request.setAttribute("errorMessage", "You do not have permission to update this address.");
+            if (!isAddressSaved) {
+                request.setAttribute("errorMessage", "Failed to save address. Please try again.");
                 request.getRequestDispatcher("updateAddress.jsp").forward(request, response);
                 return;
             }
 
-            // Kiểm tra địa chỉ trùng lặp
-            if (addressDAO.isDuplicateAddress(userId, fullName, phone, city, district, ward, specificAddress, addressType, addressId)) {
-                request.setAttribute("errorMessage", "This address already exists.");
+            // Cập nhật thông tin địa chỉ vào bảng users với đầy đủ thông tin
+            String fullAddress = city + ", " + district + ", " + ward + ", " + specificAddress;
+            boolean isUserAddressUpdated = addressDAO.updateUserAddress(userId, phone, fullAddress);  // Cập nhật thông tin người dùng
+
+            if (!isUserAddressUpdated) {
+                request.setAttribute("errorMessage", "Failed to update address in user profile.");
                 request.getRequestDispatcher("updateAddress.jsp").forward(request, response);
                 return;
             }
 
-            // Tạo đối tượng Address và lưu hoặc cập nhật
-            Address address = new Address(addressId, userId, fullName, phone, city, district, ward, specificAddress, addressType, isDefault);
-            boolean isSuccess = (addressId > 0) ? addressDAO.updateAddress(address) : addressDAO.saveAddress(address);
-
-            if (!isSuccess) {
-                request.setAttribute("errorMessage", "Failed to update address. Please try again.");
-                request.getRequestDispatcher("updateAddress.jsp").forward(request, response);
-                return;
+            // Cập nhật nếu người dùng chọn địa chỉ mặc định (nếu cần)
+            if (isDefault) {
+                addressDAO.setAllOtherAddressesToNonDefault(userId); // Đảm bảo chỉ có một địa chỉ mặc định
             }
 
             response.sendRedirect("profile.jsp?updateSuccess=1");
+
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "An error occurred while updating the address.");
@@ -81,6 +81,7 @@ public class UpdateAddressServlet extends HttpServlet {
         }
     }
 
+    // Kiểm tra dữ liệu rỗng
     private boolean isEmpty(String... values) {
         for (String value : values) {
             if (value == null || value.trim().isEmpty()) {
@@ -88,13 +89,5 @@ public class UpdateAddressServlet extends HttpServlet {
             }
         }
         return false;
-    }
-
-    private int parseInteger(String value, int defaultValue) {
-        try {
-            return (value != null && !value.isEmpty()) ? Integer.parseInt(value) : defaultValue;
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
     }
 }

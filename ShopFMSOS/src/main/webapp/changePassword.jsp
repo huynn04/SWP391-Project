@@ -47,27 +47,40 @@
         </style>
     </head>
     <body>
-        <%@ include file="header.jsp" %>
+    <%@ include file="header.jsp" %>
 
-        <div class="container mt-5">
-            <h2>Change Password</h2>
+    <div class="container mt-5">
+        <h2>Change Password</h2>
 
-            <form action="ChangePasswordServlet" method="POST">
+        <c:if test="${not empty error}">
+            <div class="alert alert-danger">${error}</div>
+        </c:if>
+        <c:if test="${not empty message}">
+            <div class="alert alert-success">${message}</div>
+        </c:if>
+
+        <form action="ChangePasswordServlet" method="POST">
+            <!-- Nếu không được phép đổi password mà không có password cũ -->
+            <c:if test="${not sessionScope.canChangePasswordWithoutOld}">
                 <div class="mb-3">
                     <label for="currentPassword" class="form-label">Current Password</label>
                     <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
                 </div>
-                <div class="mb-3">
-                    <label for="newPassword" class="form-label">New Password</label>
-                    <input type="password" class="form-control" id="newPassword" name="newPassword" required>
-                </div>
-                <div class="mb-3">
-                    <label for="confirmPassword" class="form-label">Confirm New Password</label>
-                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Change Password</button>
-            </form>
-        </div>
-    </body>
+            </c:if>
+
+            <div class="mb-3">
+                <label for="newPassword" class="form-label">New Password</label>
+                <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Change Password</button>
+        </form>
+    </div>
+</body>
 </html>
 

@@ -23,7 +23,7 @@
         </c:if>
 
         <!-- Form cập nhật địa chỉ -->
-        <form action="UpdateAddressServlet" method="POST">
+        <form action="update-address" method="POST">
             <!-- Truyền id địa chỉ để nhận diện -->
             <input type="hidden" name="addressId" value="${param.addressId}">
 
@@ -64,6 +64,12 @@
                     <option value="Work" ${param.addressType == 'Work' ? 'selected' : ''}>Work</option>
                     <option value="Other" ${param.addressType == 'Other' ? 'selected' : ''}>Other</option>
                 </select>
+            </div>
+
+            <!-- Xử lý checkbox cho địa chỉ mặc định -->
+            <div class="mb-3">
+                <label for="isDefault" class="form-label">Set as Default Address</label>
+                <input type="checkbox" class="form-check-input" id="isDefault" name="isDefault" ${param.isDefault == 'on' ? 'checked' : ''}>
             </div>
 
             <button type="submit" class="btn btn-primary">Save Address</button>

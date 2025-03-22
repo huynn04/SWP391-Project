@@ -26,7 +26,7 @@ CREATE TABLE users (
     full_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     phone_number VARCHAR(15),
-    address_id INT NULL,
+    address VARCHAR(100) NULL,  -- Đổi từ address_id thành address
     password VARCHAR(255) NOT NULL,
     avatar VARCHAR(255),
     status SMALLINT DEFAULT 1,
@@ -41,7 +41,7 @@ CREATE TABLE addresses (
     user_id INT NOT NULL,
     full_name VARCHAR(255) NOT NULL,
     phone VARCHAR(15) NOT NULL,
-    city VARCHAR(100) NOT NULL,
+    city VARCHAR(100) NOT NULL, -- Cái này sẽ được sao chép vào trường address của bảng users
     district VARCHAR(100) NOT NULL,
     ward VARCHAR(100) NOT NULL,
     specific_address VARCHAR(255) NOT NULL,
@@ -52,8 +52,20 @@ CREATE TABLE addresses (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- Thêm ràng buộc khóa ngoại vào users
-ALTER TABLE users ADD CONSTRAINT FK_users_addresses FOREIGN KEY (address_id) REFERENCES addresses(address_id);
+-- Cập nhật giá trị cho trường address trong bảng users từ trường city của bảng addresses
+UPDATE users
+SET address = a.city
+FROM users u
+JOIN addresses a ON u.user_id = a.user_id;
+
+
+-- Cập nhật giá trị cho trường phone_number trong bảng users từ trường phone của bảng addresses
+UPDATE users
+SET phone_number = a.phone
+FROM users u
+JOIN addresses a ON u.user_id = a.user_id;
+
+
 
 -- Tạo bảng categories
 CREATE TABLE categories (

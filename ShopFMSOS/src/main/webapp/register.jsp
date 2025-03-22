@@ -84,7 +84,7 @@
                                         </div>
                                         <div class="col-12">
                                             <div class="d-grid">
-                                                <button class="btn btn-primary btn-lg" type="submit">Log In</button>
+                                                <button class="btn btn-primary btn-lg" type="submit">Register</button>
                                             </div>
                                         </div>
                                     </div>

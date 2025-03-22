@@ -1,7 +1,13 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
+
 package controller;
 
 import dal.UserDAO;
 import java.io.IOException;
+import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,13 +16,17 @@ import java.util.Date;
 import java.util.List;
 import model.User;
 
+/**
+ *
+ * @author Nguyễn Ngoc Huy CE180178
+ */
 public class SelectStaffServlet extends HttpServlet {
-
-    @Override
+   
+@Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         UserDAO userDao = new UserDAO();
-
+        
         // Nếu có tham số "selectedId" nghĩa là người dùng đã chọn một khách hàng để chuyển thành Staff
         String selectedId = request.getParameter("selectedId");
         if (selectedId != null && !selectedId.trim().isEmpty()) {
@@ -31,8 +41,7 @@ public class SelectStaffServlet extends HttpServlet {
                     // Gọi phương thức updateStaff để cập nhật thông tin (DAO updateStaff đã hỗ trợ cập nhật role_id)
                     boolean updated = userDao.updateStaff(customer);
                     if (updated) {
-                        // Sau khi cập nhật thành công, chuyển hướng đến trang quản lý Staff và thông báo thành công
-                        request.setAttribute("successMessage", "Customer has been successfully updated to Staff.");
+                        // Sau khi cập nhật thành công, chuyển hướng đến trang quản lý Staff
                         response.sendRedirect("StaffManager");
                         return;
                     } else {
@@ -48,25 +57,21 @@ public class SelectStaffServlet extends HttpServlet {
             request.getRequestDispatcher("SelectStaff.jsp").forward(request, response);
             return;
         }
-
+        
         // Nếu không có tham số selectedId, hiển thị danh sách khách hàng để chọn
         String searchQuery = request.getParameter("searchQuery");
         String searchBy = request.getParameter("searchBy");
         String sortBy = request.getParameter("sortBy");
-
+        
         List<User> customerList;
-
-        // Kiểm tra và thực hiện tìm kiếm + sắp xếp nếu có
         if (searchQuery != null && !searchQuery.trim().isEmpty()) {
             customerList = userDao.searchAndSortCustomers(searchQuery, searchBy, sortBy);
         } else {
             customerList = userDao.getAllCustomers(sortBy);
         }
-
-        // Đưa danh sách khách hàng vào request attribute
+        
+        // Đưa danh sách khách hàng vào request attribute (đặt tên là customerList để rõ ràng)
         request.setAttribute("customerList", customerList);
-
-        // Forward đến trang SelectStaff.jsp để hiển thị danh sách
         request.getRequestDispatcher("SelectStaff.jsp").forward(request, response);
     }
 }

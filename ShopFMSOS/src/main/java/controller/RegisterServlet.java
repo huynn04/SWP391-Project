@@ -4,7 +4,6 @@ import dal.UserDAO;
 import dal.EmailService; // Import lớp EmailService để gửi email
 import model.User;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.Date;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -42,15 +41,9 @@ public class RegisterServlet extends HttpServlet {
         Date createdAt = new Date();
         Date updatedAt = new Date();
 
-        // Chuyển đổi Date thành Timestamp để phù hợp với kiểu dữ liệu trong cơ sở dữ liệu
-        Timestamp createdAtTimestamp = new Timestamp(createdAt.getTime());
-        Timestamp updatedAtTimestamp = new Timestamp(updatedAt.getTime());
-
-        // Tạo đối tượng User (không có address)
-        User user = new User(0, roleId, fullName, email, "", password, "default-avatar.png", status, createdAtTimestamp, updatedAtTimestamp);
-        
-        // Khởi tạo UserDAO và chèn người dùng vào cơ sở dữ liệu
+        User user = new User(0, roleId, fullName, email, "", "", password, "default-avatar.png", status, createdAt, updatedAt);
         UserDAO userDAO = new UserDAO();
+
         boolean isInserted = userDAO.insertUser(user);
 
         if (isInserted) {
@@ -68,8 +61,8 @@ public class RegisterServlet extends HttpServlet {
             // Đăng nhập tự động sau khi đăng ký thành công
             HttpSession session = request.getSession();
             session.setAttribute("loggedInUser", user);
-            // Chuyển hướng sang trang cập nhật địa chỉ
-            response.sendRedirect("updateAddress.jsp");
+            // Chuyển hướng sang trang home.jsp
+            response.sendRedirect("home.jsp?userId=" + user.getUserId());
         } else {
             request.setAttribute("errorMessage", "Registration failed. Email might already be in use.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
