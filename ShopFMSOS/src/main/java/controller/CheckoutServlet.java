@@ -90,7 +90,7 @@ public class CheckoutServlet extends HttpServlet {
         order.setUserId(userId);
         order.setTotalPrice(totalPrice);
         order.setOrderDate(new Date());
-        order.setStatus(1); // Giả sử status = 1 nghĩa là "đã đặt hàng"
+        order.setStatus(0); // Giả sử status = 1 nghĩa là "đã đặt hàng"
         order.setReceiverName(fullName);
         order.setReceiverAddress(address);
         order.setReceiverPhone(phone);
