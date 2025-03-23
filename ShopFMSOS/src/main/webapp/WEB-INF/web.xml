@@ -176,6 +176,26 @@
         <servlet-name>UpdateProfileServlet</servlet-name>
         <servlet-class>controller.UpdateProfileServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CustomerCancelOrderServlet</servlet-name>
+        <servlet-class>controller.CustomerCancelOrderServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CustomerOrderHistoryServlet</servlet-name>
+        <servlet-class>controller.CustomerOrderHistoryServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CustomerUpdateOrderServlet</servlet-name>
+        <servlet-class>controller.CustomerUpdateOrderServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateOrderDetailServlet</servlet-name>
+        <servlet-class>controller.UpdateOrderDetailServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ViewOrderDetailServlet</servlet-name>
+        <servlet-class>controller.ViewOrderDetailServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -419,6 +439,26 @@
     <servlet-mapping>
         <servlet-name>EditCommentServlet</servlet-name>
         <url-pattern>/EditComment</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CustomerCancelOrderServlet</servlet-name>
+        <url-pattern>/CustomerCancelOrder</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CustomerOrderHistoryServlet</servlet-name>
+        <url-pattern>/CustomerOrderHistory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CustomerUpdateOrderServlet</servlet-name>
+        <url-pattern>/CustomerUpdateOrder</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateOrderDetailServlet</servlet-name>
+        <url-pattern>/UpdateOrderDetail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ViewOrderDetailServlet</servlet-name>
+        <url-pattern>/ViewOrderDetail</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

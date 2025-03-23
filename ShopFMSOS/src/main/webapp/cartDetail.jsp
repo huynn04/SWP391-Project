@@ -1,32 +1,34 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List, model.Product, java.math.BigDecimal" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Giỏ hàng của bạn</title>
+        <title>Your Shopping Cart</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
     <body>
         <%@ include file="header.jsp" %>
         <div class="container mt-5">
-            <h2 class="mb-4">Giỏ hàng của bạn</h2>
+            <h2 class="mb-4">Your Shopping Cart</h2>
             <%
                 List<Product> cart = (List<Product>) session.getAttribute("cart");
                 Object totalPriceObj = session.getAttribute("totalPrice");
-                BigDecimal totalPrice = (totalPriceObj != null) ? (BigDecimal) totalPriceObj : BigDecimal.ZERO;
+                double totalPrice = (totalPriceObj != null) ? (double) totalPriceObj : 0;
                 if (cart != null && !cart.isEmpty()) {
             %>
             <table class="table table-bordered">
                 <thead class="table-dark">
                     <tr>
-                        <th>Ảnh</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Giá</th>
-                        <th>Số lượng</th>
-                        <th>Thành tiền</th>
-                        <th>Hành động</th>
+                        <th>Image</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -44,12 +46,12 @@
                         <td><%= p.getProductName()%></td>
                         <td class="item-price">$<%= String.format("%.3f", p.getPrice().doubleValue())%></td>
                         <td>
-                            <input onchange="changeQuantity(this)" type="number" class="quantity-input form-control text-center" data-product-id="<%= p.getProductId()%>" 
+                            <input onchange="changeQuantity(this, <%= p.getProductId()%>)" type="number" class="quantity-input form-control text-center" data-product-id="<%= p.getProductId()%>" 
                                    data-max-quantity="<%= p.getQuantity()%>" value="<%= p.getQuantity()%>" min="1" style="width: 80px;">
                         </td>
                         <td class="item-total">$<%= String.format("%.3f", p.getPrice().doubleValue() * p.getQuantity())%></td>
                         <td class="text-center">
-                            <a href="RemoveFromCart?productId=<%= p.getProductId()%>" class="btn btn-danger btn-sm">Xóa</a>
+                            <a href="RemoveFromCart?productId=<%= p.getProductId()%>" class="btn btn-danger btn-sm">Remove</a>
                         </td>
                     </tr>
                     <%
@@ -58,12 +60,10 @@
                 </tbody>
             </table>
             <form onsubmit="doDiscount(event)" class="mb-3">
-                <label for="discountCode">Nhập mã giảm giá:</label>
+                <label for="discountCode">Enter Discount Code:</label>
                 <input type="text" name="discountCode" id="discountCode" class="form-control w-50 d-inline">
-                <button type="submit" class="btn btn-primary">Áp dụng</button>
+                <button type="submit" class="btn btn-primary">Apply</button>
             </form>
-
-
 
             <script>
                 function applyDiscount(e) {
@@ -72,7 +72,7 @@
                     const discountCode = discountInput.value.trim();
 
                     if (!discountCode) {
-                        alert("Vui lòng nhập mã giảm giá.");
+                        alert("Please enter a discount code.");
                         return;
                     }
 
@@ -92,59 +92,71 @@
                                     alert(data.success);
                                 }
                             })
-                            .catch(error => console.error("Lỗi:", error));
+                            .catch(error => console.error("Error:", error));
                 }
             </script>
 
-
             <div class="mt-3 p-3 bg-light border text-end">
-                <h4>Tổng giá trị giỏ hàng: <strong id="cart-total" class="text-danger">$<%= String.format("%.3f", totalPrice)%></strong></h4>
+                <h4>Total Cart Value: <strong id="cart-total" class="text-danger">$<%= String.format("%.3f", totalPrice)%></strong></h4>
             </div>
             <div class="mt-3 text-end">
-                <a href="CheckoutInfo" class="btn btn-success btn-lg">Mua hàng</a>
+                <a href="CheckoutInfo" class="btn btn-success btn-lg">Checkout</a>
             </div>
             <%
             } else {
             %>
-            <div class="alert alert-warning text-center">Giỏ hàng của bạn đang trống.</div>
+            <div class="alert alert-warning text-center">Your cart is empty.</div>
             <%
                 }
             %>
         </div>
         <%@ include file="footer.jsp" %>
         <script>
-            function changeQuantity(input) {
+            function changeQuantity(input, id) {
                 const cart_total = document.querySelector('#cart-total');
                 const itemPrice = input.parentElement.parentElement.querySelector('.item-price');
                 const currPrice = input.parentElement.parentElement.querySelector('.item-total');
+
                 let initPriceVal = Number(itemPrice.textContent.replace(/[^0-9]/g, ''));
                 let quantity = Number(input.value);
                 let newPrice = initPriceVal * quantity;
-                newPrice = newPrice.toLocaleString('vi-VN');
+                newPrice = newPrice.toLocaleString('en-US');
                 currPrice.innerHTML = `$\${newPrice}`;
                 updateTotalPrice();
+                fetch(`AddToCart?action=changeQuantity&id=\${id}&quantity=\${quantity}`, {method: 'post'})
+                        .then(response => response.text())
+                        .then(data => console.log(data))
+                        .catch(err => console.log(err));
+                if (quantity < 1) {
+                    alert("Quantity cannot be less than 1.");
+                    input.value = 1;
+                    quantity = 1;
+                }
+
             }
             function updateTotalPrice() {
                 const getAllInputs = document.querySelectorAll('.item-total');
                 const cart_total = document.querySelector('#cart-total');
                 let totalPrice = 0;
+               
+
                 if (getAllInputs) {
                     Array.from(getAllInputs).forEach(input => {
                         let currentVal = Number(input.textContent.replace(/[^0-9]/g, ''));
                         totalPrice += currentVal;
                     });
-                    totalPrice = totalPrice.toLocaleString('vi-VN');
+                    totalPrice = totalPrice.toLocaleString('en-US');
                     cart_total.innerHTML = `$\${totalPrice}`;
                 }
             }
             updateTotalPrice();
-        </script>
 
-        <script>
             function doDiscount(e) {
                 e.preventDefault();
+                const cartTotal = document.querySelector('#cart-total');
+                let currentTotal = parseFloat(cartTotal.textContent.replace(/[^0-9.]/g, ''));
                 const input = document.querySelector('#discountCode');
-                let url = "ApplyDiscount";
+                let url = `ApplyDiscount?currentTotal=\${currentTotal}`;
 
                 fetch(url, {
                     method: 'POST',
@@ -156,68 +168,47 @@
                         .then(response => response.text())
                         .then(data => {
                             if (data === "LOGIN_REQUIRED") {
-                                alert("Bạn cần đăng nhập để sử dụng mã giảm giá.");
+                                alert("You need to log in to use a discount code.");
                                 return;
                             }
                             if (data === "EMPTY_CODE") {
-                                alert("Vui lòng nhập mã giảm giá.");
+                                alert("Please enter a discount code.");
                                 return;
                             }
                             if (data === "CART_EMPTY" || data === "NO_ITEMS") {
-                                alert("Giỏ hàng của bạn đang trống.");
+                                alert("Your cart is empty.");
                                 return;
                             }
                             if (data.startsWith("MIN_ORDER_")) {
                                 let minOrderValue = data.split("_")[2];
-                                alert("Mã giảm giá chỉ áp dụng cho đơn hàng trên $" + minOrderValue);
+                                alert("Discount code applies only for orders over $" + minOrderValue);
                                 return;
                             }
                             if (data === "INVALID_CODE") {
-                                alert("Mã giảm giá không hợp lệ hoặc đã hết hạn.");
+                                alert("Invalid or expired discount code.");
                                 return;
                             }
                             if (data === "ERROR") {
-                                alert("Đã xảy ra lỗi khi áp dụng mã giảm giá.");
+                                alert("An error occurred while applying the discount code.");
                                 return;
                             }
 
-                            // Lấy giá trị giảm giá và loại giảm giá từ response
-                            let [discountValue, discountType] = data.split("|");
-                            discountValue = parseFloat(discountValue);
+                            // Update total cart value
 
-                            // Cập nhật tổng giá trị giỏ hàng
-                            const cartTotal = document.querySelector('#cart-total');
-                            let currentTotal = parseFloat(cartTotal.textContent.replace(/[^0-9.]/g, ''));
-
-                            let newTotal;
-                            if (discountType === "percent") {
-                                newTotal = currentTotal - (currentTotal * discountValue / 100);
-                            } else {
-                                newTotal = currentTotal - discountValue;
-                            }
-
-                            if (newTotal < 0)
-                                newTotal = 0;
-
-                            cartTotal.textContent = "$" + newTotal.toFixed(2);
-                            alert("Mã giảm giá đã được áp dụng!");
+                            cartTotal.textContent = "$" + data;
+                            alert("Discount code applied successfully!");
                         })
-                        .catch(err => console.log("Lỗi:", err));
+                        .catch(err => console.log("Error:", err));
             }
+
         </script>
+        <c:if test="${not empty sessionScope.error}">
+            <script>
+                alert('${error}');
+            </script>
+            <c:remove var="error" scope="session"/>
+        </c:if>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-            (function (d, w, c) {
-                w.ChatraID = '6ttM7t2hWx4ta8j2Z';
-                var s = d.createElement('script');
-                w[c] = w[c] || function () {
-                    (w[c].q = w[c].q || []).push(arguments);
-                };
-                s.async = true;
-                s.src = 'https://call.chatra.io/chatra.js';
-                if (d.head)
-                    d.head.appendChild(s);
-            })(document, window, 'Chatra');
-        </script>
+
     </body>
 </html>

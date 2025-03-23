@@ -114,5 +114,29 @@ public class CartDAO extends DBContext {
             e.printStackTrace();
         }
     }
+    // Xoá giỏ hàng sau khi mua
+    public void clearCart(int userId) {
+        if (userId <= 0) {
+            System.out.println(">>> [DEBUG] userId không hợp lệ, không thể xóa giỏ hàng.");
+            return;
+        }
 
+        try ( Connection conn = getConnection()) {
+            String sqlDeleteCartDetails = "DELETE FROM cart_details WHERE cart_id IN "
+                    + "(SELECT cart_id FROM cart WHERE user_id = ?)";
+            try ( PreparedStatement psDetails = conn.prepareStatement(sqlDeleteCartDetails)) {
+                psDetails.setInt(1, userId);
+                psDetails.executeUpdate();
+            }
+
+            String sqlDeleteCart = "DELETE FROM cart WHERE user_id = ?";
+            try ( PreparedStatement psCart = conn.prepareStatement(sqlDeleteCart)) {
+                psCart.setInt(1, userId);
+                psCart.executeUpdate();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

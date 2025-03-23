@@ -6,7 +6,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Thông tin thanh toán</title>
+        <title>Payment information</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
         <script>
             document.addEventListener("DOMContentLoaded", function () {
@@ -20,20 +20,21 @@
     <body>
         <%@ include file="header.jsp" %>
         <div class="container mt-5">
-            <h2 class="mb-4">Thông tin thanh toán</h2>
+            <h2 class="mb-4">Payment information</h2>
             <c:if test="${empty cart}">
-                <div class="alert alert-warning">Giỏ hàng của bạn đang trống.</div>
+                <div class="alert alert-warning">Your cart is empty.</div>
             </c:if>
             <c:if test="${not empty cart}">
-                <form action="thongbao.jsp" method="post">
-                    <h4 class="mb-3">Sản phẩm trong giỏ hàng</h4>
+                <!-- Sửa action để gửi đến CheckoutServlet -->
+                <form action="Checkout" method="post">
+                    <h4 class="mb-3">Products in cart</h4>
                     <table class="table table-bordered text-center">
                         <thead>
                             <tr>
-                                <th>Ảnh</th>
-                                <th>Tên sản phẩm</th>
-                                <th>Giá</th>
-                                <th>Số lượng</th>
+                                <th>Image</th>
+                                <th>Product Name</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -42,92 +43,63 @@
                                     <td><img src="${p.image}" width="50"></td>
                                     <td>${p.productName}</td>
                                     <td>$${p.price}</td>
-                                    <td><input type="number" name="quantity_${p.productId}" value="${p.quantity}" min="1" class="form-control text-center"></td>
+                                    <td><input readonly type="number" name="quantity_${p.productId}" value="${p.quantity}" min="1" class="form-control text-center"></td>
                                 </tr>
                             </c:forEach>
                         </tbody>
                     </table>
-                    <h4 class="mb-3">Địa chỉ giao hàng</h4>
-                    <div class="form-group">
-                      
-                     
-                            
-                            <c:forEach var="addr" items="${addressList}">
-                                <option value="${addr.id}" ${addr.isDefault ? "selected" : ""}>
-                                    ${addr.fullName} - ${addr.phone} - ${addr.specificAddress}, ${addr.ward}, ${addr.district}, ${addr.city}
-                                </option>
-                            </c:forEach>
-                            <option value="new"> ★ Nhập địa chỉ </option>
-                            
-                      
-                       
-                        
-                        <div class="form-group">
-                            <label for="fullName">Họ và tên</label>
-                            <input type="text" id="fullName" name="fullName" class="form-control">
-                        <div class="form-group">
-                            <label for="phone">Số điện thoại</label>
-                            <input type="text" id="phone" name="phone" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="specificAddress">Địa chỉ cụ thể</label>
-                            <input type="text" id="specificAddress" name="specificAddress" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="ward">Phường/Xã</label>
-                            <input type="text" id="ward" name="ward" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="district">Quận/Huyện</label>
-                            <input type="text" id="district" name="district" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="city">Tỉnh/Thành phố</label>
-                            <input type="text" id="city" name="city" class="form-control">
-                        </div>
-                        </select>
+                    <div style="display: flex; justify-content: space-between">
+                        <h3 style="font-size: 24px; color: #333;">Total price:</h3>
+                        <span style="font-size: 24px; font-weight: bold; color: #FF5733; background-color: #F4F4F4; padding: 10px 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+                            <span>$${requestScope.totalPrice}</span>
+                        </span>
+
                     </div>
-                    <div id="newAddressForm" style="display: none;" class="mt-3">
-                        <h5>Nhập địa chỉ mới</h5>
-                        <div class="form-group">
-                            <label for="fullName">Họ và tên</label>
-                            <input type="text" id="fullName" name="fullName" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Số điện thoại</label>
-                            <input type="text" id="phone" name="phone" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="specificAddress">Địa chỉ cụ thể</label>
-                            <input type="text" id="specificAddress" name="specificAddress" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="ward">Phường/Xã</label>
-                            <input type="text" id="ward" name="ward" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="district">Quận/Huyện</label>
-                            <input type="text" id="district" name="district" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="city">Tỉnh/Thành phố</label>
-                            <input type="text" id="city" name="city" class="form-control">
-                        </div>
-                    </div>
-                    <h4 class="mt-4">Phương thức thanh toán</h4>
+                    <h4 class="mb-3">Shipping address</h4>
                     <div class="form-group">
-                        <label for="paymentMethod">Chọn phương thức thanh toán</label>
+                        <!-- Danh sách địa chỉ hiện có -->
+
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone number</label>
+                        <input type="text" id="phone" name="phone" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="specificAddress">Specific address</label>
+                        <input type="text" id="specificAddress" name="specificAddress" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="ward">Ward/Commune</label>
+                        <input type="text" id="ward" name="ward" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="district">District</label>
+                        <input type="text" id="district" name="district" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="city">Province/City</label>
+                        <input type="text" id="city" name="city" class="form-control">
+                    </div>
+                    <h4 class="mt-4">Payment method</h4>
+                    <div class="form-group">
+                        <label for="paymentMethod">Select payment method</label>
                         <select id="paymentMethod" name="paymentMethod" class="form-control" required>
-                            <option value="COD">Thanh toán khi nhận hàng</option>
-                            <option value="Online">Thanh toán trực tuyến</option>
-                            <option value="Ghino">Thanh toán ghi nợ</option>
+                            <option value="COD">Cash on Delivery</option>
+                            <option value="Online">Online Payment</option>
+                            <option value="Ghino">Debit payment</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary mt-3">Xác nhận mua hàng</button>
+                    <button type="submit" class="btn btn-primary mt-3">Purchase Confirmation</button>
                 </form>
             </c:if>
         </div>
         <%@ include file="footer.jsp" %>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     </body>
+
 </html>

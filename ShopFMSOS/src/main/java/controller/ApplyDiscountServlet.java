@@ -1,20 +1,25 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
 package controller;
 
 import dal.CartDAO;
 import dal.DiscountDAO;
+import java.io.IOException;
+import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Discount;
-import model.Cart;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
+import model.User;
 
-@WebServlet(name = "ApplyDiscountServlet", urlPatterns = {"/ApplyDiscount"})
+/**
+ *
+ * @author Dang Chi Vi CE182507
+ */
 public class ApplyDiscountServlet extends HttpServlet {
 
     @Override
@@ -24,19 +29,20 @@ public class ApplyDiscountServlet extends HttpServlet {
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");
 
-        HttpSession session = request.getSession();
-        Integer userId = (Integer) session.getAttribute("userId");
+        HttpSession session = request.getSession(true);
+        if (session == null || session.getAttribute("loggedInUser") == null) {
+            response.sendRedirect("LoginServlet");
+            return;
+        }
+        User user = (User) session.getAttribute("loggedInUser");
+        int userId = user.getId();
 
         // Debug để kiểm tra session có userId không
-        System.out.println("Session userId: " + session.getAttribute("userId"));
-
-        try (PrintWriter out = response.getWriter()) {
-            if (userId == null) {
-                out.print("LOGIN_REQUIRED"); // Thông báo đăng nhập
-                return;
-            }
+        try ( PrintWriter out = response.getWriter()) {
 
             String discountCode = request.getParameter("discountCode");
+            double currentTotal = Double.parseDouble(request.getParameter("currentTotal"));
+            double newPrice;
             if (discountCode == null || discountCode.trim().isEmpty()) {
                 out.print("EMPTY_CODE");
                 return;
@@ -45,54 +51,24 @@ public class ApplyDiscountServlet extends HttpServlet {
             CartDAO cartDAO = new CartDAO();
             DiscountDAO discountDAO = new DiscountDAO();
 
-            Cart cart = cartDAO.getCartByUserId(userId);
-            if (cart == null) {
-                out.print("CART_EMPTY");
-                return;
-            }
-
-            BigDecimal totalPrice = cartDAO.getTotalPrice(cart.getCartId());
-            if (totalPrice == null || totalPrice.compareTo(BigDecimal.ZERO) == 0) {
-                out.print("NO_ITEMS");
-                return;
-            }
-
             Discount discount = discountDAO.getDiscountByCode(discountCode);
             if (discount == null || discount.getStatus() != 1) {
                 out.print("INVALID_CODE");
                 return;
             }
 
-            if (totalPrice.compareTo(BigDecimal.valueOf(discount.getMinOrderValue())) < 0) {
-                out.print("MIN_ORDER_" + discount.getMinOrderValue()); // Mã lỗi kèm giá trị tối thiểu
-                return;
-            }
-
-            // Tính toán giá trị giảm giá
-            BigDecimal discountAmount;
-            if ("percent".equalsIgnoreCase(discount.getDiscountType())) {
-                discountAmount = totalPrice.multiply(BigDecimal.valueOf(discount.getDiscountValue())).divide(BigDecimal.valueOf(100));
-            } else {
-                discountAmount = BigDecimal.valueOf(discount.getDiscountValue());
-            }
-
-            BigDecimal newTotal = totalPrice.subtract(discountAmount);
-            if (newTotal.compareTo(BigDecimal.ZERO) < 0) {
-                newTotal = BigDecimal.ZERO;
-            }
-
-            // Lưu mã giảm giá vào giỏ hàng
-            cartDAO.applyDiscountToCart(cart.getCartId(), discountCode, discountAmount);
+            newPrice = currentTotal - (currentTotal * (discount.getDiscountValue() / 100));
+            session.setAttribute("totalPrice", newPrice);
+            System.out.println(newPrice);
 
             // Trả về số phần trăm hoặc số tiền giảm giá để cập nhật trên giao diện
-            out.print(discount.getDiscountValue() + "|" + discount.getDiscountType());
-
-            // Debug để kiểm tra session sau khi cập nhật
-            System.out.println("New total after discount: " + newTotal);
-            System.out.println("Applied discount code: " + discountCode);
+            out.print(newPrice);
         } catch (Exception e) {
             e.printStackTrace(); // Ghi lỗi vào console server
             response.getWriter().print("ERROR");
         }
+        // Lưu mã giảm giá vào giỏ hàng
+
     }
 }
+
