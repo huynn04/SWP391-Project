@@ -29,6 +29,10 @@ public class User {
     
     public User() {}
 
+    public User(int aInt, int aInt0, String string, String string0, String string1, String string2, String string3, String string4, int aInt1, java.sql.Date date, java.sql.Date date0) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
     public int getId() { // Thêm phương thức này để giữ nguyên cách gọi trong code cũ
         return userId;
     }
@@ -115,5 +119,13 @@ public class User {
     
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getAddress() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public void setAddress(String address) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
