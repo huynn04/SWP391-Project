@@ -5,19 +5,25 @@
     // Lấy thông tin người dùng từ session
     User loggedInUser = (User) session.getAttribute("loggedInUser");
     int userRole = (loggedInUser != null) ? loggedInUser.getRoleId() : -1; // Nếu chưa đăng nhập, gán -1
+
+    // Nếu người dùng không có quyền (role khác 1 và 2), chuyển hướng về home.jsp
+    if (userRole != 1 && userRole != 2) {
+        response.sendRedirect("home.jsp");
+        return; // Dừng thực thi JSP để tránh hiển thị nội dung bên dưới
+    }
 %>
 
-<!-- Sidebar with menu options -->
+<!-- Sidebar với menu -->
 <nav class="col-md-2 d-none d-md-block sidebar">
     <div class="sidebar-sticky">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link active" href="home.jsp">
+                <a class="nav-link active" href="home">
                     <span data-feather="home"></span>
                     Home
                 </a>
             </li>
-            <!-- Các menu khác -->
+
             <li class="nav-item">
                 <a class="nav-link" href="CustomerManager">
                     <span data-feather="users"></span>

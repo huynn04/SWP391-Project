@@ -10,7 +10,6 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.auth.oauth2.BearerToken;
 
 import com.google.api.services.people.v1.PeopleService;
-import com.google.api.services.people.v1.PeopleServiceScopes;
 import com.google.api.services.people.v1.model.Person;
 
 import dal.UserDAO;
@@ -24,7 +23,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
 import java.util.Optional;
 
 @WebServlet("/callback")
@@ -40,6 +38,7 @@ public class GoogleCallbackServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
+            // Nhận mã code từ Google
             String code = request.getParameter("code");
 
             if (code == null || code.isEmpty()) {
@@ -47,9 +46,9 @@ public class GoogleCallbackServlet extends HttpServlet {
                 return;
             }
 
+            // Gửi mã code để lấy access token
             HttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
 
-            // Lấy access token từ code
             GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
                     transport,
                     JSON_FACTORY,
@@ -60,18 +59,16 @@ public class GoogleCallbackServlet extends HttpServlet {
                     REDIRECT_URI
             ).execute();
 
-            // Tạo Credential từ token
             Credential credential = new Credential(BearerToken.authorizationHeaderAccessMethod())
                     .setAccessToken(tokenResponse.getAccessToken());
 
-            // Tạo PeopleService từ credential
+            // Lấy thông tin người dùng từ Google
             PeopleService peopleService = new PeopleService.Builder(
                     transport,
                     JSON_FACTORY,
                     credential
             ).setApplicationName("ShopFMSOS Login").build();
 
-            // Lấy profile người dùng
             Person profile = peopleService.people()
                     .get("people/me")
                     .setPersonFields("names,emailAddresses")
@@ -80,42 +77,42 @@ public class GoogleCallbackServlet extends HttpServlet {
             String name = profile.getNames().get(0).getDisplayName();
             String email = profile.getEmailAddresses().get(0).getValue();
 
-            System.out.println("[GoogleCallback] Tên: " + name);
-            System.out.println("[GoogleCallback] Email: " + email);
+            System.out.println("[GoogleCallback] Đăng nhập từ Google:");
+            System.out.println("Tên: " + name);
+            System.out.println("Email: " + email);
 
-            // Kiểm tra user trong DB
             UserDAO userDAO = new UserDAO();
             Optional<User> optionalUser = userDAO.getUserByEmail(email);
 
             User user;
+
             if (optionalUser.isPresent()) {
+                // ✅ User đã tồn tại → giữ nguyên role_id từ database
                 user = optionalUser.get();
+                System.out.println("[GoogleCallback] Đã tồn tại user, role ID: " + user.getRoleId());
             } else {
+                // ❌ User chưa tồn tại → tạo mới và đặt role mặc định là 3
                 user = new User();
                 user.setFullName(name);
                 user.setEmail(email);
                 user.setStatus(1);
-                user.setRoleId(3); // customer
-                user.setPassword("GOOGLE_USER"); // tạm thời đặt mật khẩu giả
-
-                // ❗ BẮT BUỘC đặt giá trị cho các field null
-//                user.setPhoneNumber("");
-//                user.setAddress("Unknown");
-//                user.setCity("Hồ Chí Minh");
-//                user.setAvatar("");
+                user.setRoleId(3); // Mặc định là customer
+                user.setPassword("GOOGLE_USER"); // Tạm placeholder
 
                 userDAO.insertUser(user);
-                user = userDAO.getUserByEmail(email).orElse(user);
+                System.out.println("[GoogleCallback] Đã tạo mới user với role ID: 3");
             }
 
-            // ✅ Lưu session
-            request.getSession().setAttribute("loggedInUser", user); // dùng đúng key
-            request.getSession().setAttribute("canChangePasswordWithoutOld", true); // ⚡ Cho phép đổi mk không cần mật khẩu cũ
+            // Lấy lại thông tin user từ DB (đảm bảo chuẩn nhất sau khi insert)
+            user = userDAO.getUserByEmail(email).orElseThrow();
 
+            // Lưu thông tin đăng nhập vào session
+            request.getSession().setAttribute("loggedInUser", user);
+            request.getSession().setAttribute("canChangePasswordWithoutOld", true);
 
-            System.out.println("[GoogleCallback] Session đã lưu: " + user.getEmail());
+            System.out.println("[GoogleCallback] Đăng nhập thành công với vai trò: " + user.getRoleId());
 
-            // ✅ Redirect đến trang chính
+            // Chuyển hướng đến trang chính
             response.sendRedirect(request.getContextPath() + "/home.jsp");
 
         } catch (GeneralSecurityException e) {
@@ -123,7 +120,7 @@ public class GoogleCallbackServlet extends HttpServlet {
             response.getWriter().write("Lỗi bảo mật: " + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            response.getWriter().write("Lỗi: " + e.getMessage());
+            response.getWriter().write("Lỗi hệ thống: " + e.getMessage());
         }
     }
 }

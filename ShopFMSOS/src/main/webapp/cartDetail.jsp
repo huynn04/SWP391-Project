@@ -205,5 +205,19 @@
                         .catch(err => console.log("Lỗi:", err));
             }
         </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+            (function (d, w, c) {
+                w.ChatraID = '6ttM7t2hWx4ta8j2Z';
+                var s = d.createElement('script');
+                w[c] = w[c] || function () {
+                    (w[c].q = w[c].q || []).push(arguments);
+                };
+                s.async = true;
+                s.src = 'https://call.chatra.io/chatra.js';
+                if (d.head)
+                    d.head.appendChild(s);
+            })(document, window, 'Chatra');
+        </script>
     </body>
 </html>

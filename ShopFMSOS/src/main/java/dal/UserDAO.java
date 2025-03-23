@@ -19,19 +19,25 @@ import model.Address;
 public class UserDAO extends DBContext {
 
     public Optional<User> getUserByEmail(String email) {
-    String sql = "SELECT user_id, full_name, email FROM users WHERE email = ?";
+    String sql = "SELECT user_id, full_name, email, role_id, password, phone_number, address, avatar, status FROM users WHERE email = ?";
     try (Connection conn = getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql)) {
         stmt.setString(1, email);
         ResultSet rs = stmt.executeQuery();
         if (rs.next()) {
             User user = new User();
-            user.setUserId(rs.getInt("user_id")); // 🛠 FIX: Đổi từ "userId" thành "user_id"
+            user.setUserId(rs.getInt("user_id"));
             user.setFullName(rs.getString("full_name"));
             user.setEmail(rs.getString("email"));
-            
-            System.out.println("📌 Found user: " + user.getFullName() + " (ID: " + user.getUserId() + ")");
-            
+            user.setRoleId(rs.getInt("role_id")); // ✅ FIXED
+            user.setPassword(rs.getString("password"));
+            user.setPhoneNumber(rs.getString("phone_number"));
+            user.setAddress(rs.getString("address"));
+            user.setAvatar(rs.getString("avatar"));
+            user.setStatus(rs.getInt("status"));
+
+            System.out.println("📌 Found user: " + user.getFullName() + " (ID: " + user.getUserId() + "), Role: " + user.getRoleId());
+
             return Optional.of(user);
         }
     } catch (SQLException e) {
@@ -39,6 +45,7 @@ public class UserDAO extends DBContext {
     }
     return Optional.empty();
 }
+
 
 
 
