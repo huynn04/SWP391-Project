@@ -119,26 +119,30 @@
 
                 let initPriceVal = Number(itemPrice.textContent.replace(/[^0-9]/g, ''));
                 let quantity = Number(input.value);
-                let newPrice = initPriceVal * quantity;
-                newPrice = newPrice.toLocaleString('en-US');
-                currPrice.innerHTML = `$\${newPrice}`;
-                updateTotalPrice();
-                fetch(`AddToCart?action=changeQuantity&id=\${id}&quantity=\${quantity}`, {method: 'post'})
-                        .then(response => response.text())
-                        .then(data => console.log(data))
-                        .catch(err => console.log(err));
+
+                // Kiểm tra nếu quantity nhỏ hơn 1 thì đặt lại giá trị thành 1
                 if (quantity < 1) {
                     alert("Quantity cannot be less than 1.");
                     input.value = 1;
                     quantity = 1;
                 }
 
+                let newPrice = initPriceVal * quantity;
+                newPrice = newPrice.toLocaleString('en-US');
+                currPrice.innerHTML = `$\${newPrice}`;
+
+                updateTotalPrice();
+
+                fetch(`AddToCart?action=changeQuantity&id=${id}&quantity=${quantity}`, {method: 'post'})
+                        .then(response => response.text())
+                        .then(data => console.log(data))
+                        .catch(err => console.log(err));
             }
+
             function updateTotalPrice() {
                 const getAllInputs = document.querySelectorAll('.item-total');
                 const cart_total = document.querySelector('#cart-total');
                 let totalPrice = 0;
-               
 
                 if (getAllInputs) {
                     Array.from(getAllInputs).forEach(input => {
@@ -149,7 +153,9 @@
                     cart_total.innerHTML = `$\${totalPrice}`;
                 }
             }
+
             updateTotalPrice();
+
 
             function doDiscount(e) {
                 e.preventDefault();
