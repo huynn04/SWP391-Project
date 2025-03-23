@@ -127,11 +127,19 @@
                         .then(response => response.text())
                         .then(data => console.log(data))
                         .catch(err => console.log(err));
+                if (quantity < 1) {
+                    alert("Quantity cannot be less than 1.");
+                    input.value = 1;
+                    quantity = 1;
+                }
+
             }
             function updateTotalPrice() {
                 const getAllInputs = document.querySelectorAll('.item-total');
                 const cart_total = document.querySelector('#cart-total');
                 let totalPrice = 0;
+               
+
                 if (getAllInputs) {
                     Array.from(getAllInputs).forEach(input => {
                         let currentVal = Number(input.textContent.replace(/[^0-9]/g, ''));
@@ -192,6 +200,7 @@
                         })
                         .catch(err => console.log("Error:", err));
             }
+
         </script>
         <c:if test="${not empty sessionScope.error}">
             <script>

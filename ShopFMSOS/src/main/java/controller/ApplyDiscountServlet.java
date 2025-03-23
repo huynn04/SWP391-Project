@@ -52,7 +52,7 @@ public class ApplyDiscountServlet extends HttpServlet {
                 out.print("INVALID_CODE");
                 return;
             }
-            
+
             newPrice = currentTotal - (currentTotal * (discount.getDiscountValue() / 100));
             session.setAttribute("totalPrice", newPrice);
             System.out.println(newPrice);
