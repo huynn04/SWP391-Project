@@ -45,8 +45,11 @@ public class Product {
         this.updated_at = updated_at;
     }
 
-    
-    
+    public Product(int product_id, String product_name, String image) {
+        this.product_id = product_id;
+        this.product_name = product_name;
+        this.image = image;
+    }
     public Product() {}
     
     public int getProductId() {

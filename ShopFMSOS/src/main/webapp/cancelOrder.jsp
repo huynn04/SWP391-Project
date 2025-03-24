@@ -10,7 +10,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cancelled Orders - Admin Dashboard</title>
+    <title>Cancel Orders - Admin Dashboard</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <style>
         body {
@@ -46,7 +46,15 @@
             <!-- Main content area -->
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                 <div class="pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Cancelled Orders</h1>
+                    <h1 class="h2">Cancel Orders</h1>
+
+                    <!-- Breadcrumb Navigation -->
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="ManageOrder">Order Management</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Cancel Orders</li>
+                        </ol>
+                    </nav>
                 </div>
 
                 <!-- Orders Table -->
@@ -59,6 +67,7 @@
                             <th>Receiver Phone</th>
                             <th>Total Price</th>
                             <th>Cancelled At</th>
+                            <th>Action</th> <!-- Thêm cột Action -->
                         </tr>
                     </thead>
                     <tbody>
@@ -68,8 +77,12 @@
                                 <td>${order.receiverName}</td>
                                 <td>${order.receiverAddress}</td>
                                 <td>${order.receiverPhone}</td>
-                                <td>${order.totalPrice}</td>
+                                <td>$${order.totalPrice}</td>
                                 <td>${order.canceledAt}</td>
+                                <td>
+                                    <!-- Nút View Order Detail -->
+                                    <a href="ViewOrderDetail?orderId=${order.orderId}" class="btn btn-primary btn-sm">View Order Detail</a>
+                                </td>
                             </tr>
                         </c:forEach>
                     </tbody>
@@ -86,5 +99,3 @@
     <script>feather.replace()</script>
 </body>
 </html>
-
-

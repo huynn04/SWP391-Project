@@ -78,9 +78,33 @@ public class AddToCartServlet extends HttpServlet {
         response.sendRedirect("cartDetail.jsp");
     }
 //thay doi o cho nay
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String action = request.getParameter("action");
+        if ("changeQuantity".equals(action)) {
+            HttpSession session = request.getSession();
+            List<Product> cart = (List<Product>) session.getAttribute("cart");
+            if (cart != null) {
+                if (cart == null) {
+                    cart = new ArrayList<>();
+                }
+
+                // Kiểm tra nếu sản phẩm đã có trong giỏ hàng, nếu có thì tăng số lượng
+                boolean found = false;
+                int id = Integer.parseInt(request.getParameter("id"));
+                int quantity = Integer.parseInt(request.getParameter("quantity"));
+                for (Product p : cart) {
+                    if (p.getProductId() == id) {
+                        p.setQuantity(quantity);  // Tăng số lượng thêm
+                        response.getWriter().write("change success");
+                        break;
+                    }
+                }
+            }
+            return;
+        }
         doGet(request, response);
     }
 }

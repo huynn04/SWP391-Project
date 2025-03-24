@@ -60,10 +60,11 @@
                         </nav>
                     </div>
 
-                    <!-- Buttons to navigate to Track Orders and Pending -->
+                    <!-- Buttons to navigate to Track Orders, Pending, and Cancel -->
                     <div class="mb-3">
                         <a href="TrackOrder" class="btn btn-info mr-2">Go to Track Orders</a>
-                        <a href="Pending" class="btn btn-warning">Go to Pending</a>
+                        <a href="Pending" class="btn btn-warning mr-2">Go to Pending</a>
+                        <a href="CancelOrder" class="btn btn-danger">Go to Cancel</a>
                     </div>
 
                     <!-- Filter Section -->
@@ -99,6 +100,7 @@
                                 <th>Receiver Name</th>
                                 <th>Receiver Address</th>
                                 <th>Receiver Phone</th>
+                                <th>Action</th> <!-- Thêm cột Action -->
                             </tr>
                         </thead>
                         <tbody>
@@ -106,7 +108,7 @@
                                 <tr>
                                     <td>${order.orderId}</td>
                                     <td>${order.userId}</td>
-                                    <td>${order.totalPrice}</td>
+                                    <td>$${order.totalPrice}</td>
                                     <td>${order.orderDate}</td>
                                     <td>
                                         <c:choose>
@@ -118,6 +120,10 @@
                                     <td>${order.receiverName}</td>
                                     <td>${order.receiverAddress}</td>
                                     <td>${order.receiverPhone}</td>
+                                    <td>
+                                        <!-- Nút View Order Detail -->
+                                        <a href="ViewOrderDetail?orderId=${order.orderId}" class="btn btn-primary btn-sm">View Order Detail</a>
+                                    </td>
                                 </tr>
                             </c:forEach>
                         </tbody>

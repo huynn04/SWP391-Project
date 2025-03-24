@@ -10,18 +10,19 @@ public class DBContext {
 
     // Phương thức để kết nối cơ sở dữ liệu
     public Connection getConnection() {
-        try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=ShopFMSOS";
-            String user = "sa";
-            String password = "123456";
-            connection = DriverManager.getConnection(url, user, password);
-            return connection;
-        } catch (SQLException | ClassNotFoundException e) {
-            System.err.println("Không thể kết nối cơ sở dữ liệu: " + e.getMessage());
-            return null;
-        }
+    try {
+        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        String url = "jdbc:sqlserver://localhost:1433;databaseName=ShopFMSOS;encrypt=true;trustServerCertificate=true;";
+        String user = "sa";
+        String password = "123456";
+        connection = DriverManager.getConnection(url, user, password);
+        return connection;
+    } catch (SQLException | ClassNotFoundException e) {
+        System.err.println("Không thể kết nối cơ sở dữ liệu: " + e.getMessage());
+        return null;
     }
+}
+
 
     // Phương thức main để kiểm tra kết nối
     public static void main(String[] args) {

@@ -6,6 +6,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ page import="model.User" %>
+<%
+User loggedInUser = (User) session.getAttribute("loggedInUser");
+if (loggedInUser == null || loggedInUser.getRoleId() != 1 && loggedInUser.getRoleId() != 2) {
+    response.sendRedirect("home.jsp"); // Chuyển hướng nếu không phải admin
+    return;
+}
+%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -96,5 +104,15 @@
             </div>
         </div>
 
+
+        <!-- Bootstrap and required scripts -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <!-- Feather icons (optional) -->
+        <script src="https://unpkg.com/feather-icons"></script>
+        <script>
+            feather.replace()
+        </script>
     </body>
 </html>

@@ -13,6 +13,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.math.BigDecimal;
 import model.Cart;
 
 /**
@@ -20,30 +22,30 @@ import model.Cart;
  * @author Nguyễn Ngoc Huy CE180178
  */
 @WebServlet(name="CartDetailServlet", urlPatterns={"/CartDetail"})
-public class CartDetailServlet extends HttpServlet {
    
+   public class CartDetailServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Giả sử userId được lưu trong session sau khi đăng nhập
-        Integer userId = (Integer) request.getSession().getAttribute("userId");
+        HttpSession session = request.getSession();
+        Integer userId = (Integer) session.getAttribute("userId");
+
         if (userId == null) {
-            // Nếu chưa đăng nhập thì chuyển hướng đến trang đăng nhập
             response.sendRedirect("login.jsp");
             return;
         }
-        
+
         CartDAO cartDAO = new CartDAO();
         Cart cart = cartDAO.getCartByUserId(userId);
-        
+
+        BigDecimal totalPrice = (BigDecimal) session.getAttribute("totalPrice");
+        if (totalPrice == null && cart != null) {
+            totalPrice = cartDAO.getTotalPrice(cart.getCartId());
+        }
+
         request.setAttribute("cart", cart);
+        request.setAttribute("totalPrice", totalPrice);
         request.getRequestDispatcher("cartDetail.jsp").forward(request, response);
-    }
-    
-    // Nếu cần xử lý POST thì có thể chuyển hướng về doGet
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        doGet(request, response);
     }
 }

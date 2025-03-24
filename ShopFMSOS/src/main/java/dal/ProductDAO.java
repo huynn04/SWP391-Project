@@ -343,4 +343,34 @@ public class ProductDAO extends DBContext {
         }
         return products;
     }
+   public boolean updateProductStock(int productId, int quantityPurchased) {
+        String sql = "UPDATE products "
+                   + "SET quantity = quantity - ?, sold = sold + ? "
+                   + "WHERE product_id = ? AND quantity >= ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            conn.setAutoCommit(false);
+
+            ps.setInt(1, quantityPurchased);
+            ps.setInt(2, quantityPurchased);
+            ps.setInt(3, productId);
+            ps.setInt(4, quantityPurchased);
+
+            int rowsUpdated = ps.executeUpdate();
+            if (rowsUpdated > 0) {
+                conn.commit();
+                System.out.println("✅ Cập nhật tồn kho sản phẩm #" + productId
+                                   + " - Giảm " + quantityPurchased);
+                return true;
+            } else {
+                conn.rollback();
+                System.out.println("⚠️ Không thể cập nhật tồn kho sản phẩm #" + productId);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

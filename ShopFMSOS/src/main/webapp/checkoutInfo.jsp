@@ -1,106 +1,105 @@
-<%-- 
-    Document   : checkoutInfo
-    Created on : Feb 18, 2025, 9:46:50 PM
-    Author     : Nguyễn Ngoc Huy CE180178
---%>
-
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.util.List, model.Product" %>
+<%@ page import="java.util.List, model.Product, model.Address" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Thông tin thanh toán</title>
+        <title>Payment information</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
         <script>
-            // Hàm để hiển thị các phương thức thanh toán chi tiết khi chọn "Thanh toán trực tuyến"
-            function togglePaymentDetails() {
-                var paymentMethod = document.getElementById("paymentMethod").value;
-                if (paymentMethod === "Online") {
-                    document.getElementById("onlinePaymentDetails").style.display = "block"; // Hiển thị chi tiết thanh toán trực tuyến
-                } else {
-                    document.getElementById("onlinePaymentDetails").style.display = "none"; // Ẩn chi tiết thanh toán
-                }
-            }
+            document.addEventListener("DOMContentLoaded", function () {
+                document.getElementById("selectedAddress").addEventListener("change", function () {
+                    var newAddressForm = document.getElementById("newAddressForm");
+                    newAddressForm.style.display = (this.value === "new") ? "block" : "none";
+                });
+            });
         </script>
     </head>
     <body>
         <%@ include file="header.jsp" %>
-
         <div class="container mt-5">
-            <h2 class="mb-4">Thông tin thanh toán</h2>
-            <form action="Checkout" method="post">
-                <!-- Hiển thị sản phẩm trong giỏ hàng -->
-                <h4 class="mb-3">Sản phẩm trong giỏ hàng</h4>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Ảnh</th>
-                            <th>Tên sản phẩm</th>
-                            <th>Giá</th>
-                            <th>Số lượng</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <%
-                            List<Product> cart = (List<Product>) request.getAttribute("cart");
-                            for (Product p : cart) {
-                        %>
-                        <tr>
-                            <td><img src="<%= p.getImage()%>" width="50"></td>
-                            <td><%= p.getProductName()%></td>
-                            <td>$<%= p.getPrice()%></td>
-                            <td><input type="number" name="quantity_<%= p.getProductId()%>" value="<%= p.getQuantity()%>" min="1" class="form-control"></td>
-                        </tr>
-                        <%
-                            }
-                        %>
-                    </tbody>
-                </table>
+            <h2 class="mb-4">Payment information</h2>
+            <c:if test="${empty cart}">
+                <div class="alert alert-warning">Your cart is empty.</div>
+            </c:if>
+            <c:if test="${not empty cart}">
+                <!-- Sửa action để gửi đến CheckoutServlet -->
+                <form action="Checkout" method="post">
+                    <h4 class="mb-3">Products in cart</h4>
+                    <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Product Name</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="p" items="${cart}">
+                                <tr>
+                                    <td><img src="${p.image}" width="50"></td>
+                                    <td>${p.productName}</td>
+                                    <td>$${p.price}</td>
+                                    <td><input readonly type="number" name="quantity_${p.productId}" value="${p.quantity}" min="1" class="form-control text-center"></td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                    <div style="display: flex; justify-content: space-between">
+                        <h3 style="font-size: 24px; color: #333;">Total price:</h3>
+                        <span style="font-size: 24px; font-weight: bold; color: #FF5733; background-color: #F4F4F4; padding: 10px 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+                            <span>$${requestScope.totalPrice}</span>
+                        </span>
 
-                <!-- Địa chỉ nhận hàng -->
-                <div class="form-group">
-                    <label for="address">Địa chỉ nhận hàng</label>
-                    <input type="text" id="address" name="address" class="form-control" required>
-                </div>
-
-                <!-- Thông tin nhận hàng -->
-                <div class="form-group">
-                    <label for="phone">Số điện thoại</label>
-                    <input type="text" id="phone" name="phone" class="form-control" required>
-                </div>
-
-                <!-- Phương thức thanh toán -->
-                <div class="form-group">
-                    <label for="paymentMethod">Phương thức thanh toán</label>
-                    <select id="paymentMethod" name="paymentMethod" class="form-control" required onchange="togglePaymentDetails()">
-                        <option value="Choose">== None ==</option>
-                        <option value="COD">Thanh toán khi nhận hàng</option>
-                        <option value="Online">Thanh toán trực tuyến</option>
-                        <option value="Ghino">Thanh toán ghi nợ</option>
-
-                    </select>
-                </div>
-
-                <!-- Chi tiết phương thức thanh toán trực tuyến (hiển thị khi chọn "Thanh toán trực tuyến") -->
-                <div id="onlinePaymentDetails" style="display: none;">
+                    </div>
+                    <h4 class="mb-3">Shipping address</h4>
                     <div class="form-group">
-                        <label for="onlinePaymentMethod">Chọn phương thức thanh toán trực tuyến</label>
-                        <select id="onlinePaymentMethod" name="onlinePaymentMethod" class="form-control">
-                            <option value="Momo">Momo</option>
-                            <option value="Visa">Thẻ Visa</option>
-                            <option value="BankTransfer">Chuyển khoản ngân hàng</option>
-                            <option value="PayLater">Thanh toán trả sau</option>
+                        <!-- Danh sách địa chỉ hiện có -->
+
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone number</label>
+                        <input type="text" id="phone" name="phone" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="specificAddress">Specific address</label>
+                        <input type="text" id="specificAddress" name="specificAddress" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="ward">Ward/Commune</label>
+                        <input type="text" id="ward" name="ward" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="district">District</label>
+                        <input type="text" id="district" name="district" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="city">Province/City</label>
+                        <input type="text" id="city" name="city" class="form-control">
+                    </div>
+                    <h4 class="mt-4">Payment method</h4>
+                    <div class="form-group">
+                        <label for="paymentMethod">Select payment method</label>
+                        <select id="paymentMethod" name="paymentMethod" class="form-control" required>
+                            <option value="COD">Cash on Delivery</option>
+                            <option value="Online">Online Payment</option>
+                            <option value="Ghino">Debit payment</option>
                         </select>
                     </div>
-                </div>
-
-                <!-- Nút xác nhận -->
-                <button type="submit" class="btn btn-primary">Xác nhận mua hàng</button>
-            </form>
+                    <button type="submit" class="btn btn-primary mt-3">Purchase Confirmation</button>
+                </form>
+            </c:if>
         </div>
-
         <%@ include file="footer.jsp" %>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     </body>
+
 </html>

@@ -16,8 +16,15 @@
                 <li><a href="products">Products</a></li>
                 <li><a href="cartDetail.jsp">Cart</a></li>
                 <li><a href="#">Categories</a></li>
-                <li><a href="login.jsp">Login</a></li>
-                <li><a href="dashboard">Dashboard</a></li>
+
+                <% if (loggedInUser == null) { %>
+                    <li><a href="login.jsp">Login</a></li>
+                <% } else { %>
+                    <% if (loggedInUser.getRoleId() == 1 || loggedInUser.getRoleId() == 2) { %>
+                        <li><a href="dashboard">Dashboard</a></li>
+                    <% } %>
+                    <li><a href="LogoutServlet" class="text-danger">Logout</a></li>
+                <% } %>
             </ul>
         </nav>
         <div class="footer-text">
