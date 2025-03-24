@@ -22,6 +22,15 @@ public class ProductReview {
     private int status;
     private Date createdAt;
     private Date updatedAt;
+    private User user;  // Thêm đối tượng User
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public ProductReview(int reviewId, int orderDetailId, int productId, int userId, String reviewContent, int rating, String title, int likes, int status, Date createdAt, Date updatedAt) {
         this.reviewId = reviewId;

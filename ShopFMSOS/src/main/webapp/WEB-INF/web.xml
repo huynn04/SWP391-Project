@@ -212,6 +212,10 @@
         <servlet-name>CustomerReceivedOrderServlet</servlet-name>
         <servlet-class>controller.CustomerReceivedOrderServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SubmitReviewServlet</servlet-name>
+        <servlet-class>controller.SubmitReviewServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -491,6 +495,10 @@
     <servlet-mapping>
         <servlet-name>CustomerReceivedOrderServlet</servlet-name>
         <url-pattern>/CustomerReceivedOrder</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SubmitReviewServlet</servlet-name>
+        <url-pattern>/SubmitReview</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>
