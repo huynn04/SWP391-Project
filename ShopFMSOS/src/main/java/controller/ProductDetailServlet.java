@@ -1,23 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
-
 package controller;
 
 import dal.ProductDAO;
+import dal.ProductReviewDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Product;
+import model.ProductReview;
 
-/**
- *
- * @author Nguyễn Ngoc Huy CE180178
- */
+import java.util.List;
+
 public class ProductDetailServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -28,8 +22,16 @@ public class ProductDetailServlet extends HttpServlet {
                 int productId = Integer.parseInt(productIdParam);
                 ProductDAO productDAO = new ProductDAO();
                 Product product = productDAO.getProductById(productId);
+                
                 if (product != null) {
+                    // Fetch product reviews
+                    ProductReviewDAO reviewDAO = new ProductReviewDAO();
+                    List<ProductReview> reviews = reviewDAO.getReviewsByProductId(productId);
+                    
+                    // Set product and reviews in request
                     request.setAttribute("product", product);
+                    request.setAttribute("reviews", reviews);
+                    
                     request.getRequestDispatcher("productDetail.jsp").forward(request, response);
                 } else {
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Product not found");
@@ -41,5 +43,4 @@ public class ProductDetailServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Product id is missing");
         }
     }
-
 }
