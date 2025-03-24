@@ -64,10 +64,10 @@
                                 <i class="fas fa-eye"></i> View Order Detail
                             </a>
                             <% if (order.getStatus() == 0) {%>
-                            <a href="CustomerCancelOrder?orderId=<%= order.getOrderId()%>" class="btn btn-sm btn-danger">Cancel</a>
+                            <a href="CustomerCancelOrder?orderId=<%= order.getOrderId() %>" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn huỷ đơn hàng này?')">Cancel</a>
                             <a href="CustomerUpdateOrder?orderId=<%= order.getOrderId()%>" class="btn btn-sm btn-primary">Update</a>
                             <% } else if (order.getStatus() == 1) {%>
-                            <a href="ReceivedOrder?orderId=<%= order.getOrderId() %>" class="btn btn-sm btn-success">Received</a>
+                            <a href="CustomerReceivedOrder?orderId=<%= order.getOrderId() %>"  class="btn btn-sm btn-success">Received</a>
                             <%
                             } else if (order.getStatus() == 2) {%>
                             <a href="ReviewForm" class="btn btn-sm btn-warning">Feedback</a>

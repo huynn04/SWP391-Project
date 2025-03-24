@@ -129,10 +129,6 @@
         <servlet-class>controller.TrackOrderServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CategoryServlet</servlet-name>
-        <servlet-class>controller.CategoryServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>controller.LoginServlet</servlet-class>
     </servlet>
@@ -195,6 +191,26 @@
     <servlet>
         <servlet-name>ViewOrderDetailServlet</servlet-name>
         <servlet-class>controller.ViewOrderDetailServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CategoryServlet</servlet-name>
+        <servlet-class>controller.CategoryServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateCategoryServlet</servlet-name>
+        <servlet-class>controller.UpdateCategoryServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteCategoryServlet</servlet-name>
+        <servlet-class>controller.DeleteCategoryServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ViewProductByCateServlet</servlet-name>
+        <servlet-class>controller.ViewProductByCateServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CustomerReceivedOrderServlet</servlet-name>
+        <servlet-class>controller.CustomerReceivedOrderServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
@@ -319,10 +335,6 @@
     <servlet-mapping>
         <servlet-name>TrackOrderServlet</servlet-name>
         <url-pattern>/TrackOrder</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CategoryServlet</servlet-name>
-        <url-pattern>/CategoryServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
@@ -459,6 +471,26 @@
     <servlet-mapping>
         <servlet-name>ViewOrderDetailServlet</servlet-name>
         <url-pattern>/ViewOrderDetail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CategoryServlet</servlet-name>
+        <url-pattern>/CategoryServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateCategoryServlet</servlet-name>
+        <url-pattern>/UpdateCategory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteCategoryServlet</servlet-name>
+        <url-pattern>/DeleteCategory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ViewProductByCateServlet</servlet-name>
+        <url-pattern>/ViewProductByCate</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CustomerReceivedOrderServlet</servlet-name>
+        <url-pattern>/CustomerReceivedOrder</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

@@ -373,4 +373,52 @@ public class ProductDAO extends DBContext {
         }
         return false;
     }
+    // Cập nhật category_id của các sản phẩm thuộc danh mục cần xóa
+    public boolean updateProductCategory(int oldCategoryId, int newCategoryId) {
+        String sql = "UPDATE products SET category_id = ? WHERE category_id = ?";
+
+        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, newCategoryId);  // Cập nhật category_id mới
+            ps.setInt(2, oldCategoryId);  // Tìm các sản phẩm thuộc category_id cũ
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;  // Trả về true nếu có sản phẩm được cập nhật
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;  // Nếu có lỗi, trả về false
+        }
+    }
+     // Lấy tất cả các sản phẩm thuộc categoryId
+    public List<Product> getProductsByCategoryId(int categoryId) {
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT * FROM products WHERE category_id = ?";
+
+        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, categoryId);  // Gắn categoryId vào câu truy vấn
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product();
+                    product.setProductId(rs.getInt("product_id"));
+                    product.setCategoryId(rs.getInt("category_id"));
+                    product.setProductName(rs.getString("product_name"));
+                    product.setDetailDesc(rs.getString("detail_desc"));
+                    product.setImage(rs.getString("image"));
+                    product.setPrice(rs.getBigDecimal("price"));
+                    product.setDiscount(rs.getBigDecimal("discount"));
+                    product.setQuantity(rs.getInt("quantity"));
+                    product.setSold(rs.getInt("sold"));
+                    product.setTarget(rs.getString("target"));
+                    product.setFactory(rs.getString("factory"));
+                    product.setStatus(rs.getInt("status"));
+
+                    products.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return products;
+    }
 }
