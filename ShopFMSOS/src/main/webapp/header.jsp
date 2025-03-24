@@ -55,7 +55,7 @@
                     <% } %>
                     <li><a class="dropdown-item" href="updateProfile.jsp">Update Profile</a></li>
                     <li><a class="dropdown-item" href="changePassword.jsp">Change Password</a></li>
-                    <li><a class="dropdown-item" href="orderHistory.jsp">Order History</a></li>
+                    <li><a class="dropdown-item" href="CustomerOrderHistory">Order History</a></li>
                     <li><a class="dropdown-item" href="managePayment.jsp">Manage Payment</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item text-danger" href="LogoutServlet">Logout</a></li>
