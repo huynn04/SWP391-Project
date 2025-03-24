@@ -21,7 +21,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
         <link rel="stylesheet" href="css/style.css">
         <style>
-            /* Đảm bảo toàn bộ trang có chiều cao tối thiểu */
+            /* Ensure the whole page has a minimum height */
             html, body {
                 height: 100%;
                 margin: 0;
@@ -38,22 +38,44 @@
                 padding-bottom: 50px;
             }
 
-            /* Định dạng cho các bài viết carousel */
+            /* Stretch the container to full width */
+            .custom-wrapper {
+                max-width: 1200px; /* Adjust the maximum width as needed */
+                margin-left: auto;
+                margin-right: auto; /* Center the wrapper horizontally */
+                padding-left: 15px; /* Adjust the padding on the left side */
+                padding-right: 15px; /* Adjust the padding on the right side */
+            }
+
+
+
+            .carousel {
+                width: 100vw; /* Ensure the carousel takes up the full width of the screen */
+                margin-right: 0; /* Remove right margin */
+            }
+            /* Formatting for carousel items */
             .carousel-inner {
-                border-radius: 10px;
+                width: 100%; /* Ensure the carousel items fill the available space */
                 overflow: hidden;
             }
 
             .carousel-item {
                 display: flex;
                 justify-content: space-between;
-                flex-wrap: nowrap; /* Đảm bảo các phần tử không xuống dòng */
+                flex-wrap: nowrap;
+                width: 100%; /* Ensure each item is full-width */
+            }
+
+            .carousel-item img {
+                width: 100vw; /* Make sure the image stretches across the full screen */
+                height: auto; /* Maintain aspect ratio */
+                object-fit: cover; /* Cover the entire area */
             }
 
             .col-md-4 {
-                flex: 1 1 30%;  /* Đảm bảo mỗi ô chiếm khoảng 30% chiều rộng */
-                max-width: 30%;  /* Giới hạn chiều rộng tối đa của mỗi ô */
-                margin-bottom: 20px;  /* Đảm bảo có khoảng cách giữa các bài viết */
+                flex: 1 1 30%;
+                max-width: 30%;
+                margin-bottom: 20px;
             }
 
             .card {
@@ -70,23 +92,23 @@
             }
 
             .card-img-top {
-                height: 200px;  /* Giảm chiều cao của ảnh */
+                height: 200px;
                 object-fit: cover;
                 width: 100%;
             }
 
             .card-body {
-                padding: 10px;  /* Giảm padding trong card */
+                padding: 10px;
             }
 
             .card-title {
-                font-size: 1rem;  /* Giảm kích thước font */
+                font-size: 1rem;
                 font-weight: 600;
                 margin-bottom: 10px;
             }
 
             .card-text {
-                font-size: 0.85rem;  /* Giảm kích thước chữ trong phần mô tả */
+                font-size: 0.85rem;
                 margin-bottom: 15px;
             }
 
@@ -139,7 +161,7 @@
                 padding-top: 500px;
             }
 
-            /* Đảm bảo nút "Add News" luôn hiển thị */
+            /* Add News Button */
             .add-news-btn {
                 position: fixed;
                 top: 100px;
@@ -159,13 +181,13 @@
                 transition: transform 0.3s ease-out, background-color 0.3s ease;
             }
 
-            /* Hiệu ứng hover cho nút */
+            /* Hover effect for button */
             .add-news-btn:hover {
                 transform: scale(1.1);
                 background-color: hotpink;
             }
 
-            /* Tooltip khi hover */
+            /* Tooltip when hovering */
             .add-news-tooltip {
                 position: absolute;
                 top: 23%;
@@ -180,12 +202,12 @@
                 transform: translateY(-50%);
             }
 
-            /* Hiển thị tooltip khi hover */
+            /* Show tooltip on hover */
             .add-news-btn:hover + .add-news-tooltip {
                 display: block;
             }
 
-            /* Định dạng các phần tử trong trang */
+            /* General page element formatting */
             .welcome-section {
                 margin-bottom: 30px;
             }
@@ -219,12 +241,23 @@
             .read-more:hover {
                 text-decoration: underline;
             }
-            /* Căn chỉnh tiêu đề và nút "Xem tất cả" trong cùng một hàng */
+
+            /* Align title and "See All" button in the same row */
             h2.d-flex {
                 display: flex;
-                justify-content: space-between; /* Đưa "Recent News" và "Xem tất cả" vào hai đầu */
-                align-items: center; /* Căn giữa theo chiều dọc */
+                justify-content: space-between;
+                align-items: center;
             }
+            .center-content {
+                display: flex;                 /* Enable flexbox */
+                justify-content: center;       /* Center horizontally */
+                align-items: center;           /* Center vertically */
+                height: 40vh;                 /* Set the container's height to fill the viewport */
+                margin: 0;                     /* Remove default margin */
+                padding: 0 0px;               /* Add padding if needed to adjust space around */
+                text-align: center;            /* Center the text inside the columns */
+            }
+
 
 
         </style>
@@ -233,83 +266,85 @@
         <div id="wrapper">
             <%@ include file="header.jsp" %>
 
-            <!-- Thêm nút "Add News" lên phía trên bên trái -->
+            <!-- Add "Add News" button -->
             <% if (loggedInUser != null && loggedInUser.getRoleId() == 1) { %>
             <a href="AddNews" class="add-news-btn">
-                <i class="fas fa-pencil-alt"></i> <!-- Biểu tượng cây bút -->
+                <i class="fas fa-pencil-alt"></i> <!-- Pen icon -->
             </a>
             <div class="add-news-tooltip">Add News</div>
             <% }
             %>
 
             <main>
+                <div class="row center-content">
+                    <!-- Left column: Main content -->
+                    <div class="col-md-12">
+                        <div class="welcome-section">
+                            <h1>Welcome to FMSOS</h1>
+                            <p class="lead">Your ultimate destination for Anime, Pokemon, and Gundam collections.</p>
+                            <p>
+                                At FMSOS, we provide high-quality products, stay updated with the latest trends, and always alert our customers about the risks of online scams.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Carousel - Advertising -->
+                <div id="advertisementCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#advertisementCarousel" data-bs-slide-to="0" class="active"></button>
+                        <button type="button" data-bs-target="#advertisementCarousel" data-bs-slide-to="1"></button>
+                        <button type="button" data-bs-target="#advertisementCarousel" data-bs-slide-to="2"></button>
+                        <button type="button" data-bs-target="#advertisementCarousel" data-bs-slide-to="3"></button>
+                    </div>
+
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="image/banner1.webp" class="d-block w-100" alt="Banner 1">
+                            <div class="carousel-caption d-none d-md-block">
+                                <h5>Exciting Promotions!</h5>
+                                <p>Up to 50% off on all Anime products.</p>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <img src="image/banner2.webp" class="d-block w-100" alt="Banner 2">
+                            <div class="carousel-caption d-none d-md-block">
+                                <h5>New Pokemon Collection</h5>
+                                <p>Own the limited edition Pokemon figures now!</p>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <img src="image/banner3.webp" class="d-block w-100" alt="Banner 3">
+                            <div class="carousel-caption d-none d-md-block">
+                                <h5>Gundam Series</h5>
+                                <p>Discover the latest Gundam models at great prices.</p>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <img src="image/banner4.webp" class="d-block w-100" alt="Banner 4">
+                            <div class="carousel-caption d-none d-md-block">
+                                <h5>New Arrivals!</h5>
+                                <p>Get ready for the hottest products launching soon.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="carousel-control-prev" type="button" data-bs-target="#advertisementCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#advertisementCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+
                 <div class="container mt-5">
-                    <div class="row">
-                        <!-- Cột bên trái: Nội dung chính -->
-                        <div class="col-md-8">
-                            <div class="welcome-section">
-                                <h1>Welcome to FMSOS</h1>
-                                <p class="lead">Your ultimate destination for Anime, Pokemon, and Gundam collections.</p>
-                                <p>
-                                    At FMSOS, we provide high-quality products, stay updated with the latest trends, and always alert our customers about the risks of online scams.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Carousel - Trình chiếu quảng cáo -->
-                    <div id="advertisementCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
-                        <div class="carousel-indicators">
-                            <button type="button" data-bs-target="#advertisementCarousel" data-bs-slide-to="0" class="active"></button>
-                            <button type="button" data-bs-target="#advertisementCarousel" data-bs-slide-to="1"></button>
-                            <button type="button" data-bs-target="#advertisementCarousel" data-bs-slide-to="2"></button>
-                            <button type="button" data-bs-target="#advertisementCarousel" data-bs-slide-to="3"></button>
-                        </div>
-
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img src="image/Banner1.png" class="d-block w-100" alt="Banner 1">
-                                <div class="carousel-caption d-none d-md-block">
-                                    <h5>Khuyến mãi hấp dẫn!</h5>
-                                    <p>Giảm giá lên đến 50% cho tất cả sản phẩm Anime.</p>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <img src="image/Banner2.png" class="d-block w-100" alt="Banner 2">
-                                <div class="carousel-caption d-none d-md-block">
-                                    <h5>Bộ sưu tập Pokemon mới</h5>
-                                    <p>Hãy sở hữu ngay các mô hình Pokemon giới hạn!</p>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <img src="image/Banner3.png" class="d-block w-100" alt="Banner 3">
-                                <div class="carousel-caption d-none d-md-block">
-                                    <h5>Gundam Series</h5>
-                                    <p>Khám phá những mẫu Gundam mới nhất với giá cực tốt.</p>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <img src="image/Banner4.png" class="d-block w-100" alt="Banner 4">
-                                <div class="carousel-caption d-none d-md-block">
-                                    <h5>Hàng mới về!</h5>
-                                    <p>Đón chờ những sản phẩm hot nhất sắp ra mắt.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button class="carousel-control-prev" type="button" data-bs-target="#advertisementCarousel" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#advertisementCarousel" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
-                    </div>
                     <h2 class="d-flex justify-content-between mb-4">
                         Recent News
-                        <!-- Hiển thị liên kết Xem tất cả nếu có nhiều bài -->
-                        <a href="AllNews" class="btn btn-secondary">Xem tất cả</a>
+                        <!-- Display "See All" link if there are multiple items -->
+                        <a href="AllNews" class="btn btn-secondary">See All</a>
                     </h2>
 
                     <div class="row">
@@ -331,7 +366,7 @@
                                         </p>
                                         <p class="card-text">
                                             <small class="text-muted">
-                                                Đăng ngày <fmt:formatDate value="${newsItem.createdAt}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                                                Posted on <fmt:formatDate value="${newsItem.createdAt}" pattern="yyyy-MM-dd HH:mm:ss"/>
                                             </small>
                                         </p>
                                         <a href="ViewNews?id=${newsItem.newsId}" class="btn btn-primary btn-sm">Read More</a>
@@ -340,9 +375,6 @@
                             </div>
                         </c:forEach>
                     </div>
-
-
-
                 </div>
             </main>
 

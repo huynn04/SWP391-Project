@@ -230,7 +230,7 @@
                             <li><a class="dropdown-item" href="DeleteNews?newsId=${news.newsId}" onclick="return confirm('Are you sure you want to delete this news?')"><i class="fas fa-trash"></i> Delete</a></li>
                         </ul>
                     </div>
-                    <% }%>
+                    <% } %>
                 </div>
 
                 <div class="article-content">
@@ -263,49 +263,50 @@
                     </div>
                 </div>
 
-                <!-- Phần bình luận -->
+                <!-- Comments Section -->
                 <div class="comments-section mt-5">
-                    <h3>Bình luận</h3>
+                    <h3>Comments</h3>
 
-                    <!-- Form để thêm bình luận -->
+                    <!-- Form to add comment -->
                     <form action="AddComment" method="POST">
                         <input type="hidden" name="newsId" value="${news.newsId}">
                         <div class="form-group">
-                            <label for="commentContent">Viết bình luận</label>
+                            <label for="commentContent">Write a comment</label>
                             <textarea name="content" id="commentContent" class="form-control" rows="3" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary mt-3">Gửi bình luận</button>
+                        <button type="submit" class="btn btn-primary mt-3">Post Comment</button>
                     </form>
 
-                    <h4 class="mt-4">Các bình luận khác</h4>
+                    <h4 class="mt-4">Other Comments</h4>
                     <c:if test="${empty newsComments}">
-                        <p class="alert alert-warning">Chưa có bình luận nào.</p>
+                        <p class="alert alert-warning">No comments yet.</p>
                     </c:if>
 
                     <c:forEach var="comment" items="${newsComments}">
                         <div class="comment">
-                            <!-- Header của bình luận -->
+                            <!-- Comment header -->
                             <div class="comment-header d-flex justify-content-between align-items-center">
                                 <div>
-                                    <p><strong>${comment.user.email}</strong></p>
+                                    <h5><strong>${comment.user.fullName}</strong></h5>  <!-- Display full name -->
                                     <p class="comment-date">${fn:substring(comment.createdAt, 0, 19)}</p>
                                 </div>
-
-                                <!-- Nút 3 chấm chỉ hiển thị nếu có quyền -->
+                                <!-- Comment actions dropdown -->
+                                <!-- Comment actions dropdown -->
                                 <c:if test="${comment.userId == loggedInUser.userId || loggedInUser.roleId == 1 || loggedInUser.roleId == 2}">
                                     <div class="dropdown">
                                         <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton-${comment.commentId}" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="fas fa-ellipsis-v"></i>
                                         </button>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton-${comment.commentId}">
+                                            <!-- Show Edit and Delete for the comment owner -->
                                             <c:if test="${comment.userId == loggedInUser.userId}">
-                                                <!-- Hiển thị Sửa và Xóa cho chủ bình luận -->
-                                                <li><a class="dropdown-item" href="javascript:void(0);" onclick="showEditCommentForm(${comment.commentId}, '${comment.content}')">Sửa</a></li>
-                                                <li><a class="dropdown-item" href="DeleteComment?commentId=${comment.commentId}&newsId=${news.newsId}" onclick="return confirm('Bạn có chắc chắn muốn xóa bình luận này?')">Xóa</a></li>
+                                                <li><a class="dropdown-item" href="javascript:void(0);" onclick="showEditCommentForm(${comment.commentId}, '${comment.content}')">Edit</a></li>
+                                                <li><a class="dropdown-item" href="DeleteComment?commentId=${comment.commentId}&newsId=${news.newsId}" onclick="return confirm('Are you sure you want to delete this comment?')">Delete</a></li>
                                                 </c:if>
-                                                <c:if test="${loggedInUser.roleId == 1 || loggedInUser.roleId == 2}">
-                                                <!-- Hiển thị chỉ Xóa cho Admin và Staff -->
-                                                <li><a class="dropdown-item" href="DeleteComment?commentId=${comment.commentId}&newsId=${news.newsId}" onclick="return confirm('Bạn có chắc chắn muốn xóa bình luận này?')">Xóa</a></li>
+
+                                            <!-- Show Delete for Admin and Staff only if the logged-in user is not the comment owner -->
+                                            <c:if test="${(loggedInUser.roleId == 1 || loggedInUser.roleId == 2) && comment.userId != loggedInUser.userId}">
+                                                <li><a class="dropdown-item" href="DeleteComment?commentId=${comment.commentId}&newsId=${news.newsId}" onclick="return confirm('Are you sure you want to delete this comment?')">Delete</a></li>
                                                 </c:if>
                                         </ul>
                                     </div>
@@ -313,17 +314,17 @@
 
                             </div>
 
-                            <!-- Nội dung bình luận -->
+                            <!-- Comment content -->
                             <p class="comment-content" id="content-${comment.commentId}">${comment.content}</p>
 
-                            <!-- Form chỉnh sửa bình luận -->
+                            <!-- Edit comment form -->
                             <div id="edit-form-${comment.commentId}" class="edit-comment-form" style="display:none;">
                                 <form action="EditComment" method="POST">
                                     <input type="hidden" name="commentId" value="${comment.commentId}">
                                     <input type="hidden" name="newsId" value="${news.newsId}">
                                     <textarea name="content" class="form-control" rows="3">${comment.content}</textarea>
-                                    <button type="submit" class="btn btn-success btn-sm mt-2">Cập nhật</button>
-                                    <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="hideEditCommentForm(${comment.commentId})">Hủy</button>
+                                    <button type="submit" class="btn btn-success btn-sm mt-2">Update</button>
+                                    <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="hideEditCommentForm(${comment.commentId})">Cancel</button>
                                 </form>
                             </div>
 

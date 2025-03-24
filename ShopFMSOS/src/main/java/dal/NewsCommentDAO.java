@@ -13,7 +13,7 @@ public class NewsCommentDAO extends DBContext {
         String sql = "INSERT INTO news_comments (news_id, user_id, content, created_at, updated_at) "
                 + "VALUES (?, ?, ?, GETDATE(), GETDATE())";
 
-        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, comment.getNewsId());
             ps.setInt(2, comment.getUserId());
             ps.setString(3, comment.getContent());
@@ -33,8 +33,8 @@ public class NewsCommentDAO extends DBContext {
                 + "JOIN users u ON nc.user_id = u.user_id "
                 + "ORDER BY nc.created_at DESC"; // Sắp xếp theo thời gian tạo
 
-        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            try (ResultSet rs = ps.executeQuery()) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     NewsComment comment = new NewsComment();
                     comment.setCommentId(rs.getInt("comment_id"));
@@ -59,19 +59,18 @@ public class NewsCommentDAO extends DBContext {
         return commentList;
     }
 
-    // Lấy bình luận theo newsId
     public List<NewsComment> getCommentsByNewsId(int newsId) {
         List<NewsComment> commentList = new ArrayList<>();
-        String sql = "SELECT nc.comment_id, nc.news_id, nc.user_id, nc.content, nc.created_at, nc.updated_at, u.email "
+        String sql = "SELECT nc.comment_id, nc.news_id, nc.user_id, nc.content, nc.created_at, nc.updated_at, u.full_name "
                 + "FROM news_comments nc "
                 + "JOIN users u ON nc.user_id = u.user_id "
                 + "WHERE nc.news_id = ? "
-                + "ORDER BY nc.created_at DESC"; // Sắp xếp theo thời gian tạo
+                + "ORDER BY nc.created_at DESC"; // Order by creation date
 
-        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, newsId); // Set the newsId parameter
 
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     NewsComment comment = new NewsComment();
                     comment.setCommentId(rs.getInt("comment_id"));
@@ -81,10 +80,10 @@ public class NewsCommentDAO extends DBContext {
                     comment.setCreatedAt(rs.getTimestamp("created_at"));
                     comment.setUpdatedAt(rs.getTimestamp("updated_at"));
 
-                    // Tạo đối tượng User và gán email
+                    // Fetch user's full name
                     User user = new User();
-                    user.setEmail(rs.getString("email"));
-                    comment.setUser(user);  // Gán đối tượng User vào NewsComment
+                    user.setFullName(rs.getString("full_name")); // Retrieve full_name instead of email
+                    comment.setUser(user);  // Set the User object in the comment
 
                     commentList.add(comment);
                 }
@@ -103,10 +102,10 @@ public class NewsCommentDAO extends DBContext {
                 + "JOIN users u ON nc.user_id = u.user_id "
                 + "WHERE nc.comment_id = ?";
 
-        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, commentId);
 
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     NewsComment comment = new NewsComment();
                     comment.setCommentId(rs.getInt("comment_id"));
@@ -134,7 +133,7 @@ public class NewsCommentDAO extends DBContext {
     // Xóa bình luận theo commentId
     public boolean deleteComment(int commentId) {
         String sql = "DELETE FROM news_comments WHERE comment_id = ?";
-        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, commentId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -146,7 +145,7 @@ public class NewsCommentDAO extends DBContext {
     // Cập nhật bình luận
     public boolean updateComment(NewsComment comment) {
         String sql = "UPDATE news_comments SET content = ?, updated_at = GETDATE() WHERE comment_id = ?";
-        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, comment.getContent());
             ps.setInt(2, comment.getCommentId());
             return ps.executeUpdate() > 0;
