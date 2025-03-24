@@ -27,7 +27,7 @@
                 <li><a href="home">Home</a></li>
                 <li><a href="products">Products</a></li>
                 <li><a href="cartDetail.jsp">Cart</a></li>
-                <li><a href="#">Categories</a></li>
+<!--                <li><a href="#">Categories</a></li>-->
                 <li><a href="AllNews">News</a></li>  <!-- Thêm mục News vào đây -->
                 <% if (loggedInUser == null) { %>
                     <!-- Chỉ hiển thị nếu người dùng chưa đăng nhập -->
@@ -35,6 +35,7 @@
                 <% } %>
             </ul>
         </nav>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
         <!-- Nếu đã đăng nhập, hiển thị menu cài đặt -->
         <% if (loggedInUser != null) { %>

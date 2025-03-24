@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("loggedInUser", user); // Lưu thông tin người dùng vào session
             session.setAttribute("userRole", user.getRoleId()); // Lưu role để phân quyền
             
-            response.sendRedirect("home.jsp"); // Chuyển hướng đến trang chủ
+            response.sendRedirect("home"); // Chuyển hướng đến trang chủ
         } else {
             request.setAttribute("errorMessage", "Invalid email or password.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
