@@ -216,6 +216,10 @@
         <servlet-name>SubmitReviewServlet</servlet-name>
         <servlet-class>controller.SubmitReviewServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AddCategoryServlet</servlet-name>
+        <servlet-class>controller.AddCategoryServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -499,6 +503,10 @@
     <servlet-mapping>
         <servlet-name>SubmitReviewServlet</servlet-name>
         <url-pattern>/SubmitReview</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddCategoryServlet</servlet-name>
+        <url-pattern>/AddCategory</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>
