@@ -124,8 +124,6 @@ CREATE TABLE product_reviews (
     user_id INT NOT NULL,
     review_content VARCHAR(MAX),
     rating SMALLINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
-    title VARCHAR(255),
-    likes INT DEFAULT 0,
     status SMALLINT DEFAULT 1,
     created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE(),
