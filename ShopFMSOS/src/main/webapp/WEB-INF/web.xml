@@ -220,6 +220,10 @@
         <servlet-name>AddCategoryServlet</servlet-name>
         <servlet-class>controller.AddCategoryServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AdminViewOrderDetailServlet</servlet-name>
+        <servlet-class>controller.AdminViewOrderDetailServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -492,6 +496,10 @@
         <servlet-name>DeleteCategoryServlet</servlet-name>
         <url-pattern>/DeleteCategory</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>ViewProductByCateServlet</servlet-name>
+        <servlet-class>controller.ViewProductByCateServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ViewProductByCateServlet</servlet-name>
         <url-pattern>/ViewProductByCate</url-pattern>
@@ -507,6 +515,10 @@
     <servlet-mapping>
         <servlet-name>AddCategoryServlet</servlet-name>
         <url-pattern>/AddCategory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminViewOrderDetailServlet</servlet-name>
+        <url-pattern>/AdminViewOrderDetail</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>
