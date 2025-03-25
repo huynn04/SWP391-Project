@@ -17,8 +17,6 @@ public class ProductReview {
     private int userId;
     private String reviewContent;
     private int rating;
-    private String title;
-    private int likes;
     private int status;
     private Date createdAt;
     private Date updatedAt;
@@ -39,8 +37,6 @@ public class ProductReview {
         this.userId = userId;
         this.reviewContent = reviewContent;
         this.rating = rating;
-        this.title = title;
-        this.likes = likes;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -94,22 +90,6 @@ public class ProductReview {
     
     public void setRating(int rating) {
         this.rating = rating;
-    }
-    
-    public String getTitle() {
-        return title;
-    }
-    
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    
-    public int getLikes() {
-        return likes;
-    }
-    
-    public void setLikes(int likes) {
-        this.likes = likes;
     }
     
     public int getStatus() {
