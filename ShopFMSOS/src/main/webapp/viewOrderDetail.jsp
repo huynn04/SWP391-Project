@@ -6,14 +6,14 @@
 <jsp:useBean id="orderDetails" type="java.util.List<model.OrderDetail>" scope="request"/>
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Chi tiết đơn hàng - FMSOS</title>
+        <title>Order Details - FMSOS</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
         <style>
-            /* Màu chủ đạo */
+            /* Main color */
             :root {
                 --primary-color: #007bff;
                 --secondary-color: #6c757d;
@@ -24,7 +24,7 @@
                 --danger-color: #dc3545;
             }
 
-            /* Đảm bảo nội dung không bị header che */
+            /* Ensure content isn't hidden behind the header */
             body {
                 padding-top: 80px;
                 background-color: var(--light-bg);
@@ -101,7 +101,7 @@
                 border-radius: 5px;
             }
 
-            /* Link xem chi tiết sản phẩm */
+            /* View product link */
             .view-product {
                 display: block;
                 text-align: right;
@@ -120,7 +120,7 @@
                 text-decoration: underline;
             }
 
-            /* Bảng thông tin đơn hàng */
+            /* Order information table */
             .order-card {
                 background: white;
                 border-radius: 10px;
@@ -157,9 +157,9 @@
         <%@ include file="header.jsp" %>
 
         <div class="container mt-5">
-            <h2 class="text-center">Chi tiết đơn hàng</h2>
+            <h2 class="text-center">Order Details</h2>
 
-            <!-- Hiển thị danh sách sản phẩm (50% ảnh - 50% thông tin) -->
+            <!-- Display product list (50% image - 50% information) -->
             <%
                 BigDecimal totalPriceOrder = BigDecimal.ZERO;
                 for (OrderDetail detail : orderDetails) {
@@ -168,35 +168,35 @@
             <div class="product-card">
                 <div class="product-img-container">
                     <% if (detail.getProduct() != null) { %>
-                        <img src="<%= detail.getProduct().getImage() %>" class="product-img" alt="Sản phẩm">
+                        <img src="<%= detail.getProduct().getImage() %>" class="product-img" alt="Product">
                     <% } else { %>
-                        <img src="default-product-image.jpg" class="product-img" alt="Sản phẩm không có ảnh">
+                        <img src="default-product-image.jpg" class="product-img" alt="No product image">
                     <% } %>
                 </div>
                 <div class="product-info">
                     <table class="product-table">
                         <tr>
-                            <th>Tên sản phẩm</th>
+                            <th>Product Name</th>
                             <td><%= detail.getProduct().getProductName() %></td>
                         </tr>
                         <tr>
-                            <th>Số lượng</th>
+                            <th>Quantity</th>
                             <td><%= detail.getQuantity() %></td>
                         </tr>
                         <tr>
-                            <th>Giá</th>
+                            <th>Price</th>
                             <td>$<%= detail.getPrice() %></td>
                         </tr>
                         <tr>
-                            <th>Tổng cộng</th>
+                            <th>Subtotal</th>
                             <td>$<%= detail.getSubtotal() %></td>
                         </tr>
                         <tr>
-                            <th>Thuế</th>
+                            <th>Tax</th>
                             <td>$<%= detail.getTax() %></td>
                         </tr>
                     </table>
-                    <!-- Link xem chi tiết sản phẩm -->
+                    <!-- View product detail link -->
                     <div class="view-product">
                         <a href="ProductDetail?productId=<%= detail.getProductId() %>">🔍 View Product Detail</a>
                     </div>
@@ -204,23 +204,23 @@
             </div>
             <% } %>
 
-            <!-- Bảng thông tin đơn hàng -->
+            <!-- Order information table -->
             <div class="order-card mb-4">
                 <table class="table">
-                    <tr><th>Ngày đặt</th><td><%= order.getOrderDate() %></td></tr>
-                    <tr><th>Người nhận</th><td><%= order.getReceiverName() %></td></tr>
-                    <tr><th>Địa chỉ giao hàng</th><td><%= order.getReceiverAddress() %></td></tr>
-                    <tr><th>Số điện thoại</th><td><%= order.getReceiverPhone() %></td></tr>
-                    <tr><th>Hình thức thanh toán</th><td><%= order.getPaymentMethod() %></td></tr>
-                    <tr><th>Tổng giá trị đơn hàng</th><td>$<%= totalPriceOrder %></td></tr>
-                    <tr><th>Ghi chú</th><td><%= order.getNote() != null ? order.getNote() : "Không có" %></td></tr>
+                    <tr><th>Order Date</th><td><%= order.getOrderDate() %></td></tr>
+                    <tr><th>Receiver Name</th><td><%= order.getReceiverName() %></td></tr>
+                    <tr><th>Delivery Address</th><td><%= order.getReceiverAddress() %></td></tr>
+                    <tr><th>Phone Number</th><td><%= order.getReceiverPhone() %></td></tr>
+                    <tr><th>Payment Method</th><td><%= order.getPaymentMethod() %></td></tr>
+                    <tr><th>Total Order Value</th><td>$<%= totalPriceOrder %></td></tr>
+                    <tr><th>Note</th><td><%= order.getNote() != null ? order.getNote() : "No notes" %></td></tr>
                     <tr>
-                        <th>Trạng thái đơn hàng</th>
+                        <th>Order Status</th>
                         <td>
-                            <% if (order.getStatus() == 0) { %> <span class="text-warning">🟡 Chờ xử lý</span>
-                            <% } else if (order.getStatus() == 1) { %> <span class="text-info">🚚 Đang giao</span>
-                            <% } else if (order.getStatus() == 2) { %> <span class="text-success">✅ Đã giao</span>
-                            <% } else { %> <span class="text-danger">❌ Đã hủy</span> <% }
+                            <% if (order.getStatus() == 0) { %> <span class="text-warning">🟡 Pending</span>
+                            <% } else if (order.getStatus() == 1) { %> <span class="text-info">🚚 In Transit</span>
+                            <% } else if (order.getStatus() == 2) { %> <span class="text-success">✅ Delivered</span>
+                            <% } else { %> <span class="text-danger">❌ Canceled</span> <% }
                             %>
                         </td>
                     </tr>
@@ -228,7 +228,7 @@
             </div>
 
             <div class="text-center mt-4">
-                <a href="CustomerOrderHistory" class="btn btn-back">⬅ Quay lại</a>
+                <a href="CustomerOrderHistory" class="btn btn-back">⬅ Back</a>
             </div>
         </div>
 

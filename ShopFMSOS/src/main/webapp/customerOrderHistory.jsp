@@ -10,7 +10,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Lịch sử đơn hàng</title>
+        <title>Order history</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <style>
@@ -29,7 +29,7 @@
     </head>
     <body>
         <div class="container mt-4">
-            <h2 class="mb-4 text-center">Lịch sử đơn hàng của bạn</h2>
+            <h2 class="mb-4 text-center">Your order history</h2>
 
             <% if (orders != null && !orders.isEmpty()) { %>
             <table class="table table-striped table-bordered">
@@ -79,12 +79,12 @@
             </table>
             <% } else { %>
             <div class="alert alert-warning text-center" role="alert">
-                Bạn chưa có đơn hàng nào.
+                You have no orders yet.
             </div>
             <% }%>
 
             <div class="text-center mt-4">
-                <a href="home.jsp" class="btn btn-secondary">Quay lại trang chủ</a>
+                <a href="home.jsp" class="btn btn-secondary">Back to home page</a>
             </div>
         </div>
 

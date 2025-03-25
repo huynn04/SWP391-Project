@@ -40,7 +40,9 @@
         }
     </style>
 </head>
+
 <body>
+    
     <%@ include file="header.jsp" %>
     <div class="container content-wrapper">
         <h2>Categories List</h2>
