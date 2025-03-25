@@ -27,6 +27,13 @@
         .container {
             padding-top: 20px;
         }
+        .current-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -57,7 +64,7 @@
 
                 <!-- Update Category Form -->
                 <div class="container mt-5">
-                    <form action="UpdateCategory" method="POST">
+                    <form action="UpdateCategory" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="categoryId" value="${category.categoryId}">
 
                         <div class="mb-3">
@@ -71,8 +78,21 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="image" class="form-label">Image URL (Optional)</label>
-                            <input type="text" class="form-control" id="image" name="image" value="${category.image}">
+                            <label for="image" class="form-label">Current Image</label>
+                            <c:choose>
+                                <c:when test="${not empty category.image}">
+                                    <img src="${category.image}" alt="Current Image" class="current-img">
+                                </c:when>
+                                <c:otherwise>
+                                    <img src="images/no-image.png" alt="No Image" class="current-img">
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="imageFile" class="form-label">Upload New Image (Optional)</label>
+                            <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*">
+                            <small class="form-text text-muted">Leave blank to keep the current image.</small>
                         </div>
 
                         <div class="mb-3">
