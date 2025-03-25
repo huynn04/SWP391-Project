@@ -10,6 +10,42 @@
         <title>Product Detail</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
         <style>
+            /* Hiệu ứng hover cho ảnh */
+            .clickable-image {
+                cursor: pointer;
+                transition: transform 0.3s ease;
+            }
+            .clickable-image:hover {
+                transform: scale(1.05);
+            }
+            /* Tùy chỉnh giao diện modal */
+            .modal-body {
+                padding: 0;
+                background-color: #000;
+            }
+            .modal-body img {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+            /* Tùy chỉnh giao diện bản thông tin sản phẩm */
+            .product-info {
+                padding: 20px;
+                background-color: #f9f9f9;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .product-info h2 {
+                margin-bottom: 15px;
+            }
+            .product-info p {
+                margin-bottom: 10px;
+                font-size: 1.1em;
+            }
+            .product-info p strong {
+                color: #333;
+            }
             /* Styles for product review */
             .review-section {
                 margin-top: 50px;
@@ -29,6 +65,26 @@
                 font-weight: bold;
             }
             .review-rating {
+                color: #ffc700;
+            }
+            .star-rating {
+                direction: rtl;
+                display: inline-flex;
+            }
+            .star-rating input[type="radio"] {
+                display: none;
+            }
+            .star-rating label {
+                font-size: 2em;
+                color: #ccc;
+                cursor: pointer;
+                transition: color 0.2s;
+            }
+            .star-rating input[type="radio"]:checked ~ label {
+                color: #ffc700;
+            }
+            .star-rating label:hover,
+            .star-rating label:hover ~ label {
                 color: #ffc700;
             }
         </style>
