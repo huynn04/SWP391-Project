@@ -6,66 +6,17 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Payment Information</title>
+        <title>Payment information</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                // Hiện form địa chỉ mới khi chọn "new"
-                document.getElementById("selectedAddress")?.addEventListener("change", function () {
-                    document.getElementById("newAddressForm").style.display = (this.value === "new") ? "block" : "none";
-                });
-
-                // Kiểm tra lỗi form
-                document.getElementById("checkoutForm").addEventListener("submit", function (event) {
-                    const requiredFields = ["fullName", "phone", "specificAddress", "ward", "district", "city"];
-                    let isValid = true;
-
-                    const validatePhone = (phone) => /^\d{10,11}$/.test(phone);
-                    const validateText = (text) => /^[a-zA-ZÀ-ỹ0-9\s]+$/.test(text);
-                    const validateQuantity = (quantity) => /^\d+$/.test(quantity) && parseInt(quantity, 10) > 0;
-
-                    requiredFields.forEach(function (fieldId) {
-                        const field = document.getElementById(fieldId);
-                        const errorSpan = document.getElementById(fieldId + "Error");
-                        const value = field.value.trim();
-
-                        if (!value) {
-                            errorSpan.textContent = "This field is required.";
-                            isValid = false;
-                        } else {
-                            if (fieldId === "phone" && !validatePhone(value)) {
-                                errorSpan.textContent = "Phone number must be 10-11 digits.";
-                                isValid = false;
-                            } else if (["fullName", "ward", "district", "city"].includes(fieldId) && !validateText(value)) {
-                                errorSpan.textContent = "Invalid characters are not allowed.";
-                                isValid = false;
-                            } else if (fieldId === "fullName" && value.length < 3) {
-                                errorSpan.textContent = "Full name must be at least 3 characters.";
-                                isValid = false;
-                            } else if (fieldId === "specificAddress" && value.length < 10) {
-                                errorSpan.textContent = "Address must be at least 10 characters.";
-                                isValid = false;
-                            } else {
-                                errorSpan.textContent = "";
-                            }
-                        }
-                    });
-
-                    document.querySelectorAll("input[name^='quantity_']").forEach(function (input) {
-                        const errorSpan = document.createElement("span");
-                        errorSpan.className = "text-danger";
-                        input.parentNode.appendChild(errorSpan);
-
-                        if (!validateQuantity(input.value)) {
-                            errorSpan.textContent = "Quantity must be a positive number.";
-                            isValid = false;
-                        } else {
-                            errorSpan.textContent = "";
-                        }
-                    });
-
-                    if (!isValid) {
-                        event.preventDefault();
+                document.getElementById("paymentMethod").addEventListener("change", function () {
+                    var onlinePaymentInfo = document.getElementById("onlinePaymentInfo");
+                    // Kiểm tra nếu lựa chọn là "Online", hiển thị phần thông tin chuyển khoản
+                    if (this.value === "Online") {
+                        onlinePaymentInfo.style.display = "block";
+                    } else {
+                        onlinePaymentInfo.style.display = "none";
                     }
                 });
             });
@@ -74,15 +25,14 @@
     <body>
         <%@ include file="header.jsp" %>
         <div class="container mt-5">
-            <h2 class="mb-4">Payment Information</h2>
-
+            <h2 class="mb-4">Payment information</h2>
             <c:if test="${empty cart}">
                 <div class="alert alert-warning">Your cart is empty.</div>
             </c:if>
-
             <c:if test="${not empty cart}">
-                <form id="checkoutForm" action="Checkout" method="post">
-                    <h4 class="mb-3">Products in Cart</h4>
+                <!-- Sửa action để gửi đến CheckoutServlet -->
+                <form action="Checkout" method="post" id="checkoutForm">
+                    <h4 class="mb-3">Products in cart</h4>
                     <table class="table table-bordered text-center">
                         <thead>
                             <tr>
@@ -103,42 +53,96 @@
                             </c:forEach>
                         </tbody>
                     </table>
+                    <div style="display: flex; justify-content: space-between">
+                        <h3 style="font-size: 24px; color: #333;">Total price:</h3>
+                        <span style="font-size: 24px; font-weight: bold; color: #FF5733; background-color: #F4F4F4; padding: 10px 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+                            <span>$${requestScope.totalPrice}</span>
+                        </span>
+                    </div>
+                    <h4 class="mb-3">Shipping address</h4>
+                    <% if (request.getAttribute("errorMessage") != null) { %>
+                    <div class="alert alert-danger mt-3" role="alert">
+                        <%= request.getAttribute("errorMessage") %>
+                    </div>
+                    <% } %>
 
-                    <h4 class="mb-3">Shipping Address</h4>
                     <div class="form-group">
+                        <!-- Danh sách địa chỉ hiện có -->
+                    </div>
+                    <div class="form-group mt-3">
                         <label for="fullName">Full Name</label>
-                        <input type="text" id="fullName" name="fullName" class="form-control" value="${param.fullName}">
-                        <span id="fullNameError" class="text-danger"></span>
+                        <input type="text" id="fullName" name="fullName" class="form-control" required>
                     </div>
-
-                    <div class="form-group mt-3">
-                        <label for="phone">Phone Number</label>
-                        <input type="text" id="phone" name="phone" class="form-control" value="${param.phone}">
-                        <span id="phoneError" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group mt-3">
-                        <label for="specificAddress">Specific Address</label>
-                        <input type="text" id="specificAddress" name="specificAddress" class="form-control" value="${param.specificAddress}">
-                        <span id="specificAddressError" class="text-danger"></span>
-                    </div>
-
-                    <h4 class="mt-4">Payment Method</h4>
                     <div class="form-group">
-                        <label for="paymentMethod">Select Payment Method</label>
+                        <label for="phone">Phone number</label>
+                        <input type="text" id="phone" name="phone" class="form-control" required pattern="\d{10}">
+                    </div>
+                    <div class="form-group">
+                        <label for="specificAddress">Specific address</label>
+                        <input type="text" id="specificAddress" name="specificAddress" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ward">Ward/Commune</label>
+                        <input type="text" id="ward" name="ward" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="district">District</label>
+                        <input type="text" id="district" name="district" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">Province/City</label>
+                        <input type="text" id="city" name="city" class="form-control" required>
+                    </div>
+                    <h4 class="mt-4">Payment method</h4>
+                    <div class="form-group">
+                        <label for="paymentMethod">Select payment method</label>
                         <select id="paymentMethod" name="paymentMethod" class="form-control" required>
                             <option value="COD">Cash on Delivery</option>
                             <option value="Online">Online Payment</option>
-                            <option value="Ghino">Debit Payment</option>
+                            <option value="Ghino">Debit payment</option>
                         </select>
                     </div>
 
-                    <button type="submit" class="btn btn-primary mt-4">Purchase Confirmation</button>
+                    <!-- Online Payment Information (Mặc định ẩn) -->
+                    <div id="onlinePaymentInfo" style="display:none;" class="mt-4 p-3 border rounded bg-light">
+                        <h5>Online Payment Information</h5>
+                        <p><strong>Amount:</strong> $${requestScope.totalPrice}</p>
+                        <p><strong>Transfer Note:</strong> <%= loggedInUser.getFullName() + " " + loggedInUser.getId() %></p>
+                        <img src="image/98cc3294e4bf54e10dae.jpg" alt="Bank QR" style="max-width: 300px;" class="img-fluid mt-2">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Purchase Confirmation</button>
                 </form>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        document.getElementById("checkoutForm").addEventListener("submit", function (event) {
+                            let fullName = document.getElementById("fullName").value;
+                            let phone = document.getElementById("phone").value;
+                            let city = document.getElementById("city").value;
+                            let district = document.getElementById("district").value;
+                            let ward = document.getElementById("ward").value;
+                            let specificAddress = document.getElementById("specificAddress").value;
+
+                            // Check if the user has filled in all shipping address fields
+                            if (!fullName || !phone || !city || !district || !ward || !specificAddress) {
+                                alert("Please fill out all shipping address fields.");
+                                event.preventDefault(); // Prevent form submission
+                            }
+
+                            // Check if the phone number is valid
+                            if (phone && !phone.match(/^\d{10}$/)) {
+                                alert("Please enter a valid phone number with exactly 10 digits.");
+                                event.preventDefault(); // Prevent form submission
+                            }
+                        });
+                    });
+                </script>
+
+
             </c:if>
         </div>
-
         <%@ include file="footer.jsp" %>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     </body>
+
 </html>

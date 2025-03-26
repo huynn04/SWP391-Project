@@ -22,6 +22,7 @@ public class CheckoutInfoServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user"); // Lấy user từ session
 
@@ -67,7 +68,7 @@ public class CheckoutInfoServlet extends HttpServlet {
 
         int userId = (user != null) ? user.getUserId() : 0;
 
-        // Lấy thông tin địa chỉ từ form
+        // Get address information from the form
         String fullName = request.getParameter("fullName");
         String phone = request.getParameter("phone");
         String city = request.getParameter("city");
@@ -76,23 +77,31 @@ public class CheckoutInfoServlet extends HttpServlet {
         String specificAddress = request.getParameter("specificAddress");
         String addressType = request.getParameter("addressType");
 
-        if (fullName == null || phone == null || city == null || district == null || ward == null
-                || specificAddress == null || addressType == null
-                || fullName.isEmpty() || phone.isEmpty() || city.isEmpty() || district.isEmpty()
-                || ward.isEmpty() || specificAddress.isEmpty() || addressType.isEmpty()) {
-            request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin!");
-            doGet(request, response);
+        // Kiểm tra nếu thiếu thông tin
+if (fullName == null || phone == null || city == null || district == null || ward == null
+        || specificAddress == null || addressType == null
+        || fullName.isEmpty() || phone.isEmpty() || city.isEmpty() || district.isEmpty()
+        || ward.isEmpty() || specificAddress.isEmpty() || addressType.isEmpty()) {
+    request.setAttribute("errorMessage", "Please fill in all the required fields!");
+    request.getRequestDispatcher("checkoutInfo.jsp").forward(request, response);  // Chuyển hướng lại trang với thông báo lỗi
+    return;
+}
+
+        // Validate phone number: should contain only digits and be exactly 10 digits long
+        if (!phone.matches("\\d{10}")) {
+            request.setAttribute("errorMessage", "Phone number must be exactly 10 digits and contain only numbers!");
+            request.getRequestDispatcher("checkoutInfo.jsp").forward(request, response);  // Redirect to the checkout form with the error message for phone
             return;
         }
 
-        // Nếu đăng nhập, lưu địa chỉ vào database
+        // If logged in, save the address to the database
         if (user != null) {
             Address newAddress = new Address(0, userId, fullName, phone, city, district, ward, specificAddress, addressType, false);
             AddressDAO addressDAO = new AddressDAO();
             addressDAO.saveAddress(newAddress);
         }
 
-        // Cập nhật số lượng sản phẩm trong kho
+        // Update the product stock
         ProductDAO productDAO = new ProductDAO();
         List<Product> cart = (List<Product>) session.getAttribute("cart");
 
@@ -102,16 +111,17 @@ public class CheckoutInfoServlet extends HttpServlet {
             }
         }
 
-        // Xóa giỏ hàng khỏi database
+        // Clear the cart in the database
         CartDAO cartDAO = new CartDAO();
         if (user != null) {
             cartDAO.clearCart(user.getUserId());
         }
 
-        // Xóa giỏ hàng trong session
+        // Remove the cart from the session
         session.removeAttribute("cart");
 
-        // Chuyển hướng đến trang thông báo
+        // Redirect to the notification page
         response.sendRedirect("thongbao.jsp");
     }
+
 }

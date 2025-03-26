@@ -1,13 +1,13 @@
 package controller;
 
 import dal.CategoryDAO;
+import model.Category;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
-import model.Category;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,14 +36,14 @@ public class AddCategoryServlet extends HttpServlet {
         // Lấy phần ảnh tải lên từ form (nếu có)
         Part filePart = request.getPart("image");
         if (filePart != null && filePart.getSize() > 0) {
-            // Lấy tên file gốc
-            String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+            // Lấy tên file gốc và tạo tên duy nhất
+            String fileName = System.currentTimeMillis() + "_" + Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
 
             // Định nghĩa đường dẫn lưu ảnh
             String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) {
-                uploadDir.mkdir();  // Tạo thư mục nếu chưa có
+                uploadDir.mkdirs();  // Tạo thư mục nếu chưa có
             }
 
             // Lưu ảnh lên server
@@ -51,7 +51,7 @@ public class AddCategoryServlet extends HttpServlet {
             filePart.write(fileToSave.getAbsolutePath());
 
             // Lưu đường dẫn ảnh
-            image = "/image/" + fileName;  // Đường dẫn lưu trên server
+            image = "/uploads/" + fileName;  // Đường dẫn lưu trên server
         }
 
         // Lấy trạng thái

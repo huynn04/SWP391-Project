@@ -54,12 +54,12 @@ public class UpdateProfileServlet extends HttpServlet {
             }
 
             // Đổi tên file để tránh trùng lặp và lưu ảnh
-            String savedFileName =fileName;
+            String savedFileName = System.currentTimeMillis() + "_" + fileName;
             File fileToSave = new File(uploadDir, savedFileName);
             filePart.write(fileToSave.getAbsolutePath());
 
             // Cập nhật đường dẫn ảnh vào avatarPath
-            avatarPath = "/image/" + savedFileName;  // Đường dẫn tương đối
+            avatarPath = "uploads/" + savedFileName;  // Đường dẫn tương đối
         }
 
         // Cập nhật thông tin người dùng
