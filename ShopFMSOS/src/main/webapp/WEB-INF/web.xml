@@ -85,6 +85,14 @@
         <servlet-class>controller.SalesStatisticsServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>AllNewsServlet</servlet-name>
+        <servlet-class>controller.AllNewsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AllNewsServlet</servlet-name>
+        <url-pattern>/AllNewsServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <servlet-name>OrderManagementServlet</servlet-name>
         <servlet-class>controller.OrderManagementServlet</servlet-class>
     </servlet>

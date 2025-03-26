@@ -1,20 +1,23 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
     <head>
         <meta charset="UTF-8">
         <title>Customer Management</title>
-        <!-- Using Bootstrap CDN for quick UI development -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
         <style>
             body {
                 padding-top: 56px;
+                background: #f0f2f5;
+                font-family: 'Roboto', sans-serif;
             }
             .sidebar {
                 height: 100vh;
                 padding-top: 20px;
                 background-color: #f8f9fa;
+                position: fixed;
+                width: 250px;
             }
             .sidebar a {
                 color: #333;
@@ -31,6 +34,25 @@
                 object-fit: cover;
                 border-radius: 50%;
             }
+            main {
+                margin-left: 250px;
+            }
+            .search-container, .sort-container {
+                margin-bottom: 20px;
+                display: flex;
+                justify-content: flex-start;
+                gap: 15px;
+            }
+            .form-select, .form-control {
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            .table-responsive {
+                background: #fff;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+            }
         </style>
     </head>
     <body>
@@ -45,46 +67,59 @@
 
         <div class="container-fluid">
             <div class="row">
-
-                <!-- Gắn file sidebar.jsp ở đây -->
-                <jsp:include page="sidebar.jsp" />
+                <!-- Sidebar -->
+                <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+                    <div class="sidebar-sticky">
+                        <jsp:include page="sidebar.jsp" />
+                    </div>
+                </nav>
 
                 <!-- Main content area -->
                 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                     <div class="pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2">Customer Management</h1>
-                        <!-- Breadcrumb hiển thị đường dẫn -->
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb breadcrumb-custom">
                                 <li class="breadcrumb-item active" aria-current="page">Customer Management</li>
                             </ol>
                         </nav>
                         <p>Manage customer information and view customer details below.</p>
-                        <!-- Phần form tìm kiếm và sắp xếp -->
-                        <form action="CustomerManager" method="get" class="form-inline mb-3">
-                            <div class="form-group mr-2">
-                                <label for="searchQuery" class="mr-2">Search:</label>
-                                <input type="text" name="searchQuery" id="searchQuery" class="form-control" placeholder="Enter name or ID">
-                            </div>
-                            <div class="form-group mr-2">
-                                <label for="searchBy" class="mr-2">By:</label>
-                                <select name="searchBy" id="searchBy" class="form-control">
-                                    <option value="id">ID</option>
-                                    <option value="name">Name</option>
-                                </select>
-                            </div>
-                            <div class="form-group mr-2">
-                                <label for="sortBy" class="mr-2">Sort by:</label>
-                                <select name="sortBy" id="sortBy" class="form-control">
-                                    <option value="id">ID</option>
-                                    <option value="name">Name</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Search & Sort</button>
+                    </div>
+
+                    <!-- Search Section -->
+                    <div class="search-container">
+                        <form action="CustomerManager" method="get" class="form-inline">
+                            <label for="searchQuery" class="mr-2">Search:</label>
+                            <input type="text" name="searchQuery" id="searchQuery" class="form-control mr-2" placeholder="Enter name or ID" value="${param.searchQuery}">
+                            <select name="searchBy" id="searchBy" class="form-control mr-2">
+                                <option value="id" ${param.searchBy == 'id' ? 'selected' : ''}>ID</option>
+                                <option value="name" ${param.searchBy == 'name' ? 'selected' : ''}>Name</option>
+                            </select>
+                            <c:if test="${not empty param.sortOption}">
+                                <input type="hidden" name="sortOption" value="${param.sortOption}">
+                            </c:if>
+                            <button type="submit" class="btn btn-primary">Search</button>
                         </form>
                     </div>
 
-                    <!-- Hiển thị thông báo nếu không tìm thấy khách hàng -->
+                    <!-- Sort Section -->
+                    <div class="sort-container">
+                        <form action="CustomerManager" method="get" class="form-inline">
+                            <label for="sortOption" class="mr-2">Sort by:</label>
+                            <select name="sortOption" id="sortOption" class="form-select" onchange="this.form.submit()">
+                                <option value="name-asc" ${sortOption == 'name-asc' ? 'selected' : ''}>Name (A-Z)</option>
+                                <option value="name-desc" ${sortOption == 'name-desc' ? 'selected' : ''}>Name (Z-A)</option>
+                                <option value="email-asc" ${sortOption == 'email-asc' ? 'selected' : ''}>Email (A-Z)</option>
+                                <option value="email-desc" ${sortOption == 'email-desc' ? 'selected' : ''}>Email (Z-A)</option>
+                            </select>
+                            <c:if test="${not empty param.searchQuery}">
+                                <input type="hidden" name="searchQuery" value="${param.searchQuery}">
+                                <input type="hidden" name="searchBy" value="${param.searchBy}">
+                            </c:if>
+                        </form>
+                    </div>
+
+                    <!-- Customer table or no results message -->
                     <c:choose>
                         <c:when test="${empty customerList}">
                             <div class="alert alert-warning" role="alert">
@@ -92,7 +127,6 @@
                             </div>
                         </c:when>
                         <c:otherwise>
-                            <!-- Customer table -->
                             <div class="table-responsive">
                                 <table class="table table-striped table-sm">
                                     <thead>
@@ -108,7 +142,6 @@
                                     <tbody>
                                         <c:forEach var="customer" items="${customerList}">
                                             <tr>
-                                                <!-- Hiển thị Avatar -->
                                                 <td>
                                                     <c:choose>
                                                         <c:when test="${not empty customer.avatar}">
@@ -131,10 +164,8 @@
                                                 <td>
                                                     <a href="DetailCustomer?id=${customer.userId}" class="btn btn-sm btn-info">View</a>
                                                     <a href="EditCustomer?id=${customer.userId}" class="btn btn-sm btn-primary">Edit</a>
-
                                                     <c:choose>
                                                         <c:when test="${customer.status == 1}">
-                                                            <!-- When status is Active, show the Disable button -->
                                                             <a href="ChangeStatusCustomer?id=${customer.userId}" 
                                                                class="btn btn-sm btn-danger"
                                                                onclick="return confirm('Are you sure you want to disable this account?');">
@@ -142,7 +173,6 @@
                                                             </a>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <!-- When status is Inactive, show the Restore button -->
                                                             <a href="ChangeStatusCustomer?id=${customer.userId}" 
                                                                class="btn btn-sm btn-success"
                                                                onclick="return confirm('Are you sure you want to restore this account?');">
@@ -150,8 +180,6 @@
                                                             </a>
                                                         </c:otherwise>
                                                     </c:choose>
-
-
                                                 </td>
                                             </tr>
                                         </c:forEach>
@@ -170,7 +198,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
         <script src="https://unpkg.com/feather-icons"></script>
         <script>
-                                                                   feather.replace();
+            feather.replace();
         </script>
     </body>
 </html>

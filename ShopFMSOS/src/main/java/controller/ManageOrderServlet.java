@@ -1,113 +1,63 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import dal.OrderDAO;
-import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet; // Thêm annotation để ánh xạ URL
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import model.Order;
 
-/**
- *
- * @author Dang Chi Vi CE182507
- */
 public class ManageOrderServlet extends HttpServlet {
-private OrderDAO orderDAO;
+    private OrderDAO orderDAO;
 
     @Override
-    public void init() throws jakarta.servlet.ServletException {
+    public void init() throws ServletException {
         orderDAO = new OrderDAO();
     }
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ManageOrderServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ManageOrderServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<Order> orders = null;
         String filterType = request.getParameter("filterType");
         String filterValue = request.getParameter("filterValue");
+        String sortOption = request.getParameter("sortOption");
+
+        if (sortOption == null) {
+            sortOption = "total-desc"; // Mặc định sắp xếp giảm dần theo total_price
+        }
 
         try {
-            // Kiểm tra xem filterType có được chọn hay không và filterValue có tồn tại không
+            // Kiểm tra filter và sort
             if (filterType != null && filterValue != null && !filterValue.trim().isEmpty()) {
-                orders = orderDAO.searchOrders(filterType, filterValue);  // Tìm kiếm đơn hàng theo filter
+                orders = orderDAO.searchOrdersSorted(filterType, filterValue, sortOption); // Tìm kiếm với sort
             } else {
-                orders = orderDAO.getAllOrders();  // Lấy tất cả đơn hàng nếu không có filter
+                orders = orderDAO.getAllOrdersSorted(sortOption); // Lấy tất cả với sort
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        // Đặt danh sách đơn hàng vào request
+        // Đặt dữ liệu vào request
         request.setAttribute("orders", orders);
+        request.setAttribute("sortOption", sortOption); // Lưu sortOption để giữ trạng thái dropdown
 
-        // Chuyển tiếp tới trang manageorder.jsp
+        // Chuyển tiếp tới manageorder.jsp
         request.getRequestDispatcher("manageorder.jsp").forward(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        doGet(request, response); // Chuyển POST sang GET để xử lý đồng nhất
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Servlet for managing orders";
+    }
 }

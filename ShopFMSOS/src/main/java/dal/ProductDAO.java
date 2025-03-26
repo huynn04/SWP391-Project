@@ -21,8 +21,8 @@ public class ProductDAO extends DBContext {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT p.product_id, p.category_id, p.product_name, p.detail_desc, p.image, p.price, p.discount, p.quantity, p.sold, p.target, p.factory, p.status, p.created_at, p.updated_at, c.category_name "
                 + "FROM products p "
-                 + "JOIN categories c ON p.category_id = c.category_id "
-               + "WHERE p.quantity > 0 OR p.status = 1";  // Lọc sản phẩm có quantity > 0 hoặc status = 1
+                + "JOIN categories c ON p.category_id = c.category_id "
+                + "WHERE p.quantity > 0 OR p.status = 1";  // Lọc sản phẩm có quantity > 0 hoặc status = 1
 
         try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -294,7 +294,7 @@ public class ProductDAO extends DBContext {
         return products;
     }
 
-   public List<Product> getFilteredProducts(String searchQuery, String[] categoryIds) {
+    public List<Product> getFilteredProducts(String searchQuery, String[] categoryIds) {
         List<Product> products = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM products WHERE 1=1");
 
@@ -305,8 +305,7 @@ public class ProductDAO extends DBContext {
             sql.append(" AND category_id IN (").append("?,".repeat(categoryIds.length - 1)).append("?)");
         }
 
-        try (Connection con = getConnection();
-             PreparedStatement ps = con.prepareStatement(sql.toString())) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql.toString())) {
 
             int paramIndex = 1;
             if (searchQuery != null && !searchQuery.trim().isEmpty()) {
@@ -318,7 +317,7 @@ public class ProductDAO extends DBContext {
                 }
             }
 
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Product product = new Product(
                             rs.getInt("product_id"),
@@ -344,13 +343,13 @@ public class ProductDAO extends DBContext {
         }
         return products;
     }
-   public boolean updateProductStock(int productId, int quantityPurchased) {
-        String sql = "UPDATE products "
-                   + "SET quantity = quantity - ?, sold = sold + ? "
-                   + "WHERE product_id = ? AND quantity >= ?";
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+    public boolean updateProductStock(int productId, int quantityPurchased) {
+        String sql = "UPDATE products "
+                + "SET quantity = quantity - ?, sold = sold + ? "
+                + "WHERE product_id = ? AND quantity >= ?";
+
+        try ( Connection conn = getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             conn.setAutoCommit(false);
 
@@ -363,7 +362,7 @@ public class ProductDAO extends DBContext {
             if (rowsUpdated > 0) {
                 conn.commit();
                 System.out.println("✅ Cập nhật tồn kho sản phẩm #" + productId
-                                   + " - Giảm " + quantityPurchased);
+                        + " - Giảm " + quantityPurchased);
                 return true;
             } else {
                 conn.rollback();
@@ -374,11 +373,12 @@ public class ProductDAO extends DBContext {
         }
         return false;
     }
+
     // Cập nhật category_id của các sản phẩm thuộc danh mục cần xóa
     public boolean updateProductCategory(int oldCategoryId, int newCategoryId) {
         String sql = "UPDATE products SET category_id = ? WHERE category_id = ?";
 
-        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, newCategoryId);  // Cập nhật category_id mới
             ps.setInt(2, oldCategoryId);  // Tìm các sản phẩm thuộc category_id cũ
 
@@ -389,15 +389,16 @@ public class ProductDAO extends DBContext {
             return false;  // Nếu có lỗi, trả về false
         }
     }
-     // Lấy tất cả các sản phẩm thuộc categoryId
+    // Lấy tất cả các sản phẩm thuộc categoryId
+
     public List<Product> getProductsByCategoryId(int categoryId) {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT * FROM products WHERE category_id = ?";
 
-        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, categoryId);  // Gắn categoryId vào câu truy vấn
 
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Product product = new Product();
                     product.setProductId(rs.getInt("product_id"));
@@ -422,4 +423,55 @@ public class ProductDAO extends DBContext {
 
         return products;
     }
+
+    public List<Product> getSortedProducts(String sortOption) {
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT * FROM products WHERE quantity > 0 OR status = 1";
+
+        // Sorting logic based on the sortOption
+        switch (sortOption) {
+            case "name-asc":
+                sql += " ORDER BY product_name ASC";
+                break;
+            case "name-desc":
+                sql += " ORDER BY product_name DESC";
+                break;
+            case "price-asc":
+                sql += " ORDER BY price ASC";
+                break;
+            case "price-desc":
+                sql += " ORDER BY price DESC";
+                break;
+            default:
+                sql += " ORDER BY product_name ASC";  // Default sorting by Name Ascending
+                break;
+        }
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Product product = new Product(
+                        rs.getInt("product_id"),
+                        rs.getInt("category_id"),
+                        rs.getString("product_name"),
+                        rs.getString("detail_desc"),
+                        rs.getString("image"),
+                        rs.getBigDecimal("price"),
+                        rs.getBigDecimal("discount"),
+                        rs.getInt("quantity"),
+                        rs.getInt("sold"),
+                        rs.getString("target"),
+                        rs.getString("factory"),
+                        rs.getInt("status"),
+                        rs.getDate("created_at"),
+                        rs.getDate("updated_at")
+                );
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return products;
+    }
+
 }

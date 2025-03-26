@@ -319,17 +319,29 @@ public Optional<User> validateUser(String email, String password) {
         }
         return customers;
     }
-// Lấy danh sách Staff (không tìm kiếm, có sắp xếp)
-
-    public List<User> getAllStaff(String sortBy) {
+public List<User> getAllStaff(String sortOption) {
         List<User> staffList = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM [users] WHERE role_id = 2 ");
-        if ("name".equalsIgnoreCase(sortBy)) {
-            sql.append("ORDER BY full_name ASC");
-        } else {
-            sql.append("ORDER BY user_id ASC");
+        String orderBy = "full_name ASC"; // Default: Name A-Z
+
+        switch (sortOption != null ? sortOption.toLowerCase() : "") {
+            case "name-desc":
+                orderBy = "full_name DESC";
+                break;
+            case "email-asc":
+                orderBy = "email ASC";
+                break;
+            case "email-desc":
+                orderBy = "email DESC";
+                break;
+            default:
+                orderBy = "full_name ASC"; // Default
         }
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql.toString());  ResultSet rs = ps.executeQuery()) {
+
+        String sql = "SELECT * FROM [users] WHERE role_id = 2 ORDER BY " + orderBy;
+
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 User user = new User(
@@ -354,8 +366,24 @@ public Optional<User> validateUser(String email, String password) {
     }
 
     // Tìm kiếm và sắp xếp danh sách Staff theo từ khóa và tiêu chí
-    public List<User> searchAndSortStaff(String searchQuery, String searchBy, String sortBy) {
+    public List<User> searchAndSortStaff(String searchQuery, String searchBy, String sortOption) {
         List<User> staffList = new ArrayList<>();
+        String orderBy = "full_name ASC"; // Default: Name A-Z
+
+        switch (sortOption != null ? sortOption.toLowerCase() : "") {
+            case "name-desc":
+                orderBy = "full_name DESC";
+                break;
+            case "email-asc":
+                orderBy = "email ASC";
+                break;
+            case "email-desc":
+                orderBy = "email DESC";
+                break;
+            default:
+                orderBy = "full_name ASC"; // Default
+        }
+
         StringBuilder sql = new StringBuilder("SELECT * FROM [users] WHERE role_id = 2 ");
 
         if (searchQuery != null && !searchQuery.trim().isEmpty()) {
@@ -366,13 +394,10 @@ public Optional<User> validateUser(String email, String password) {
             }
         }
 
-        if ("name".equalsIgnoreCase(sortBy)) {
-            sql.append("ORDER BY full_name ASC");
-        } else {
-            sql.append("ORDER BY user_id ASC");
-        }
+        sql.append("ORDER BY ").append(orderBy);
 
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql.toString())) {
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql.toString())) {
 
             if (searchQuery != null && !searchQuery.trim().isEmpty()) {
                 ps.setString(1, "%" + searchQuery + "%");

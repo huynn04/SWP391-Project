@@ -24,7 +24,6 @@
                 padding-bottom: 60px;
             }
 
-            /* Product Cards */
             .products-col {
                 padding-top: 25px;
                 animation: fadeInUp 0.8s ease-out;
@@ -70,7 +69,6 @@
                 box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
             }
 
-            /* Hiệu ứng ảnh nâng cao */
             .card-img-top {
                 max-height: 230px;
                 width: 100%;
@@ -88,46 +86,6 @@
                 transform: scale(1.1) rotate(3deg) translateZ(20px);
                 filter: brightness(1.15) saturate(1.2);
                 background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
-            }
-
-            /* Thêm overlay hiệu ứng */
-            .card-img-top::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0);
-                transition: all 0.5s ease;
-                border-radius: 15px 15px 0 0;
-                pointer-events: none;
-            }
-
-            .product-card:hover .card-img-top::after {
-                background: rgba(0, 0, 0, 0.05);
-                box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
-            }
-
-            /* Hiệu ứng zoom-in khi load */
-            @keyframes imageZoomIn {
-                0% {
-                    transform: scale(0.8);
-                    opacity: 0;
-                }
-                100% {
-                    transform: scale(1);
-                    opacity: 1;
-                }
-            }
-
-            .card-img-top {
-                animation: imageZoomIn 0.6s ease-out forwards;
-            }
-
-            /* Hiệu ứng phản chiếu nhẹ */
-            .product-card:hover .card-img-top {
-                box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.2);
             }
 
             .product-title {
@@ -219,8 +177,20 @@
                 transform: translateY(-3px) scale(1.05);
             }
 
-            /* Giữ nguyên các phần khác như filter-section, pagination nếu không cần thay đổi */
-            /* Responsive */
+            /* Custom dropdown styles */
+            .sort-section select {
+                padding: 0.75rem;
+                font-size: 1rem;
+                border-radius: 10px;
+                background-color: #f8f9fa;
+                transition: background-color 0.3s ease;
+            }
+
+            .sort-section select:focus {
+                background-color: #e2e6ea;
+                outline: none;
+            }
+
             @media (max-width: 992px) {
                 .card-img-top {
                     max-height: 190px;
@@ -229,7 +199,6 @@
                 .product-card {
                     margin-bottom: 25px;
                 }
-
 
                 .product-title {
                     font-size: 1.1rem;
@@ -252,18 +221,27 @@
                     timeout = setTimeout(() => func.apply(context, args), wait);
                 };
             }
+
             const filterProducts = debounce(function () {
                 document.getElementById('filterForm').submit();
-            }, 300); // Adjusted to 300ms for better responsiveness
+            }, 300);
 
             function clearAllFilters() {
                 document.querySelectorAll('.form-check-input').forEach(checkbox => checkbox.checked = false);
                 document.getElementById('searchQuery').value = '';
                 document.getElementById('filterForm').submit();
             }
+
             function clearSearch() {
                 document.getElementById('searchQuery').value = '';
                 document.getElementById('filterForm').submit();
+            }
+
+            function sortProducts() {
+                const sortOption = document.querySelector('select[name="sortOption"]').value;
+                const urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('sortOption', sortOption); // Add or update the sortOption parameter
+                window.location.search = urlParams.toString(); // Reload with the new sort option
             }
 
             window.addEventListener('load', function () {
@@ -287,8 +265,6 @@
                         });
                     }, 100);
                 }
-                // Uncomment if you want to fetch categories on load, but ensure no infinite loop
-                // document.getElementById('filterForm').submit();
             });
         </script>
     </head>
@@ -338,21 +314,23 @@
                     </div>
                 </div>
                 <div class="col-md-9 products-col">
+                    <div class="sort-section mb-3">
+                        <h6>Sort By:</h6>
+                        <div class="d-flex">
+                            <select class="form-select me-2" name="sortOption" onchange="sortProducts()">
+                                <option value="name-asc" <%= "name-asc".equals(request.getParameter("sortOption")) ? "selected" : "" %>>Name (A-Z)</option>
+                                <option value="name-desc" <%= "name-desc".equals(request.getParameter("sortOption")) ? "selected" : "" %>>Name (Z-A)</option>
+                                <option value="price-asc" <%= "price-asc".equals(request.getParameter("sortOption")) ? "selected" : "" %>>Price (Low to High)</option>
+                                <option value="price-desc" <%= "price-desc".equals(request.getParameter("sortOption")) ? "selected" : "" %>>Price (High to Low)</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <%
-                            // Récupérer les attributs totalPages et currentPage depuis la requête
-                            Integer totalPages = (Integer) request.getAttribute("totalPages");
-                            Integer currentPage = (Integer) request.getAttribute("currentPage");
-
-
-
-
-
-
                             List<Product> products = (List<Product>) request.getAttribute("products");
                             if (products != null && !products.isEmpty()) {
                                 for (Product product : products) {
-                                    // Vérifier si quantity > 0 et si status = 1
                                     if (product.getQuantity() > 0 && product.getStatus() == 1) {
                         %>
                         <div class="col-md-4 col-sm-6">
@@ -382,8 +360,11 @@
                         %>
                     </div>
 
-                    <%-- Vérifier et afficher la pagination --%>
+                    <%-- Pagination --%>
                     <%
+                        Integer totalPages = (Integer) request.getAttribute("totalPages");
+                        Integer currentPage = (Integer) request.getAttribute("currentPage");
+
                         if (totalPages != null && totalPages > 1) {
                             StringBuilder queryParams = new StringBuilder();
                             if (request.getAttribute("searchQuery") != null) {
@@ -421,19 +402,5 @@
             </div>
         </div>
         <%@ include file="footer.jsp" %>
-        <script>
-            (function (d, w, c) {
-                w.ChatraID = '6ttM7t2hWx4ta8j2Z';
-                var s = d.createElement('script');
-                w[c] = w[c] || function () {
-                    (w[c].q = w[c].q || []).push(arguments);
-                };
-                s.async = true;
-                s.src = 'https://call.chatra.io/chatra.js';
-                if (d.head)
-                    d.head.appendChild(s);
-            })(document, window, 'Chatra');
-        </script>
     </body>
-
 </html>

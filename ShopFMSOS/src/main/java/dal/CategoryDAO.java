@@ -162,4 +162,38 @@ public class CategoryDAO extends DBContext {
             return false;  // Trả về false nếu có lỗi
         }
     }
+    public List<Category> getAllCategoriesSorted(String sortOption) {
+        List<Category> categories = new ArrayList<>();
+        String orderBy = "category_name ASC"; // Mặc định A-Z
+
+        if ("name-desc".equals(sortOption)) {
+            orderBy = "category_name DESC"; // Z-A
+        }
+
+        String sql = "SELECT category_id, category_name, description, image, status, created_at, updated_at " +
+                     "FROM categories ORDER BY " + orderBy;
+
+        try (Connection con = getConnection(); 
+             PreparedStatement ps = con.prepareStatement(sql); 
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Category category = new Category(
+                        rs.getInt("category_id"),
+                        rs.getString("category_name"),
+                        rs.getString("description"),
+                        rs.getString("image"),
+                        rs.getInt("status"),
+                        rs.getDate("created_at"),
+                        rs.getDate("updated_at")
+                );
+                categories.add(category);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return categories;
+    }
 }

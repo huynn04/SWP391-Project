@@ -9,6 +9,8 @@ import model.News;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -16,6 +18,8 @@ import java.util.List;
  */
 public class NewsDAO extends DBContext {
 
+    private static final Logger LOGGER = Logger.getLogger(NewsDAO.class.getName());
+    
     // Lấy tất cả tin tức
     public List<News> getAllNews(int page) {
         List<News> newsList = new ArrayList<>();
@@ -250,6 +254,141 @@ public class NewsDAO extends DBContext {
             e.printStackTrace();
         }
         return count;
+    }
+
+    public List<News> getAllNews(int page, String sortOption) {
+        List<News> newsList = new ArrayList<>();
+        int pageSize = 10;
+        int offset = (page - 1) * pageSize;
+
+        String orderBy = "created_at DESC";  // Mặc định là sắp xếp theo ngày mới nhất
+
+        // Áp dụng sắp xếp theo tên hoặc ngày đăng
+        if ("name-asc".equals(sortOption)) {
+            orderBy = "title ASC";
+        } else if ("name-desc".equals(sortOption)) {
+            orderBy = "title DESC";
+        } else if ("created-asc".equals(sortOption)) {
+            orderBy = "created_at ASC";
+        } else if ("created-desc".equals(sortOption)) {
+            orderBy = "created_at DESC";
+        }
+
+        String sql = "WITH NewsWithRow AS ("
+                + "   SELECT news_id, user_id, title, content, image, status, created_at, updated_at, "
+                + "          ROW_NUMBER() OVER (ORDER BY " + orderBy + ") AS RowNum "
+                + "   FROM news "
+                + "   WHERE status = 1 "
+                + ") "
+                + "SELECT news_id, user_id, title, content, image, status, created_at, updated_at "
+                + "FROM NewsWithRow "
+                + "WHERE RowNum BETWEEN ? AND ?";
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, offset + 1);  // Bắt đầu từ bài viết thứ (offset + 1)
+            ps.setInt(2, offset + pageSize);  // Kết thúc tại bài viết thứ (offset + pageSize)
+
+            try ( ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    News news = new News(
+                            rs.getInt("news_id"),
+                            rs.getInt("user_id"),
+                            rs.getString("title"),
+                            rs.getString("content"),
+                            rs.getString("image"),
+                            rs.getInt("status"),
+                            rs.getTimestamp("created_at"),
+                            rs.getTimestamp("updated_at")
+                    );
+                    newsList.add(news);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return newsList;
+    }
+public List<News> getNewsSortedByUser(int page, String sortOption, String searchQuery) {
+        List<News> newsList = new ArrayList<>();
+        int pageSize = 10;
+        int offset = (page - 1) * pageSize;
+
+        String orderBy = "n.created_at DESC";  // Mặc định
+        String whereClause = " WHERE n.status = 1";
+        
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            whereClause += " AND LOWER(n.title) LIKE LOWER('%" + searchQuery + "%')";
+        }
+
+        // Xử lý sortOption
+        switch (sortOption) {
+            case "name-asc":
+                orderBy = "n.title ASC";
+                break;
+            case "name-desc":
+                orderBy = "n.title DESC";
+                break;
+            case "created-asc":
+                orderBy = "n.created_at ASC";
+                break;
+            case "created-desc":
+                orderBy = "n.created_at DESC";
+                break;
+            case "title-length-asc":
+                orderBy = "LEN(n.title) ASC";
+                break;
+            case "title-length-desc":
+                orderBy = "LEN(n.title) DESC";
+                break;
+            case "user-asc":
+                orderBy = "u.full_name ASC";
+                break;
+            case "user-desc":
+                orderBy = "u.full_name DESC";
+                break;
+            default:
+                orderBy = "n.created_at DESC"; // Mặc định nếu sortOption không hợp lệ
+        }
+
+        String sql = "WITH NewsWithRow AS ("
+                + "   SELECT n.news_id, n.user_id, n.title, n.content, n.image, n.status, n.created_at, n.updated_at, "
+                + "          ROW_NUMBER() OVER (ORDER BY " + orderBy + ") AS RowNum "
+                + "   FROM news n "
+                + "   LEFT JOIN users u ON n.user_id = u.user_id "
+                + whereClause
+                + ") "
+                + "SELECT news_id, user_id, title, content, image, status, created_at, updated_at "
+                + "FROM NewsWithRow "
+                + "WHERE RowNum BETWEEN ? AND ?";
+
+        LOGGER.log(Level.INFO, "Executing SQL: {0}", sql);
+        LOGGER.log(Level.INFO, "Sort Option: {0}, Page: {1}, Search: {2}", new Object[]{sortOption, page, searchQuery});
+
+        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, offset + 1);
+            ps.setInt(2, offset + pageSize);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    News news = new News(
+                            rs.getInt("news_id"),
+                            rs.getInt("user_id"),
+                            rs.getString("title"),
+                            rs.getString("content"),
+                            rs.getString("image"),
+                            rs.getInt("status"),
+                            rs.getTimestamp("created_at"),
+                            rs.getTimestamp("updated_at")
+                    );
+                    newsList.add(news);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "SQL Exception: ", e);
+        }
+
+        return newsList;
     }
 
 }

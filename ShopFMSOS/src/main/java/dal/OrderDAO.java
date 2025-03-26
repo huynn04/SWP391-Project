@@ -662,5 +662,79 @@ public class OrderDAO extends DBContext {
 
         return false;  // Nếu không có bản ghi nào được cập nhật hoặc xảy ra lỗi
     }
+        public List<Order> getAllOrdersSorted(String sortOption) throws SQLException {
+        List<Order> orders = new ArrayList<>();
+        String orderBy = "total_price DESC"; // Mặc định giảm dần
+
+        if ("total-asc".equals(sortOption)) {
+            orderBy = "total_price ASC"; // Tăng dần
+        }
+
+        String sql = "SELECT * FROM orders ORDER BY " + orderBy;
+
+        try (Connection con = getConnection(); 
+             PreparedStatement ps = con.prepareStatement(sql); 
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                orders.add(new Order(
+                        rs.getInt("order_id"),
+                        rs.getInt("user_id"),
+                        rs.getBigDecimal("total_price"),
+                        rs.getTimestamp("order_date"),
+                        rs.getInt("status"),
+                        rs.getString("note"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_address"),
+                        rs.getString("receiver_phone"),
+                        rs.getString("payment_method"),
+                        rs.getString("discount_code"),
+                        rs.getTimestamp("delivered_at"),
+                        rs.getTimestamp("canceled_at")
+                ));
+            }
+        }
+        return orders;
+    }
+public List<Order> searchOrdersSorted(String filterType, String filterValue, String sortOption) throws SQLException {
+        List<Order> orders = new ArrayList<>();
+        String orderBy = "total_price DESC"; // Mặc định giảm dần
+
+        if ("total-asc".equals(sortOption)) {
+            orderBy = "total_price ASC"; // Tăng dần
+        }
+
+        String sql = "";
+        if ("byCustomerId".equals(filterType)) {
+            sql = "SELECT * FROM orders WHERE user_id = ? ORDER BY " + orderBy;
+        } else if ("byDate".equals(filterType)) {
+            sql = "SELECT * FROM orders WHERE CAST(order_date AS DATE) = ? ORDER BY " + orderBy;
+        }
+
+        try (Connection con = getConnection(); 
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, filterValue);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                orders.add(new Order(
+                        rs.getInt("order_id"),
+                        rs.getInt("user_id"),
+                        rs.getBigDecimal("total_price"),
+                        rs.getTimestamp("order_date"),
+                        rs.getInt("status"),
+                        rs.getString("note"),
+                        rs.getString("receiver_name"),
+                        rs.getString("receiver_address"),
+                        rs.getString("receiver_phone"),
+                        rs.getString("payment_method"),
+                        rs.getString("discount_code"),
+                        rs.getTimestamp("delivered_at"),
+                        rs.getTimestamp("canceled_at")
+                ));
+            }
+        }
+        return orders;
+    }
 
 }

@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Categories</title>
@@ -9,6 +9,8 @@
     <style>
         body {
             padding-top: 56px;
+            background: #f0f2f5;
+            font-family: 'Roboto', sans-serif;
         }
         .sidebar {
             height: 100vh;
@@ -28,6 +30,27 @@
             width: 100px;
             height: 100px;
             object-fit: cover;
+            border-radius: 5px;
+        }
+        .table-responsive {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .btn-sm {
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        .sort-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .form-select {
+            width: 200px;
+            padding: 8px;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -54,8 +77,17 @@
                             <li class="breadcrumb-item active" aria-current="page">Categories List</li>
                         </ol>
                     </nav>
-
                     <a href="AddCategory" class="btn btn-success mb-3">Add New Category</a>
+                </div>
+
+                <!-- Sorting Section -->
+                <div class="sort-container">
+                    <form method="GET" action="CategoryServlet">
+                        <select name="sortOption" class="form-select" onchange="this.form.submit()">
+                            <option value="name-asc" ${sortOption == 'name-asc' ? 'selected' : ''}>Category Name (A-Z)</option>
+                            <option value="name-desc" ${sortOption == 'name-desc' ? 'selected' : ''}>Category Name (Z-A)</option>
+                        </select>
+                    </form>
                 </div>
 
                 <!-- Hiển thị danh sách danh mục -->

@@ -1,12 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import dal.CategoryDAO;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet; // Thêm annotation để ánh xạ URL
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,12 +11,8 @@ import java.io.IOException;
 import java.util.List;
 import model.Category;
 
-/**
- *
- * @author Dang Chi Vi CE182507
- */
 public class CategoryServlet extends HttpServlet {
- private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     private CategoryDAO categoryDAO;
 
     @Override
@@ -28,10 +21,19 @@ public class CategoryServlet extends HttpServlet {
         categoryDAO = new CategoryDAO();
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Category> categories = categoryDAO.getAllCategories(); // Lấy tất cả các danh mục từ database
-        request.setAttribute("categories", categories); // Đưa dữ liệu vào attribute
-        RequestDispatcher dispatcher = request.getRequestDispatcher("categories.jsp"); // Chuyển tiếp đến category.jsp
+        String sortOption = request.getParameter("sortOption");
+        if (sortOption == null) {
+            sortOption = "name-asc"; // Mặc định sắp xếp A-Z
+        }
+
+        // Lấy danh sách category đã sắp xếp
+        List<Category> categories = categoryDAO.getAllCategoriesSorted(sortOption);
+
+        request.setAttribute("categories", categories); // Đưa danh sách vào request
+        request.setAttribute("sortOption", sortOption); // Lưu sortOption để giữ trạng thái dropdown
+        RequestDispatcher dispatcher = request.getRequestDispatcher("categories.jsp");
         dispatcher.forward(request, response);
     }
 }
