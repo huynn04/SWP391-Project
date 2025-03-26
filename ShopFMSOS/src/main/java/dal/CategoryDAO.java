@@ -143,23 +143,4 @@ public class CategoryDAO extends DBContext {
             return false;  // Nếu có lỗi, trả về false
         }
     }
-    public boolean addCategory(Category category) {
-        String sql = "INSERT INTO categories (category_name, description, image, status, created_at, updated_at) " +
-                     "VALUES (?, ?, ?, ?, GETDATE(), GETDATE())";
-
-        try (Connection con = getConnection(); 
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            
-            ps.setString(1, category.getCategoryName());
-            ps.setString(2, category.getDescription());
-            ps.setString(3, category.getImage());  // Trường image có thể NULL, đảm bảo không gây lỗi
-            ps.setInt(4, category.getStatus());
-
-            int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0;  // Trả về true nếu thêm thành công
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;  // Trả về false nếu có lỗi
-        }
-    }
 }

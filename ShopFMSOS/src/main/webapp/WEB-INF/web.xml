@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee                               http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
-    <!-- Cấu hình welcome file -->
-    <welcome-file-list>
-        <welcome-file>home</welcome-file>
-    </welcome-file-list>
     <servlet>
         <servlet-name>HomeServlet</servlet-name>
         <servlet-class>controller.HomeServlet</servlet-class>
@@ -217,12 +213,48 @@
         <servlet-class>controller.SubmitReviewServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ManageNewsServlet</servlet-name>
+        <servlet-class>controller.ManageNewsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddNewsServlet</servlet-name>
+        <servlet-class>controller.AddNewsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteNewsServlet</servlet-name>
+        <servlet-class>controller.DeleteNewsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ViewNewsServlet</servlet-name>
+        <servlet-class>controller.ViewNewsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>EditNewsServlet</servlet-name>
+        <servlet-class>controller.EditNewsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AllNewsServlet</servlet-name>
+        <servlet-class>controller.AllNewsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddCommentServlet</servlet-name>
+        <servlet-class>controller.AddCommentServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteCommentServlet</servlet-name>
+        <servlet-class>controller.DeleteCommentServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>EditCommentServlet</servlet-name>
+        <servlet-class>controller.EditCommentServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>AddCategoryServlet</servlet-name>
         <servlet-class>controller.AddCategoryServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>AdminViewOrderDetailServlet</servlet-name>
-        <servlet-class>controller.AdminViewOrderDetailServlet</servlet-class>
+        <servlet-name>ReceivedOrderServlet</servlet-name>
+        <servlet-class>controller.ReceivedOrderServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GenerateQRCodeServlet</servlet-name>
@@ -396,74 +428,38 @@
         <servlet-name>UpdateProfileServlet</servlet-name>
         <url-pattern>/UpdateProfileServlet</url-pattern>
     </servlet-mapping>
-    <servlet>
-        <servlet-name>ManageNewsServlet</servlet-name>
-        <servlet-class>controller.ManageNewsServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>ManageNewsServlet</servlet-name>
         <url-pattern>/ManageNews</url-pattern>
     </servlet-mapping>
-    <servlet>
-        <servlet-name>AddNewsServlet</servlet-name>
-        <servlet-class>controller.AddNewsServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>AddNewsServlet</servlet-name>
         <url-pattern>/AddNews</url-pattern>
     </servlet-mapping>
-    <servlet>
-        <servlet-name>DeleteNewsServlet</servlet-name>
-        <servlet-class>controller.DeleteNewsServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>DeleteNewsServlet</servlet-name>
         <url-pattern>/DeleteNews</url-pattern>
     </servlet-mapping>
-    <servlet>
-        <servlet-name>ViewNewsServlet</servlet-name>
-        <servlet-class>controller.ViewNewsServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>ViewNewsServlet</servlet-name>
         <url-pattern>/ViewNews</url-pattern>
     </servlet-mapping>
-    <servlet>
-        <servlet-name>EditNewsServlet</servlet-name>
-        <servlet-class>controller.EditNewsServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>EditNewsServlet</servlet-name>
         <url-pattern>/EditNews</url-pattern>
     </servlet-mapping>
-    <servlet>
-        <servlet-name>AllNewsServlet</servlet-name>
-        <servlet-class>controller.AllNewsServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>AllNewsServlet</servlet-name>
         <url-pattern>/AllNews</url-pattern>
     </servlet-mapping>
-    <servlet>
-        <servlet-name>AddCommentServlet</servlet-name>
-        <servlet-class>controller.AddCommentServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>AddCommentServlet</servlet-name>
         <url-pattern>/AddComment</url-pattern>
     </servlet-mapping>
-    <servlet>
-        <servlet-name>DeleteCommentServlet</servlet-name>
-        <servlet-class>controller.DeleteCommentServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>DeleteCommentServlet</servlet-name>
         <url-pattern>/DeleteComment</url-pattern>
     </servlet-mapping>
-    <servlet>
-        <servlet-name>EditCommentServlet</servlet-name>
-        <servlet-class>controller.EditCommentServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>EditCommentServlet</servlet-name>
         <url-pattern>/EditComment</url-pattern>
@@ -500,10 +496,6 @@
         <servlet-name>DeleteCategoryServlet</servlet-name>
         <url-pattern>/DeleteCategory</url-pattern>
     </servlet-mapping>
-    <servlet>
-        <servlet-name>ViewProductByCateServlet</servlet-name>
-        <servlet-class>controller.ViewProductByCateServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
         <servlet-name>ViewProductByCateServlet</servlet-name>
         <url-pattern>/ViewProductByCate</url-pattern>
@@ -521,8 +513,8 @@
         <url-pattern>/AddCategory</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>AdminViewOrderDetailServlet</servlet-name>
-        <url-pattern>/AdminViewOrderDetail</url-pattern>
+        <servlet-name>ReceivedOrderServlet</servlet-name>
+        <url-pattern>/ReceivedOrder</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GenerateQRCodeServlet</servlet-name>
@@ -531,4 +523,7 @@
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
+    <welcome-file-list>
+        <welcome-file>home</welcome-file>
+    </welcome-file-list>
 </web-app>

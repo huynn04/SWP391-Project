@@ -75,6 +75,8 @@ public class SubmitReviewServlet extends HttpServlet {
         int userId = Integer.parseInt(request.getParameter("userId")); // Assuming user ID is stored in session
         String reviewContent = request.getParameter("reviewContent");
         int rating = Integer.parseInt(request.getParameter("rating"));
+        String title = request.getParameter("title");
+        int likes = 0; // Initial value for likes
         int status = 1; // Assuming the review is active by default
         
         // Create a ProductReview object
@@ -84,6 +86,8 @@ public class SubmitReviewServlet extends HttpServlet {
         review.setUserId(userId);
         review.setReviewContent(reviewContent);
         review.setRating(rating);
+        review.setTitle(title);
+        review.setLikes(likes);
         review.setStatus(status);
         review.setCreatedAt(new Timestamp(new Date().getTime()));
         review.setUpdatedAt(new Timestamp(new Date().getTime()));
@@ -95,10 +99,10 @@ public class SubmitReviewServlet extends HttpServlet {
         // Redirect or show a message based on the result
         if (result) {
             // Redirect to a success page or back to the product page
-            response.sendRedirect("productDetails?productId=" + productId + "&message=Review added successfully.");
+            response.sendRedirect("productDetails.jsp?productId=" + productId + "&message=Review added successfully.");
         } else {
             // Display an error message
-            response.sendRedirect("productDetails?productId=" + productId + "&error=Error while adding the review.");
+            response.sendRedirect("productDetails.jsp?productId=" + productId + "&error=Error while adding the review.");
         }
     }
 
