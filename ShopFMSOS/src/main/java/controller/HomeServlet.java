@@ -13,7 +13,7 @@ public class HomeServlet extends HttpServlet {
 
     private final NewsDAO newsDAO = new NewsDAO(); // Tạo DAO để lấy dữ liệu
 
-    @Override
+     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Lấy danh sách bài viết mới nhất từ database

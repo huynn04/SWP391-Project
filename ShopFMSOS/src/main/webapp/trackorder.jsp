@@ -61,7 +61,10 @@
                     </div>
 
                     <!-- Switch Button -->
-                    <a href="Pending" class="btn btn-secondary switch-btn">Go to Pending Orders</a>
+                    <div class="mb-3">
+                        <a href="Pending" class="btn btn-warning mr-2">Go to Pending</a>
+                        <a href="CancelOrder" class="btn btn-danger">Go to Cancel</a>
+                    </div>
 
                     <table class="table table-striped">
                         <thead>
