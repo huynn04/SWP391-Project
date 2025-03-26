@@ -19,22 +19,21 @@ public class NewsDAO extends DBContext {
     // Lấy tất cả tin tức
     public List<News> getAllNews(int page) {
         List<News> newsList = new ArrayList<>();
-        int pageSize = 10;
+        int pageSize = 10;  // Nombre d'articles par page
         int offset = (page - 1) * pageSize;
 
         String sql = "WITH NewsWithRow AS ("
                 + "   SELECT news_id, user_id, title, content, image, status, created_at, updated_at, "
                 + "          ROW_NUMBER() OVER (ORDER BY created_at DESC) AS RowNum "
                 + "   FROM news "
-                + "   WHERE status = 1 " // Lọc chỉ những bài tin có status = 1
                 + ") "
                 + "SELECT news_id, user_id, title, content, image, status, created_at, updated_at "
                 + "FROM NewsWithRow "
                 + "WHERE RowNum BETWEEN ? AND ?";
 
         try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, offset + 1);  // Bắt đầu từ bài viết thứ (offset + 1)
-            ps.setInt(2, offset + pageSize);  // Kết thúc tại bài viết thứ (offset + pageSize)
+            ps.setInt(1, offset + 1);  // Commencer à partir de l'article (offset + 1)
+            ps.setInt(2, offset + pageSize);  // Finir à l'article (offset + pageSize)
 
             try ( ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -210,26 +209,27 @@ public class NewsDAO extends DBContext {
 
     public List<News> getRecentNews() {
         List<News> newsList = new ArrayList<>();
+        String sql = "SELECT TOP 6 news_id, title, content, image, created_at FROM news ORDER BY created_at DESC";
 
-        // Cập nhật câu truy vấn để lấy thêm cột status
-        String sql = "SELECT TOP 6 news_id, title, content, image, status, created_at FROM news WHERE status = 1 ORDER BY created_at DESC";
+        try ( Connection conn = getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
 
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+            System.out.println("Thực thi SQL: " + sql); // Debug
+
             while (rs.next()) {
                 News news = new News();
-                // Gán giá trị vào các thuộc tính của đối tượng News
                 news.setNewsId(rs.getInt("news_id"));
                 news.setTitle(rs.getString("title"));
                 news.setContent(rs.getString("content"));
                 news.setImage(rs.getString("image"));
-                news.setStatus(rs.getInt("status"));  // Gán giá trị status từ cơ sở dữ liệu
                 news.setCreatedAt(rs.getTimestamp("created_at"));
-                newsList.add(news);  // Thêm đối tượng News vào danh sách
+
+                System.out.println("Lấy được bài viết: " + news.getTitle()); // Debug
+
+                newsList.add(news);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return newsList;
     }
 

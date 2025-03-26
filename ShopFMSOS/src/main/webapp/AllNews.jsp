@@ -144,37 +144,34 @@
                     <div class="row">
                         <!-- Hiển thị tin tức -->
                         <c:forEach var="newsItem" items="${newsList}">
-                            <c:if test="${newsItem.status == 1}">
-                                <div class="col-12 mb-4">
-                                    <div class="news-item">
-                                        <!-- Hình ảnh -->
-                                        <img src="${newsItem.image}" alt="${newsItem.title}">
+                            <div class="col-12 mb-4">
+                                <div class="news-item">
+                                    <!-- Hình ảnh -->
+                                    <img src="${newsItem.image}" alt="${newsItem.title}">
 
-                                        <!-- Nội dung -->
-                                        <div class="news-content">
-                                            <h5 class="news-title">${newsItem.title}</h5>
-                                            <p class="news-description">
-                                                <c:choose>
-                                                    <c:when test="${fn:length(newsItem.content) > 100}">
-                                                        ${fn:substring(newsItem.content, 0, 100)}...
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        ${newsItem.content}
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </p>
-                                            <p class="news-date">
-                                                <small class="text-muted">
-                                                    Đăng ngày <fmt:formatDate value="${newsItem.createdAt}" pattern="yyyy-MM-dd HH:mm:ss"/>
-                                                </small>
-                                            </p>
-                                            <a href="ViewNews?id=${newsItem.newsId}" class="btn btn-primary btn-sm read-more">Read More</a>
-                                        </div>
+                                    <!-- Nội dung -->
+                                    <div class="news-content">
+                                        <h5 class="news-title">${newsItem.title}</h5>
+                                        <p class="news-description">
+                                            <c:choose>
+                                                <c:when test="${fn:length(newsItem.content) > 100}">
+                                                    ${fn:substring(newsItem.content, 0, 100)}...
+                                                </c:when>
+                                                <c:otherwise>
+                                                    ${newsItem.content}
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </p>
+                                        <p class="news-date">
+                                            <small class="text-muted">
+                                                Đăng ngày <fmt:formatDate value="${newsItem.createdAt}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                                            </small>
+                                        </p>
+                                        <a href="ViewNews?id=${newsItem.newsId}" class="btn btn-primary btn-sm read-more">Read More</a>
                                     </div>
                                 </div>
-                            </c:if>
+                            </div>
                         </c:forEach>
-
                     </div>
 
                     <!-- Phân trang -->

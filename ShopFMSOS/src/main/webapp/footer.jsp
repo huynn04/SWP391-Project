@@ -8,30 +8,37 @@
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
-<footer id="footer">
-    <div class="container">
-        <nav>
-            <ul class="footer-nav">
-                <li><a href="home">Home</a></li>
-                <li><a href="products">Products</a></li>
-                <li><a href="cartDetail.jsp">Cart</a></li>
-                <li><a href="#">Categories</a></li>
+<div id="wrapper">
+    <!-- Nội dung chính của trang -->
+    <main>
+        <!-- Nội dung của trang bạn đặt ở đây -->
+    </main>
 
-                <% if (loggedInUser == null) { %>
-                    <li><a href="login.jsp">Login</a></li>
-                <% } else { %>
-                    <% if (loggedInUser.getRoleId() == 1 || loggedInUser.getRoleId() == 2) { %>
-                        <li><a href="dashboard">Dashboard</a></li>
+    <footer id="footer">
+        <div class="container">
+            <nav>
+                <ul class="footer-nav">
+                    <li><a href="home">Home</a></li>
+                    <li><a href="products">Products</a></li>
+                    <li><a href="cartDetail.jsp">Cart</a></li>
+                    <li><a href="#">Categories</a></li>
+
+                    <% if (loggedInUser == null) { %>
+                        <li><a href="login.jsp">Login</a></li>
+                    <% } else { %>
+                        <% if (loggedInUser.getRoleId() == 1 || loggedInUser.getRoleId() == 2) { %>
+                            <li><a href="dashboard">Dashboard</a></li>
+                        <% } %>
+                        <li><a href="LogoutServlet" class="text-danger">Logout</a></li>
                     <% } %>
-                    <li><a href="LogoutServlet" class="text-danger">Logout</a></li>
-                <% } %>
-            </ul>
-        </nav>
-        <div class="footer-text">
-            <p>&copy; 2025 FMSOS. All rights reserved.</p>
+                </ul>
+            </nav>
+            <div class="footer-text">
+                <p>&copy; 2025 FMSOS. All rights reserved.</p>
+            </div>
         </div>
-    </div>
-</footer>
+    </footer>
+</div>
 
 <style>
     /* Đảm bảo footer nằm dưới cùng trang */
@@ -47,7 +54,7 @@
     }
 
     main {
-        flex: 1; /* Phần chính sẽ mở rộng để đẩy footer xuống dưới */
+        flex: 1;  /* Phần chính sẽ mở rộng để đẩy footer xuống dưới */
     }
 
     #footer {
@@ -55,6 +62,7 @@
         padding: 20px 0;
         border-top: 1px solid #e7e7e7;
         text-align: center;
+        width: 100%;
     }
 
     .footer-nav {
@@ -63,7 +71,7 @@
         margin: 0 0 10px 0;
         display: flex;
         justify-content: center;
-        gap: 20px; /* Khoảng cách giữa các mục */
+        gap: 20px;  /* Khoảng cách giữa các mục */
     }
 
     .footer-nav li {
