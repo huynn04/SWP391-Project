@@ -210,27 +210,27 @@ public class NewsDAO extends DBContext {
 
     public List<News> getRecentNews() {
         List<News> newsList = new ArrayList<>();
-        String sql = "SELECT TOP 6 news_id, title, content, image, created_at FROM news ORDER BY created_at DESC";
 
-        try ( Connection conn = getConnection();  PreparedStatement ps = conn.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
+        // Cập nhật câu truy vấn để lấy thêm cột status
+        String sql = "SELECT TOP 6 news_id, title, content, image, status, created_at FROM news WHERE status = 1 ORDER BY created_at DESC";
 
-            System.out.println("Thực thi SQL: " + sql); // Debug
-
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 News news = new News();
+                // Gán giá trị vào các thuộc tính của đối tượng News
                 news.setNewsId(rs.getInt("news_id"));
                 news.setTitle(rs.getString("title"));
                 news.setContent(rs.getString("content"));
                 news.setImage(rs.getString("image"));
+                news.setStatus(rs.getInt("status"));  // Gán giá trị status từ cơ sở dữ liệu
                 news.setCreatedAt(rs.getTimestamp("created_at"));
+                newsList.add(news);  // Thêm đối tượng News vào danh sách
 
-                System.out.println("Lấy được bài viết: " + news.getTitle()); // Debug
-
-                newsList.add(news);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return newsList;
     }
 
