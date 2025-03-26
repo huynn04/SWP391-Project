@@ -21,7 +21,8 @@ public class ProductDAO extends DBContext {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT p.product_id, p.category_id, p.product_name, p.detail_desc, p.image, p.price, p.discount, p.quantity, p.sold, p.target, p.factory, p.status, p.created_at, p.updated_at, c.category_name "
                 + "FROM products p "
-                + "JOIN categories c ON p.category_id = c.category_id";  // JOIN với bảng categories
+                 + "JOIN categories c ON p.category_id = c.category_id "
+               + "WHERE p.quantity > 0 OR p.status = 1";  // Lọc sản phẩm có quantity > 0 hoặc status = 1
 
         try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
