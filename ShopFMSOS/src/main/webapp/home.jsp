@@ -343,38 +343,36 @@
                 <div class="container mt-5">
                     <h2 class="d-flex justify-content-between mb-4">
                         Recent News
-
+                        <!-- Display "See All" link if there are multiple items -->
                         <a href="AllNews" class="btn btn-secondary">See All</a>
                     </h2>
 
                     <div class="row">
                         <c:forEach var="newsItem" items="${newsList}">
-                            <c:if test="${newsItem.status == 1}">
-                                <div class="col-md-4 mb-4">
-                                    <div class="card">
-                                        <img src="${newsItem.image}" class="card-img-top" alt="${newsItem.title}">
-                                        <div class="card-body">
-                                            <h5 class="card-title">${newsItem.title}</h5>
-                                            <p class="card-text">
-                                                <c:choose>
-                                                    <c:when test="${fn:length(newsItem.content) > 100}">
-                                                        ${fn:substring(newsItem.content, 0, 100)}...
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        ${newsItem.content}
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </p>
-                                            <p class="card-text">
-                                                <small class="text-muted">
-                                                    Posted on <fmt:formatDate value="${newsItem.createdAt}" pattern="yyyy-MM-dd HH:mm:ss"/>
-                                                </small>
-                                            </p>
-                                            <a href="ViewNews?id=${newsItem.newsId}" class="btn btn-primary btn-sm">Read More</a>
-                                        </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="card">
+                                    <img src="${newsItem.image}" class="card-img-top" alt="${newsItem.title}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${newsItem.title}</h5>
+                                        <p class="card-text">
+                                            <c:choose>
+                                                <c:when test="${fn:length(newsItem.content) > 100}">
+                                                    ${fn:substring(newsItem.content, 0, 100)}...
+                                                </c:when>
+                                                <c:otherwise>
+                                                    ${newsItem.content}
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </p>
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                Posted on <fmt:formatDate value="${newsItem.createdAt}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                                            </small>
+                                        </p>
+                                        <a href="ViewNews?id=${newsItem.newsId}" class="btn btn-primary btn-sm">Read More</a>
                                     </div>
                                 </div>
-                            </c:if>
+                            </div>
                         </c:forEach>
                     </div>
                 </div>
