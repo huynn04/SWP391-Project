@@ -19,21 +19,22 @@ public class NewsDAO extends DBContext {
     // Lấy tất cả tin tức
     public List<News> getAllNews(int page) {
         List<News> newsList = new ArrayList<>();
-        int pageSize = 10;  // Nombre d'articles par page
+        int pageSize = 10;
         int offset = (page - 1) * pageSize;
 
         String sql = "WITH NewsWithRow AS ("
                 + "   SELECT news_id, user_id, title, content, image, status, created_at, updated_at, "
                 + "          ROW_NUMBER() OVER (ORDER BY created_at DESC) AS RowNum "
                 + "   FROM news "
+                + "   WHERE status = 1 " // Lọc chỉ những bài tin có status = 1
                 + ") "
                 + "SELECT news_id, user_id, title, content, image, status, created_at, updated_at "
                 + "FROM NewsWithRow "
                 + "WHERE RowNum BETWEEN ? AND ?";
 
         try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, offset + 1);  // Commencer à partir de l'article (offset + 1)
-            ps.setInt(2, offset + pageSize);  // Finir à l'article (offset + pageSize)
+            ps.setInt(1, offset + 1);  // Bắt đầu từ bài viết thứ (offset + 1)
+            ps.setInt(2, offset + pageSize);  // Kết thúc tại bài viết thứ (offset + pageSize)
 
             try ( ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
