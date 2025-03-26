@@ -27,8 +27,8 @@
             .container {
                 max-width: 1200px;
                 margin: 20px;
-                padding-top: 50px;
-                margin-top: 500px;  /* Tạo thêm khoảng cách nếu cần thiết */
+                padding-top: 20px;
+                margin-top: 20px;  /* Tạo thêm khoảng cách nếu cần thiết */
             }
 
             .article-container {
@@ -334,7 +334,11 @@
                 </div>
 
             </div>
+
         </div>
+
+        <!-- Footer Section -->
+        <%@ include file="footer.jsp" %>
 
         <script>
             function showEditCommentForm(commentId, content) {
@@ -352,3 +356,4 @@
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     </body>
 </html>
+
