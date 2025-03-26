@@ -634,4 +634,33 @@ public class OrderDAO extends DBContext {
             return false; // Nếu có lỗi xảy ra, trả về false
         }
     }
+        public boolean cancelCustomerOrder(int orderId) {
+        String sql = "UPDATE orders SET status = -1, canceled_at = GETDATE() WHERE order_id = ? AND status = 0"; // Trạng thái -1 là "Đã hủy"
+        
+        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;  // Nếu có bản ghi bị ảnh hưởng, trả về true
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return false;  // Nếu có lỗi hoặc không có bản ghi bị ảnh hưởng, trả về false
+    }
+        public boolean updateOrderStatusToReceived(int orderId) {
+        String sql = "UPDATE orders SET status = 2 WHERE order_id = ? AND status = 1"; // Cập nhật trạng thái từ 1 (Đang giao) thành 2 (Đã giao)
+
+        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;  // Trả về true nếu có bản ghi được cập nhật
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;  // Nếu không có bản ghi nào được cập nhật hoặc xảy ra lỗi
+    }
+
 }

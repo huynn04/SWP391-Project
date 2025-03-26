@@ -121,8 +121,7 @@
                                     <td>${order.receiverAddress}</td>
                                     <td>${order.receiverPhone}</td>
                                     <td>
-                                        <!-- Nút View Order Detail -->
-                                        <a href="ViewOrderDetail?orderId=${order.orderId}" class="btn btn-primary btn-sm">View Order Detail</a>
+                                        <a href="AdminViewOrderDetail?orderId=${order.orderId}" class="btn btn-primary btn-sm">View Order Detail</a>
                                     </td>
                                 </tr>
                             </c:forEach>

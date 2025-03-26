@@ -84,4 +84,82 @@ public class CategoryDAO extends DBContext {
 
         return productCountMap;
     }
+     // Hàm cập nhật danh mục
+    public boolean updateCategory(Category category) {
+        String sql = "UPDATE categories SET category_name = ?, description = ?, image = ?, status = ?, updated_at = GETDATE() WHERE category_id = ?";
+
+        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, category.getCategoryName());
+            ps.setString(2, category.getDescription());
+            ps.setString(3, category.getImage());
+            ps.setInt(4, category.getStatus());
+            ps.setInt(5, category.getCategoryId());
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0; // Trả về true nếu cập nhật thành công
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Nếu có lỗi, trả về false
+        }
+    }
+
+    // Hàm lấy Category theo categoryId
+    public Category getCategoryById(int categoryId) {
+        Category category = null;
+        String sql = "SELECT * FROM categories WHERE category_id = ?";
+
+        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, categoryId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    category = new Category();
+                    category.setCategoryId(rs.getInt("category_id"));
+                    category.setCategoryName(rs.getString("category_name"));
+                    category.setDescription(rs.getString("description"));
+                    category.setImage(rs.getString("image"));
+                    category.setStatus(rs.getInt("status"));
+                    category.setCreatedAt(rs.getDate("created_at"));
+                    category.setUpdatedAt(rs.getDate("updated_at"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return category;
+    }
+     // Xóa danh mục khỏi bảng categories
+    public boolean deleteCategory(int categoryId) {
+        String sql = "DELETE FROM categories WHERE category_id = ?";
+
+        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, categoryId);
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;  // Trả về true nếu danh mục đã được xóa
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;  // Nếu có lỗi, trả về false
+        }
+    }
+    public boolean addCategory(Category category) {
+        String sql = "INSERT INTO categories (category_name, description, image, status, created_at, updated_at) " +
+                     "VALUES (?, ?, ?, ?, GETDATE(), GETDATE())";
+
+        try (Connection con = getConnection(); 
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ps.setString(1, category.getCategoryName());
+            ps.setString(2, category.getDescription());
+            ps.setString(3, category.getImage());  // Trường image có thể NULL, đảm bảo không gây lỗi
+            ps.setInt(4, category.getStatus());
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;  // Trả về true nếu thêm thành công
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;  // Trả về false nếu có lỗi
+        }
+    }
 }

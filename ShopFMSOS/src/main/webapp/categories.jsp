@@ -1,27 +1,114 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Categories</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-top: 56px;
+        }
+        .sidebar {
+            height: 100vh;
+            padding-top: 20px;
+            background-color: #f8f9fa;
+        }
+        .sidebar a {
+            color: #333;
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #ddd;
+        }
+        .category-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+    </style>
+</head>
 <body>
-    <%@ include file="navbar.jsp" %> 
-    <h2>Danh M?c S?n Ph?m</h2>
-    <table border="1">
-        <tr>
-            <th>Hình ?nh</th>
-            <th>Tên Danh M?c</th>
-            <th>Mô T?</th>
-            <th>Tr?ng Thái</th>
-            <th>Ngày T?o</th>
-        </tr>
-        <c:forEach var="category" items="${categoryList}">
-            <tr>
-                <td><img src="${category.image}" alt="Image" width="50"></td>
-                <td>${category.categoryName}</td>
-                <td>${category.description}</td>
-                <td>
-                    <c:choose>
-                        <c:when test="${category.status == 1}">Ho?t ??ng</c:when>
-                        <c:otherwise>Không ho?t ??ng</c:otherwise>
-                    </c:choose>
-                </td>
-                <td>${category.createdAt}</td>
-            </tr>
-        </c:forEach>
-    </table>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" href="dashboard">Admin Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <jsp:include page="sidebar.jsp" />
+
+            <!-- Main content -->
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div class="pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Categories List</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item active" aria-current="page">Categories List</li>
+                        </ol>
+                    </nav>
+
+                    <a href="AddCategory" class="btn btn-success mb-3">Add New Category</a>
+                </div>
+
+                <!-- Hiá»ƒn thá»‹ danh sÃ¡ch danh má»¥c -->
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Category Name</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="category" items="${categories}">
+                                <tr>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${category.image != null}">
+                                                <img src="${category.image}" alt="${category.categoryName}" class="category-img">
+                                            </c:when>
+                                            <c:otherwise>
+                                                <img src="images/no-image.png" alt="No image" class="category-img">
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>${category.categoryName}</td>
+                                    <td>${category.description}</td>
+                                    <td>${category.status == 1 ? 'Active' : 'Inactive'}</td>
+                                    <td>
+                                        <a href="UpdateCategory?categoryId=${category.categoryId}" class="btn btn-warning btn-sm">Update</a>
+                                        <a href="ViewProductByCate?categoryId=${category.categoryId}" class="btn btn-info btn-sm">View Products</a>
+                                        <c:if test="${category.categoryId != 13}">
+                                            <a href="DeleteCategory?categoryId=${category.categoryId}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this category?')">Delete</a>
+                                        </c:if>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        feather.replace();
+    </script>
 </body>
+</html>

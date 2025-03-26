@@ -14,6 +14,16 @@
         <%@ include file="header.jsp" %>
         <div class="container mt-5">
             <h2 class="mb-4">Your Shopping Cart</h2>
+
+            <%-- Check if there is an error message in session --%>
+            <c:if test="${not empty sessionScope.error}">
+                <div class="alert alert-danger">
+                    ${sessionScope.error}
+                </div>
+                <%-- Clear the error message after displaying it --%>
+                <c:remove var="error" scope="session"/>
+            </c:if>
+
             <%
                 List<Product> cart = (List<Product>) session.getAttribute("cart");
                 Object totalPriceObj = session.getAttribute("totalPrice");
@@ -59,6 +69,7 @@
                     %>
                 </tbody>
             </table>
+                
             <form onsubmit="doDiscount(event)" class="mb-3">
                 <label for="discountCode">Enter Discount Code:</label>
                 <input type="text" name="discountCode" id="discountCode" class="form-control w-50 d-inline">
@@ -99,16 +110,13 @@
             <div class="mt-3 p-3 bg-light border text-end">
                 <h4>Total Cart Value: <strong id="cart-total" class="text-danger">$<%= String.format("%.3f", totalPrice)%></strong></h4>
             </div>
+
             <div class="mt-3 text-end">
                 <a href="CheckoutInfo" class="btn btn-success btn-lg">Checkout</a>
             </div>
-            <%
-            } else {
-            %>
+            <% } else { %>
             <div class="alert alert-warning text-center">Your cart is empty.</div>
-            <%
-                }
-            %>
+            <% } %>
         </div>
         <%@ include file="footer.jsp" %>
         <script>
@@ -119,26 +127,29 @@
 
                 let initPriceVal = Number(itemPrice.textContent.replace(/[^0-9]/g, ''));
                 let quantity = Number(input.value);
+
+                // Check if quantity is negative
+                if (quantity < 1) {
+                    alert("Quantity cannot be less than 1.");
+                    input.value = 1;  // Set to 1 if negative value is entered
+                    quantity = 1;
+                }
+
                 let newPrice = initPriceVal * quantity;
                 newPrice = newPrice.toLocaleString('en-US');
                 currPrice.innerHTML = `$\${newPrice}`;
                 updateTotalPrice();
+
                 fetch(`AddToCart?action=changeQuantity&id=\${id}&quantity=\${quantity}`, {method: 'post'})
                         .then(response => response.text())
                         .then(data => console.log(data))
                         .catch(err => console.log(err));
-                if (quantity < 1) {
-                    alert("Quantity cannot be less than 1.");
-                    input.value = 1;
-                    quantity = 1;
-                }
-
             }
+
             function updateTotalPrice() {
                 const getAllInputs = document.querySelectorAll('.item-total');
                 const cart_total = document.querySelector('#cart-total');
                 let totalPrice = 0;
-               
 
                 if (getAllInputs) {
                     Array.from(getAllInputs).forEach(input => {
@@ -149,6 +160,7 @@
                     cart_total.innerHTML = `$\${totalPrice}`;
                 }
             }
+
             updateTotalPrice();
 
             function doDiscount(e) {
@@ -194,7 +206,6 @@
                             }
 
                             // Update total cart value
-
                             cartTotal.textContent = "$" + data;
                             alert("Discount code applied successfully!");
                         })
@@ -202,13 +213,5 @@
             }
 
         </script>
-        <c:if test="${not empty sessionScope.error}">
-            <script>
-                alert('${error}');
-            </script>
-            <c:remove var="error" scope="session"/>
-        </c:if>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     </body>
 </html>

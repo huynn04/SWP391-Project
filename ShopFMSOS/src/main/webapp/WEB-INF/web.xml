@@ -2,7 +2,7 @@
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee                               http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
     <!-- Cấu hình welcome file -->
     <welcome-file-list>
-        <welcome-file>home.jsp</welcome-file>
+        <welcome-file>home</welcome-file>
     </welcome-file-list>
     <servlet>
         <servlet-name>HomeServlet</servlet-name>
@@ -129,10 +129,6 @@
         <servlet-class>controller.TrackOrderServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CategoryServlet</servlet-name>
-        <servlet-class>controller.CategoryServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>controller.LoginServlet</servlet-class>
     </servlet>
@@ -195,6 +191,42 @@
     <servlet>
         <servlet-name>ViewOrderDetailServlet</servlet-name>
         <servlet-class>controller.ViewOrderDetailServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CategoryServlet</servlet-name>
+        <servlet-class>controller.CategoryServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateCategoryServlet</servlet-name>
+        <servlet-class>controller.UpdateCategoryServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteCategoryServlet</servlet-name>
+        <servlet-class>controller.DeleteCategoryServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ViewProductByCateServlet</servlet-name>
+        <servlet-class>controller.ViewProductByCateServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CustomerReceivedOrderServlet</servlet-name>
+        <servlet-class>controller.CustomerReceivedOrderServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SubmitReviewServlet</servlet-name>
+        <servlet-class>controller.SubmitReviewServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddCategoryServlet</servlet-name>
+        <servlet-class>controller.AddCategoryServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AdminViewOrderDetailServlet</servlet-name>
+        <servlet-class>controller.AdminViewOrderDetailServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GenerateQRCodeServlet</servlet-name>
+        <servlet-class>controller.GenerateQRCodeServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
@@ -319,10 +351,6 @@
     <servlet-mapping>
         <servlet-name>TrackOrderServlet</servlet-name>
         <url-pattern>/TrackOrder</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CategoryServlet</servlet-name>
-        <url-pattern>/CategoryServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
@@ -459,6 +487,46 @@
     <servlet-mapping>
         <servlet-name>ViewOrderDetailServlet</servlet-name>
         <url-pattern>/ViewOrderDetail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CategoryServlet</servlet-name>
+        <url-pattern>/CategoryServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateCategoryServlet</servlet-name>
+        <url-pattern>/UpdateCategory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteCategoryServlet</servlet-name>
+        <url-pattern>/DeleteCategory</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>ViewProductByCateServlet</servlet-name>
+        <servlet-class>controller.ViewProductByCateServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ViewProductByCateServlet</servlet-name>
+        <url-pattern>/ViewProductByCate</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CustomerReceivedOrderServlet</servlet-name>
+        <url-pattern>/CustomerReceivedOrder</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SubmitReviewServlet</servlet-name>
+        <url-pattern>/SubmitReview</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddCategoryServlet</servlet-name>
+        <url-pattern>/AddCategory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminViewOrderDetailServlet</servlet-name>
+        <url-pattern>/AdminViewOrderDetail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GenerateQRCodeServlet</servlet-name>
+        <url-pattern>/GenerateQRCode</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

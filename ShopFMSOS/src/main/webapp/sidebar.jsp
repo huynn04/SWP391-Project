@@ -39,6 +39,14 @@
                     </a>
                 </li>
             <% } %>
+            <% if (userRole == 1) { %>
+                <li class="nav-item">
+                    <a class="nav-link" href="CategoryServlet">
+                        <span data-feather="user"></span>
+                        Category Manage
+                    </a>
+                </li>
+            <% } %>
 
             <li class="nav-item">
                 <a class="nav-link" href="ManageProduct">

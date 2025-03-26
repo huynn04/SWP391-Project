@@ -14,7 +14,7 @@
             <h2 class="text-success">🎉 Đặt hàng thành công! 🎉</h2>
             <p>Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.</p>
             <a href="home.jsp" class="btn btn-primary">Tiếp tục mua sắm</a>
-            <a href="orderHistory.jsp" class="btn btn-secondary">Xem đơn hàng</a>
+            <a href="CustomerOrderHistory" class="btn btn-secondary">Xem đơn hàng</a>
         
     </div>
 

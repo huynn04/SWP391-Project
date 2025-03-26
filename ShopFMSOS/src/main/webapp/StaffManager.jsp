@@ -76,13 +76,13 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        Vui lòng chọn một trong các lựa chọn bên dưới:
+                                        Please choose one of the options below:
                                     </div>
                                     <div class="modal-footer">
                                         <!-- Nút chọn từ danh sách có sẵn -->
-                                        <a href="SelectStaff" class="btn btn-primary">Chọn từ danh sách</a>
+                                        <a href="SelectStaff" class="btn btn-primary">Select from the list</a>
                                         <!-- Nút tạo nhân viên mới -->
-                                        <a href="CreateStaff" class="btn btn-success">Tạo mới Staff</a>
+                                        <a href="CreateStaff" class="btn btn-success">Create new Staff</a>
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
                                     </div>
                                 </div>
