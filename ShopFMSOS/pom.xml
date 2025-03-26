@@ -29,11 +29,11 @@
         </dependencies>
     </dependencyManagement>
     <repositories>
-    <repository>
-        <id>central</id>
-        <url>https://repo1.maven.org/maven2</url>
-    </repository>
-</repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!-- JSTL -->
@@ -117,11 +117,16 @@
             <version>2.2.0</version>
         </dependency>
         
-<dependency>
-  <groupId>com.google.apis</groupId>
-  <artifactId>google-api-services-people</artifactId>
-  <version>v1-rev20240313-2.0.0</version>
-</dependency>
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-people</artifactId>
+            <version>v1-rev20240313-2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.4.0</version>
+        </dependency>
 
 
 

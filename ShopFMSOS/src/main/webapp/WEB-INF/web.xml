@@ -224,6 +224,10 @@
         <servlet-name>AdminViewOrderDetailServlet</servlet-name>
         <servlet-class>controller.AdminViewOrderDetailServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GenerateQRCodeServlet</servlet-name>
+        <servlet-class>controller.GenerateQRCodeServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -519,6 +523,10 @@
     <servlet-mapping>
         <servlet-name>AdminViewOrderDetailServlet</servlet-name>
         <url-pattern>/AdminViewOrderDetail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GenerateQRCodeServlet</servlet-name>
+        <url-pattern>/GenerateQRCode</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

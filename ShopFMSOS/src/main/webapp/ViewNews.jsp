@@ -27,8 +27,8 @@
             .container {
                 max-width: 1200px;
                 margin: 20px;
-                padding-top: 20px;
-                margin-top: 20px;  /* Tạo thêm khoảng cách nếu cần thiết */
+                padding-top: 50px;
+                margin-top: 500px;  /* Tạo thêm khoảng cách nếu cần thiết */
             }
 
             .article-container {
