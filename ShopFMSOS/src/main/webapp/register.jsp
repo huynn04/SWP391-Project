@@ -25,6 +25,11 @@
                                         </div>
                                     </div>
                                 </div>
+                                <% if (request.getAttribute("errorMessage") != null) { %>
+                                        <div class="alert alert-danger mt-3" role="alert">
+                                            <%= request.getAttribute("errorMessage") %>
+                                        </div>
+                                        <% } %>
                                 <form action="RegisterServlet" method="POST">
                                     <div class="row gy-3 gy-md-4 overflow-hidden">
                                         <div class="col-12">

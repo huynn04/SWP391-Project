@@ -28,10 +28,31 @@ public class RegisterServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        if (firstName == null || lastName == null || email == null || password == null
-                || firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+        // Kiểm tra các trường không được để trống
+        if (firstName == null || firstName.isEmpty() || lastName == null || lastName.isEmpty()
+                || email == null || email.isEmpty() || password == null || password.isEmpty()) {
             request.setAttribute("errorMessage", "First Name, Last Name, Email, and Password are required.");
-            request.getRequestDispatcher("home.jsp").forward(request, response);
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+
+        // Kiểm tra định dạng email
+        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            request.setAttribute("errorMessage", "Invalid email format.");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+
+        // Kiểm tra mật khẩu phải có ít nhất 8 ký tự, 1 chữ hoa, 1 số, 1 ký tự đặc biệt
+        if (password.length() < 8) {
+            request.setAttribute("errorMessage", "Password must be at least 8 characters long.");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+
+        if (!password.matches(".*[A-Z].*") || !password.matches(".*\\d.*") || !password.matches(".*\\W.*")) {
+            request.setAttribute("errorMessage", "Password must contain at least 1 uppercase letter, 1 number, and 1 special character.");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
@@ -67,14 +88,5 @@ public class RegisterServlet extends HttpServlet {
             request.setAttribute("errorMessage", "Registration failed. Email might already be in use.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
-    }
-
-    /**
-     * Xử lý yêu cầu HTTP GET (chuyển hướng đến trang đăng ký nếu cần).
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.getRequestDispatcher("register.jsp").forward(request, response);
     }
 }
