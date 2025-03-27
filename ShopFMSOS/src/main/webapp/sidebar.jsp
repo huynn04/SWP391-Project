@@ -32,20 +32,20 @@
             </li>
 
             <% if (userRole == 1) { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="StaffManager">
-                        <span data-feather="user"></span>
-                        Manage Staff
-                    </a>
-                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="StaffManager">
+                    <span data-feather="user"></span>
+                    Manage Staff
+                </a>
+            </li>
             <% } %>
             <% if (userRole == 1) { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="CategoryServlet">
-                        <span data-feather="user"></span>
-                        Category Manage
-                    </a>
-                </li>
+            <li class="nav-item">
+                <a class="nav-link" href="CategoryServlet">
+                    <span data-feather="user"></span>
+                    Category Manage
+                </a>
+            </li>
             <% } %>
 
             <li class="nav-item">
@@ -64,6 +64,13 @@
                 <a class="nav-link" href="ManageNews">
                     <span data-feather="file-text"></span>
                     Manage News
+                </a>
+            </li>
+            <!-- Thêm mục Manage Discount ở đây -->
+            <li class="nav-item">
+                <a class="nav-link" href="ManageDiscount">
+                    <span data-feather="tag"></span>
+                    Manage Discount
                 </a>
             </li>
             <li class="nav-item">
