@@ -27,7 +27,7 @@
                 <li><a href="home">Home</a></li>
                 <li><a href="products">Products</a></li>
                 <li><a href="cartDetail.jsp">Cart</a></li>
-<!--                <li><a href="#">Categories</a></li>-->
+                <li><a href="LuckyWheelServlet">Lucky Wheel</a></li>
                 <li><a href="AllNews">News</a></li>  <!-- Thêm mục News vào đây -->
                 <% if (loggedInUser == null) { %>
                     <!-- Chỉ hiển thị nếu người dùng chưa đăng nhập -->
