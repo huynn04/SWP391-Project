@@ -219,7 +219,6 @@
                                     <% } else if (order.getStatus() == 1) { %>
                                     <a href="CustomerReceivedOrder?orderId=<%= order.getOrderId() %>" class="btn btn-sm btn-success">Received</a>
                                     <% } else if (order.getStatus() == 2) { %>
-                                    <a href="ReviewForm" class="btn btn-sm btn-warning">Feedback</a>
                                     <% } %>
                                 </td>
                             </tr>
@@ -266,14 +265,14 @@
                     dataType: "json",
                     success: function (response) {
                         if (response.success) {
-                            row.find(".subtotal").text(response.newSubtotal + " VNĐ");
-                            $(".total-price[data-order-id='" + orderId + "']").text(response.newTotal + " VNĐ");
+                            row.find(".subtotal").text(response.newSubtotal + " $");
+                            $(".total-price[data-order-id='" + orderId + "']").text(response.newTotal + " $");
                         } else {
-                            alert("Cập nhật không thành công!");
+                            alert("Update fail");
                         }
                     },
                     error: function () {
-                        alert("Có lỗi xảy ra, vui lòng thử lại.");
+                        alert("Error, please try again.");
                     }
                 });
             });
