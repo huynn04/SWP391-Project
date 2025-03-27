@@ -12,7 +12,7 @@ public class DiscountDAO extends DBContext {
 
     // Lấy mã giảm giá từ database theo code
     public Discount getDiscountByCode(String code) {
-        String sql = "SELECT * FROM discounts WHERE code = ? AND status = 1";
+        String sql = "SELECT * FROM discounts WHERE code = ? AND status = 1 AND expiry_date >= GETDATE()";
         try ( Connection conn = getConnection();  PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, code);
             ResultSet rs = stmt.executeQuery();
@@ -29,9 +29,22 @@ public class DiscountDAO extends DBContext {
                 );
             }
         } catch (SQLException e) {
+            System.err.println("Error in getDiscountByCode: " + e.getMessage());
             e.printStackTrace();
         }
-        return null;
+        return null; // Không tìm thấy mã giảm giá hợp lệ
+    }
+    // Phương thức để cập nhật mã giảm giá vào bảng orders
+
+    public void applyDiscountToOrder(int userId, String discountCode) {
+        String sql = "UPDATE orders SET discount_code = ? WHERE user_id = ? AND discount_code IS NULL";
+        try ( Connection conn = getConnection();  PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, discountCode);
+            stmt.setInt(2, userId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void insertDiscount(Discount discount) {
@@ -43,13 +56,8 @@ public class DiscountDAO extends DBContext {
             stmt.setDouble(4, discount.getMinOrderValue());
             stmt.setDate(5, new java.sql.Date(discount.getExpiryDate().getTime()));
             stmt.setInt(6, discount.getStatus());
-
             int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Coupon inserted successfully into the database: " + discount.getCode());
-            } else {
-                System.out.println("Failed to insert coupon into the database.");
-            }
+            System.out.println("Inserted discount with code: " + discount.getCode() + ", Rows affected: " + rowsAffected);
         } catch (SQLException e) {
             System.err.println("Error in insertDiscount: " + e.getMessage());
             e.printStackTrace();
@@ -80,43 +88,20 @@ public class DiscountDAO extends DBContext {
         return discountList;
     }
 
-    // Kiểm tra xem mã giảm giá đã được áp dụng cho người dùng chưa
-    public boolean isDiscountApplied(int userId) {
-        String sql = "SELECT COUNT(*) FROM orders WHERE user_id = ? AND discount_code IS NOT NULL";
+    public boolean isDiscountApplied(int userId, String discountCode) {
+        String sql = "SELECT COUNT(*) FROM orders WHERE user_id = ? AND discount_code = ?";
         try ( Connection conn = getConnection();  PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
+            stmt.setString(2, discountCode);
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
-                return rs.getInt(1) > 0;  // Nếu có ít nhất 1 bản ghi, mã giảm giá đã được áp dụng
+                return rs.getInt(1) > 0;  // Nếu số lượng bản ghi trả về > 0, nghĩa là mã giảm giá đã được lưu
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;  // Nếu không có bản ghi nào, nghĩa là mã giảm giá chưa được áp dụng
+        return false;  // Nếu không có bản ghi nào, nghĩa là mã giảm giá chưa được lưu
     }
-
-    // Phương thức để áp dụng mã giảm giá vào đơn hàng
-    public void applyDiscountToOrder(int userId, String discountCode) {
-        String sql = "UPDATE orders SET discount_code = ? WHERE user_id = ? AND discount_code IS NULL";
-        try ( Connection conn = getConnection();  PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, discountCode);
-            stmt.setInt(2, userId);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void updateDiscountStatus(String code, int status) {
-    String query = "UPDATE discounts SET status = ? WHERE code = ?";
-    try ( Connection conn = getConnection();  PreparedStatement stmt = conn.prepareStatement(query)) {
-        stmt.setInt(1, status);  
-        stmt.setString(2, code);
-        stmt.executeUpdate();
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-}
-
 
 }

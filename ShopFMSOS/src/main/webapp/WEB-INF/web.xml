@@ -92,6 +92,10 @@
         <servlet-name>LuckyWheelServlet</servlet-name>
         <servlet-class>controller.LuckyWheelServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ManageDiscountServlet</servlet-name>
+        <servlet-class>controller.ManageDiscount</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>AllNewsServlet</servlet-name>
         <url-pattern>/AllNewsServlet</url-pattern>
@@ -543,6 +547,10 @@
     <servlet-mapping>
         <servlet-name>LuckyWheelServlet</servlet-name>
         <url-pattern>/LuckyWheelServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManageDiscountServlet</servlet-name>
+        <url-pattern>/ManageDiscount</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

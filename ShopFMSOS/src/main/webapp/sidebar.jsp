@@ -74,6 +74,13 @@
                     Manage News
                 </a>
             </li>
+            <!-- Thêm mục Manage Discount ở đây -->
+            <li class="nav-item">
+                <a class="nav-link" href="ManageDiscount">
+                    <span data-feather="tag"></span>
+                    Manage Discount
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link" href="SalesStatistics">
                     <span data-feather="bar-chart-2"></span>
