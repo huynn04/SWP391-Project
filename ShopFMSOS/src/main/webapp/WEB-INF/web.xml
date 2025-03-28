@@ -165,14 +165,6 @@
         <servlet-class>controller.ProductControllerServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GoogleLoginServlet</servlet-name>
-        <servlet-class>controller.GoogleLoginServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GoogleCallbackServlet</servlet-name>
-        <servlet-class>controller.GoogleCallbackServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>ChangePasswordServlet</servlet-name>
         <servlet-class>controller.ChangePasswordServlet</servlet-class>
     </servlet>
@@ -235,6 +227,22 @@
     <servlet>
         <servlet-name>GenerateQRCodeServlet</servlet-name>
         <servlet-class>controller.GenerateQRCodeServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ManageDiscountServlet</servlet-name>
+        <servlet-class>controller.ManageDiscountServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddDiscountServlet</servlet-name>
+        <servlet-class>controller.AddDiscountServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>EditDiscountServlet</servlet-name>
+        <servlet-class>controller.EditDiscountServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteDiscountServlet</servlet-name>
+        <servlet-class>controller.DeleteDiscountServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
@@ -389,14 +397,6 @@
         <url-pattern>/ProductController</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GoogleLoginServlet</servlet-name>
-        <url-pattern>/GoogleLoginServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GoogleCallbackServlet</servlet-name>
-        <url-pattern>/GoogleCallbackServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>ChangePasswordServlet</servlet-name>
         <url-pattern>/ChangePasswordServlet</url-pattern>
     </servlet-mapping>
@@ -456,6 +456,25 @@
         <servlet-name>AddCommentServlet</servlet-name>
         <servlet-class>controller.AddCommentServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GoogleLoginServlet</servlet-name>
+        <servlet-class>controller.GoogleLoginServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GoogleLoginServlet</servlet-name>
+        <url-pattern>/googleLogin</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GoogleCallbackServlet</servlet-name>
+        <servlet-class>controller.GoogleCallbackServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GoogleCallbackServlet</servlet-name>
+        <url-pattern>/callback</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AddCommentServlet</servlet-name>
         <url-pattern>/AddComment</url-pattern>
@@ -535,6 +554,22 @@
     <servlet-mapping>
         <servlet-name>GenerateQRCodeServlet</servlet-name>
         <url-pattern>/GenerateQRCode</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManageDiscountServlet</servlet-name>
+        <url-pattern>/ManageDiscount</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddDiscountServlet</servlet-name>
+        <url-pattern>/AddDiscount</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EditDiscountServlet</servlet-name>
+        <url-pattern>/EditDiscount</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteDiscountServlet</servlet-name>
+        <url-pattern>/DeleteDiscount</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

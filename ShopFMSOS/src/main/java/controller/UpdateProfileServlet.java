@@ -16,11 +16,12 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024,   // 1 MB
-    maxFileSize = 1024 * 1024 * 5,     // 5 MB
-    maxRequestSize = 1024 * 1024 * 25  // 25 MB
+        fileSizeThreshold = 1024 * 1024, // 1 MB
+        maxFileSize = 1024 * 1024 * 5, // 5 MB
+        maxRequestSize = 1024 * 1024 * 25 // 25 MB
 )
 public class UpdateProfileServlet extends HttpServlet {
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -37,46 +38,48 @@ public class UpdateProfileServlet extends HttpServlet {
         String phone = request.getParameter("phoneNumber");
         String address = request.getParameter("address");
 
-        // Lấy phần ảnh tải lên
-        Part filePart = request.getPart("avatar");  // Avatar file
-        String avatarPath = user.getAvatar();  // Giữ avatar cũ nếu không chọn ảnh mới
+        // Xử lý upload ảnh đại diện
+        String img = user.getAvatar(); // Mặc định là avatar cũ
+        try {
+            Part part = request.getPart("avatar");
+            if (part != null && part.getSize() > 0) {
+                String picFolder = "src/main/webapp/image"; // đưa trực tiếp vào source
 
-        // Kiểm tra nếu người dùng chọn ảnh mới
-        if (filePart != null && filePart.getSize() > 0) {
-            // Lấy tên file gốc
-            String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+                // Lấy đường dẫn thư mục gốc của project
+                String projectPath = getServletContext().getRealPath("/").split("target")[0];
 
-            // Định nghĩa thư mục lưu trữ ảnh
-            String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdir();  // Tạo thư mục nếu chưa có
+                // Đường dẫn tuyệt đối của thư mục image trong project
+                String realPath = projectPath + picFolder;
+
+                File uploadDir = new File(realPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+
+                String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
+                String savedFileName = System.currentTimeMillis() + "_" + fileName;
+
+                part.write(realPath + File.separator + savedFileName);
+
+                img = "image/" + savedFileName; // Đường dẫn để hiển thị trên JSP
             }
-
-            // Đổi tên file để tránh trùng lặp và lưu ảnh
-            String savedFileName = System.currentTimeMillis() + "_" + fileName;
-            File fileToSave = new File(uploadDir, savedFileName);
-            filePart.write(fileToSave.getAbsolutePath());
-
-            // Cập nhật đường dẫn ảnh vào avatarPath
-            avatarPath = "uploads/" + savedFileName;  // Đường dẫn tương đối
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         // Cập nhật thông tin người dùng
         user.setFullName(fullName);
-        user.setAvatar(avatarPath);
         user.setPhoneNumber(phone);
         user.setAddress(address);
+        user.setAvatar(img);
 
-        // Gọi DAO để cập nhật thông tin người dùng trong database
+        // Gọi DAO để cập nhật vào DB
         UserDAO userDAO = new UserDAO();
         boolean success = userDAO.updateUserProfile(user);
 
         if (success) {
-            // Cập nhật lại thông tin người dùng trong session
-            session.setAttribute("loggedInUser", user);  // Lưu lại thông tin mới của người dùng vào session
-
-            response.sendRedirect("viewProfile.jsp");  // Điều hướng đến trang View Profile
+            session.setAttribute("loggedInUser", user);
+            response.sendRedirect("viewProfile.jsp");
         } else {
             request.setAttribute("error", "Failed to update profile.");
             request.getRequestDispatcher("updateProfile.jsp").forward(request, response);
