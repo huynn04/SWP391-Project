@@ -228,6 +228,22 @@
         <servlet-name>GenerateQRCodeServlet</servlet-name>
         <servlet-class>controller.GenerateQRCodeServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ManageDiscountServlet</servlet-name>
+        <servlet-class>controller.ManageDiscountServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddDiscountServlet</servlet-name>
+        <servlet-class>controller.AddDiscountServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>EditDiscountServlet</servlet-name>
+        <servlet-class>controller.EditDiscountServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteDiscountServlet</servlet-name>
+        <servlet-class>controller.DeleteDiscountServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -527,6 +543,22 @@
     <servlet-mapping>
         <servlet-name>GenerateQRCodeServlet</servlet-name>
         <url-pattern>/GenerateQRCode</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManageDiscountServlet</servlet-name>
+        <url-pattern>/ManageDiscount</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddDiscountServlet</servlet-name>
+        <url-pattern>/AddDiscount</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EditDiscountServlet</servlet-name>
+        <url-pattern>/EditDiscount</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteDiscountServlet</servlet-name>
+        <url-pattern>/DeleteDiscount</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>
