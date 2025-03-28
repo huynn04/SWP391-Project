@@ -87,7 +87,7 @@ public class CancelOrderServlet extends HttpServlet {
 
         // Gọi OrderDAO để hủy đơn hàng
         OrderDAO orderDAO = new OrderDAO();
-        orderDAO.cancelOrder(orderId);
+        orderDAO.cancelOrderAndReturnStock(orderId);
 
         // Lấy tất cả các đơn hàng đã hủy (status = -1)
         List<Order> cancelledOrders = orderDAO.getCancelledOrders();
