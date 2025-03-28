@@ -344,7 +344,10 @@
                                     <h6 class="product-price text-success">$<%= product.getPrice() %></h6>
                                     <div class="d-flex justify-content-between">
                                         <a href="ProductDetail?productId=<%= product.getProductId() %>" class="btn btn-primary btn-sm">Buy Now</a>
-                                        <a href="AddToCart?productId=<%= product.getProductId() %>" class="btn btn-success btn-sm">🛒</a>
+                                        <a href="<%= session.getAttribute("loggedInUser") != null ? "AddToCart?productId=" + product.getProductId() : "login.jsp" %>" 
+                                           class="btn btn-success btn-sm">
+                                            🛒
+                                        </a>
                                     </div>
                                 </div>
                             </div>
