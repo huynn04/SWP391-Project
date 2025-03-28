@@ -33,6 +33,7 @@ public class CustomerCancelOrderServlet extends HttpServlet {
             response.sendRedirect("CustomerOrderHistory"); // Trang lịch sử đơn hàng
         } else {
             // Nếu huỷ không thành công, chuyển hướng về trang thông báo lỗi
+            
             response.sendRedirect("error.jsp");
         }
     }
