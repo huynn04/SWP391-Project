@@ -1,6 +1,7 @@
 package controller;
 
 import dal.CartDAO;
+import dal.DiscountDAO;
 import dal.ProductDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -11,9 +12,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import model.Cart;
+import model.Discount;
 import model.Product;
 
-@WebServlet(name="CartDetailServlet", urlPatterns={"/CartDetail"})
 public class CartDetailServlet extends HttpServlet {
 
     @Override
@@ -56,8 +57,20 @@ public class CartDetailServlet extends HttpServlet {
             totalPrice = cartDAO.getTotalPrice(cart.getCartId());
         }
 
+        // Get discount code status here
+        String discountCode = (String) session.getAttribute("discountCode");
+        DiscountDAO discountDAO = new DiscountDAO();
+        boolean discountCodeActive = true;
+        if (discountCode != null) {
+            Discount discount = discountDAO.getDiscountByCode(discountCode);
+            if (discount == null || discount.getStatus() != 1) {
+                discountCodeActive = false;
+            }
+        }
+
         request.setAttribute("cart", cart);
         request.setAttribute("totalPrice", totalPrice);
+        request.setAttribute("discountCodeActive", discountCodeActive); // Pass discount status to JSP
         request.getRequestDispatcher("cartDetail.jsp").forward(request, response);
     }
 }

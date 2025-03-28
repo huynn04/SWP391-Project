@@ -28,6 +28,7 @@
                 List<Product> cart = (List<Product>) session.getAttribute("cart");
                 Object totalPriceObj = session.getAttribute("totalPrice");
                 double totalPrice = (totalPriceObj != null) ? (double) totalPriceObj : 0;
+                boolean discountApplied = (session.getAttribute("discountApplied") != null) && (boolean) session.getAttribute("discountApplied");
                 if (cart != null && !cart.isEmpty()) {
             %>
             <table class="table table-bordered">
@@ -69,12 +70,20 @@
                     %>
                 </tbody>
             </table>
-                
-            <form onsubmit="doDiscount(event)" class="mb-3">
-                <label for="discountCode">Enter Discount Code:</label>
-                <input type="text" name="discountCode" id="discountCode" class="form-control w-50 d-inline">
-                <button type="submit" class="btn btn-primary">Apply</button>
-            </form>
+
+            <%-- Show discount code input only if discount hasn't been applied --%>
+            <c:if test="${not discountApplied}">
+                <form onsubmit="doDiscount(event)" class="mb-3">
+                    <label for="discountCode">Enter Discount Code:</label>
+                    <input type="text" name="discountCode" id="discountCode" class="form-control w-50 d-inline" 
+                           placeholder="Enter code here">
+                    <button type="submit" class="btn btn-primary">Apply</button>
+                </form>
+            </c:if>
+
+            <c:if test="${discountApplied}">
+                <div class="alert alert-info">A discount code has already been applied to your order.</div>
+            </c:if>
 
             <script>
                 function applyDiscount(e) {
@@ -101,6 +110,9 @@
                                 } else {
                                     document.querySelector('#cart-total').textContent = "$" + parseFloat(data.newTotal).toFixed(2);
                                     alert(data.success);
+                                    // Disable discount input and button after successful application
+                                    document.querySelector('#discountCode').disabled = true;
+                                    document.querySelector('button[type="submit"]').disabled = true;
                                 }
                             })
                             .catch(error => console.error("Error:", error));
@@ -125,7 +137,7 @@
                 const itemPrice = input.parentElement.parentElement.querySelector('.item-price');
                 const currPrice = input.parentElement.parentElement.querySelector('.item-total');
 
-                let initPriceVal = Number(itemPrice.textContent.replace(/[^0-9]/g, ''));
+                let initPriceVal = Number(itemPrice.textContent.replace(/[^0-9.]/g, ''));
                 let quantity = Number(input.value);
 
                 // Check if quantity is negative
@@ -153,7 +165,7 @@
 
                 if (getAllInputs) {
                     Array.from(getAllInputs).forEach(input => {
-                        let currentVal = Number(input.textContent.replace(/[^0-9]/g, ''));
+                        let currentVal = Number(input.textContent.replace(/[^0-9.]/g, ''));
                         totalPrice += currentVal;
                     });
                     totalPrice = totalPrice.toLocaleString('en-US');
@@ -208,10 +220,12 @@
                             // Update total cart value
                             cartTotal.textContent = "$" + data;
                             alert("Discount code applied successfully!");
+                            // Disable discount input and button after successful application
+                            document.querySelector('#discountCode').disabled = true;
+                            document.querySelector('button[type="submit"]').disabled = true;
                         })
                         .catch(err => console.log("Error:", err));
             }
-
         </script>
     </body>
 </html>

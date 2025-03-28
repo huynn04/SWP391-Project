@@ -15,7 +15,6 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import model.User;
 
-@WebServlet(name = "ApplyDiscountServlet", urlPatterns = {"/ApplyDiscount"})
 public class ApplyDiscountServlet extends HttpServlet {
 
     @Override
@@ -33,12 +32,12 @@ public class ApplyDiscountServlet extends HttpServlet {
         User user = (User) session.getAttribute("loggedInUser");
         int userId = user.getId();
 
-        // Debug để kiểm tra session có userId không
-        try ( PrintWriter out = response.getWriter()) {
+        try (PrintWriter out = response.getWriter()) {
 
             String discountCode = request.getParameter("discountCode");
             double currentTotal = Double.parseDouble(request.getParameter("currentTotal"));
             double newPrice;
+
             if (discountCode == null || discountCode.trim().isEmpty()) {
                 out.print("EMPTY_CODE");
                 return;
@@ -49,21 +48,24 @@ public class ApplyDiscountServlet extends HttpServlet {
 
             Discount discount = discountDAO.getDiscountByCode(discountCode);
             if (discount == null || discount.getStatus() != 1) {
+                // Nếu mã giảm giá không hợp lệ hoặc đã hết hạn, trả về lỗi
                 out.print("INVALID_CODE");
                 return;
             }
 
+            // Áp dụng giảm giá
             newPrice = currentTotal - (currentTotal * (discount.getDiscountValue() / 100));
             session.setAttribute("totalPrice", newPrice);
-            System.out.println(newPrice);
 
-            // Trả về số phần trăm hoặc số tiền giảm giá để cập nhật trên giao diện
+            // Cập nhật trạng thái mã giảm giá trong giỏ hàng thành "1" (chưa sử dụng)
+            discountDAO.updateDiscountStatus(discountCode, 1);
+
+            // Trả về tổng giá trị mới sau khi áp dụng giảm giá
             out.print(newPrice);
+
         } catch (Exception e) {
-            e.printStackTrace(); // Ghi lỗi vào console server
+            e.printStackTrace(); // Log lỗi
             response.getWriter().print("ERROR");
         }
-        // Lưu mã giảm giá vào giỏ hàng
-
     }
 }

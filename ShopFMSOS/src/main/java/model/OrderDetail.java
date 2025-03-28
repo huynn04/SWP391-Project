@@ -115,22 +115,21 @@ public class OrderDetail {
     }
 
 public BigDecimal getSubtotal() {
-    // Kiểm tra và gán giá trị mặc định nếu price, tax, hoặc quantity là null
+    // Kiểm tra và gán giá trị mặc định nếu price hoặc quantity là null
     BigDecimal price = this.price != null ? this.price : BigDecimal.ZERO;
-    BigDecimal tax = this.tax != null ? this.tax : BigDecimal.ZERO;
 
     // Nếu quantity là kiểu int hoặc Integer, chuyển trực tiếp sang BigDecimal
     BigDecimal quantity = BigDecimal.valueOf(this.quantity); // Không cần kiểm tra null nếu quantity là kiểu int
 
-    // Tính tổng price và tax
-    BigDecimal totalPrice = price.add(tax);
+    // Tính phần bổ sung 5% của giá
+    BigDecimal additionalAmount = price.multiply(BigDecimal.valueOf(0.05)); // 5% giá trị của price
 
-    // Tính subtotal bằng cách nhân quantity với tổng price và tax
-    return quantity.multiply(totalPrice);
+    // Tính subtotal = quantity * price + 5% * price
+    BigDecimal subtotal = quantity.multiply(price).add(additionalAmount);
+
+    // Đảm bảo kết quả chỉ có 2 chữ số thập phân
+    return subtotal.setScale(2, BigDecimal.ROUND_HALF_UP); // Làm tròn kết quả sau dấu thập phân
 }
-
-
-
     public void setSubtotal(BigDecimal subtotal) {
         this.subtotal = subtotal;
     }

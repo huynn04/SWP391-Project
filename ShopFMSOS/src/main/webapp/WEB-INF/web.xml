@@ -88,6 +88,18 @@
         <servlet-name>AllNewsServlet</servlet-name>
         <servlet-class>controller.AllNewsServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>LuckyWheelServlet</servlet-name>
+        <servlet-class>controller.LuckyWheelServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ApplyDiscountServlet</servlet-name>
+        <servlet-class>controller.ApplyDiscountServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CartDetailServlet</servlet-name>
+        <servlet-class>controller.CartDetailServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>AllNewsServlet</servlet-name>
         <url-pattern>/AllNewsServlet</url-pattern>
@@ -460,17 +472,14 @@
         <servlet-name>GoogleLoginServlet</servlet-name>
         <servlet-class>controller.GoogleLoginServlet</servlet-class>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>GoogleLoginServlet</servlet-name>
         <url-pattern>/googleLogin</url-pattern>
     </servlet-mapping>
-
     <servlet>
         <servlet-name>GoogleCallbackServlet</servlet-name>
         <servlet-class>controller.GoogleCallbackServlet</servlet-class>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>GoogleCallbackServlet</servlet-name>
         <url-pattern>/callback</url-pattern>
@@ -570,6 +579,18 @@
     <servlet-mapping>
         <servlet-name>DeleteDiscountServlet</servlet-name>
         <url-pattern>/DeleteDiscount</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LuckyWheelServlet</servlet-name>
+        <url-pattern>/LuckyWheel</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ApplyDiscountServlet</servlet-name>
+        <url-pattern>/ApplyDiscount</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CartDetailServlet</servlet-name>
+        <url-pattern>/CartDetail</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>30</session-timeout>

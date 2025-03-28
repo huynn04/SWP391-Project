@@ -144,11 +144,12 @@
 
                         <h3>Order Details</h3>
                         <table class="table table-striped">
-                            <h4>Total Price: <span id="totalPrice"><%= request.getAttribute("totalPrice") %> VND</span></h4>
+                            <h4>Total Price: $<span id="totalPrice"><%= request.getAttribute("totalPrice") %></span></h4>
                             <thead>
                                 <tr>
                                     <th>Product</th>
                                     <th>Quantity</th>
+                                    <th>Ship</th>
                                     <th>Price</th>
                                 </tr>
                             </thead>
@@ -164,6 +165,7 @@
                                                name="quantity" value="<%= detail.getQuantity() %>" disabled>
                                         <input type="hidden" name="orderDetailId" value="<%= detail.getOrderDetailId() %>">
                                     </td>
+                                    <td><%= detail.getTax() %></td>
                                     <td><%= detail.getPrice() %></td>
                                 </tr>
                                 <% } %>
@@ -171,6 +173,9 @@
                         </table>
 
                         <button type="submit" class="btn btn-primary">Update</button>
+                        <a href="CustomerOrderHistory" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </a>
                     </form>
                 </div>
             </main>
@@ -202,7 +207,7 @@
                         dataType: "json",
                         success: function (response) {
                             if (response.success) {
-                                $("#totalPrice").text(response.newTotal + " VND");
+                                $("#totalPrice").text(response.newTotal + " $");
                                 $input.data("original-quantity", newQuantity); // Update original quantity
                             } else {
                                 alert("Update failed!");
