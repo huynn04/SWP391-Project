@@ -29,7 +29,7 @@
                         <td>
                             <input type="file" class="form-control" name="avatar">
                             <% if (user.getAvatar() != null && !user.getAvatar().isEmpty()) { %>
-                            <img src="<%= user.getAvatar() %>" alt="Avatar" width="100" class="rounded mt-2">
+                            <img src="${pageContext.request.contextPath}/<%= user.getAvatar() %>" alt="Avatar" width="100" class="rounded mt-2">
                             <% } %>
                         </td>
                     </tr>
