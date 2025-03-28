@@ -249,15 +249,34 @@
                 align-items: center;
             }
             .center-content {
-                display: flex;                 /* Enable flexbox */
-                justify-content: center;       /* Center horizontally */
-                align-items: center;           /* Center vertically */
-                height: auto;                 /* Set the container's height to fill the viewport */
-                margin: auto;                     /* Remove default margin */
-                padding: auto auto;               /* Add padding if needed to adjust space around */
-                text-align: center;            /* Center the text inside the columns */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 40vh;
+                margin: 0;
+                padding: 0 0px;
+                text-align: center;
+            }
+            #scrollToTopBtn {
+                position: fixed;
+                bottom: 60px; /* Tăng giá trị này để nút xuất hiện cao hơn */
+                right: 20px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 50%;
+                padding: 15px;
+                font-size: 18px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                cursor: pointer;
+                z-index: 1000;
+                display: none; /* Initially hidden */
+                transition: background-color 0.3s ease;
             }
 
+            #scrollToTopBtn:hover {
+                background-color: #0056b3;
+            }
 
 
         </style>
@@ -378,11 +397,33 @@
                         </c:forEach>
                     </div>
                 </div>
+                <!-- Back to Top Button -->
+                <button id="scrollToTopBtn" title="Go to top">
+                    <i class="fas fa-arrow-up"></i>
+                </button>
             </main>
 
             <%@ include file="footer.jsp" %>
         </div>
+        <script>
+            // Get the button
+            var mybutton = document.getElementById("scrollToTopBtn");
 
+            // When the user scrolls down 20px from the top of the document, show the button
+            window.onscroll = function () {
+                if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                    mybutton.style.display = "block";
+                } else {
+                    mybutton.style.display = "none";
+                }
+            };
+
+            // When the user clicks the button, scroll to the top of the document
+            mybutton.onclick = function () {
+                document.body.scrollTop = 0; // For Safari
+                document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE, and Opera
+            };
+        </script>
 
     </body>
 </html>
