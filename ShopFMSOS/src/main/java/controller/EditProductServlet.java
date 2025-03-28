@@ -1,3 +1,9 @@
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
+
 package controller;
 
 import dal.CategoryDAO;
@@ -14,10 +20,14 @@ import jakarta.servlet.http.Part;
 import java.math.BigDecimal;
 import model.Product;
 
+/**
+ *
+ * @author Tran Huy Lam CE180899
+ */
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024,   // 1 MB
-    maxFileSize = 1024 * 1024 * 5,     // 5 MB
-    maxRequestSize = 1024 * 1024 * 25  // 25 MB
+        fileSizeThreshold = 1024 * 1024, // 1 MB
+        maxFileSize = 1024 * 1024 * 5, // 5 MB
+        maxRequestSize = 1024 * 1024 * 25 // 25 MB
 )
 public class EditProductServlet extends HttpServlet {
 
@@ -64,6 +74,8 @@ public class EditProductServlet extends HttpServlet {
         String priceStr = request.getParameter("price");
         String discountStr = request.getParameter("discount");
         String quantityStr = request.getParameter("quantity");
+        String target = request.getParameter("target");
+        String factory = request.getParameter("factory");
         int status = Integer.parseInt(request.getParameter("status"));
 
         // Lấy thông tin sản phẩm hiện tại từ DB (để giữ lại ảnh cũ nếu không upload mới)
@@ -114,6 +126,8 @@ public class EditProductServlet extends HttpServlet {
         product.setPrice(price);
         product.setDiscount(discount);
         product.setQuantity(quantity);
+        product.setTarget(target);
+        product.setFactory(factory);
         product.setStatus(status);
         product.setImage(newImagePath);  // Cập nhật ảnh sản phẩm mới (hoặc cũ nếu không thay đổi)
 

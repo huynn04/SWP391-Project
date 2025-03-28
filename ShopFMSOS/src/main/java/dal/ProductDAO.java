@@ -474,4 +474,103 @@ public class ProductDAO extends DBContext {
         return products;
     }
 
+    public List<Product> getPaginatedProducts(String searchQuery, String searchBy, String sortBy, int page, int pageSize) {
+        List<Product> products = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM [products] WHERE 1=1");
+
+        // Handle search for specific columns only
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            switch (searchBy) {
+                case "id":
+                    sql.append(" AND LOWER(product_id) LIKE LOWER(?)");
+                    break;
+                case "name":
+                    sql.append(" AND LOWER(product_name) LIKE LOWER(?)");
+                    break;
+                case "price":
+                    sql.append(" AND LOWER(price) LIKE LOWER(?)");
+                    break;
+                case "quantity":
+                    sql.append(" AND LOWER(quantity) LIKE LOWER(?)");
+                    break;
+                case "sold":
+                    sql.append(" AND LOWER(sold) LIKE LOWER(?)");
+                    break;
+                default:
+                    sql.append(" AND LOWER(product_name) LIKE LOWER(?)"); // Default to name
+                    break;
+            }
+        }
+
+        // Handle sorting (remains unchanged)
+        if (sortBy != null && !sortBy.isEmpty()) {
+            String[] sortParts = sortBy.split("-");
+            String column = sortParts[0];
+            String direction = (sortParts.length > 1 && "desc".equals(sortParts[1])) ? "DESC" : "ASC";
+
+            switch (column) {
+                case "name":
+                    sql.append(" ORDER BY product_name ").append(direction);
+                    break;
+                case "id":
+                    sql.append(" ORDER BY product_id ").append(direction);
+                    break;
+                case "price":
+                    sql.append(" ORDER BY price ").append(direction);
+                    break;
+                case "quantity":
+                    sql.append(" ORDER BY quantity ").append(direction);
+                    break;
+                case "sold":
+                    sql.append(" ORDER BY sold ").append(direction);
+                    break;
+                default:
+                    sql.append(" ORDER BY product_id ASC");
+                    break;
+            }
+        } else {
+            sql.append(" ORDER BY product_id ASC");
+        }
+
+        sql.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql.toString())) {
+            int paramIndex = 1;
+
+            // Set search parameter
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                String searchPattern = "%" + searchQuery + "%";
+                ps.setString(paramIndex++, searchPattern);
+            }
+
+            // Set pagination parameters
+            ps.setInt(paramIndex++, (page - 1) * pageSize);
+            ps.setInt(paramIndex, pageSize);
+
+            try ( ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product(
+                            rs.getInt("product_id"),
+                            rs.getInt("category_id"),
+                            rs.getString("product_name"),
+                            rs.getString("detail_desc"),
+                            rs.getString("image"),
+                            rs.getBigDecimal("price"),
+                            rs.getBigDecimal("discount"),
+                            rs.getInt("quantity"),
+                            rs.getInt("sold"),
+                            rs.getString("target"),
+                            rs.getString("factory"),
+                            rs.getInt("status"),
+                            rs.getDate("created_at"),
+                            rs.getDate("updated_at")
+                    );
+                    products.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
 }
