@@ -39,9 +39,13 @@ public class AddCategoryServlet extends HttpServlet {
             // Lấy tên file gốc và tạo tên duy nhất
             String fileName = System.currentTimeMillis() + "_" + Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
 
-            // Định nghĩa đường dẫn lưu ảnh
-            String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
-            File uploadDir = new File(uploadPath);
+            // Định nghĩa đường dẫn lưu ảnh vào thư mục src/main/webapp/image
+            String picFolder = "src/main/webapp/image"; // thư mục lưu ảnh
+            String projectPath = getServletContext().getRealPath("/").split("target")[0]; // Đường dẫn gốc
+            String realPath = projectPath + picFolder;
+
+            // Tạo thư mục nếu chưa có
+            File uploadDir = new File(realPath);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();  // Tạo thư mục nếu chưa có
             }
@@ -51,7 +55,7 @@ public class AddCategoryServlet extends HttpServlet {
             filePart.write(fileToSave.getAbsolutePath());
 
             // Lưu đường dẫn ảnh
-            image = "/uploads/" + fileName;  // Đường dẫn lưu trên server
+            image = "image/" + fileName;  // Đường dẫn ảnh trong thư mục image
         }
 
         // Lấy trạng thái
