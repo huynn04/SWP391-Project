@@ -69,22 +69,7 @@
                         }
                     %>
                 </tbody>
-            </table>
-
-            <%-- Show discount code input only if discount hasn't been applied --%>
-            <c:if test="${not discountApplied}">
-                <form onsubmit="doDiscount(event)" class="mb-3">
-                    <label for="discountCode">Enter Discount Code:</label>
-                    <input type="text" name="discountCode" id="discountCode" class="form-control w-50 d-inline" 
-                           placeholder="Enter code here">
-                    <button type="submit" class="btn btn-primary">Apply</button>
-                </form>
-            </c:if>
-
-            <c:if test="${discountApplied}">
-                <div class="alert alert-info">A discount code has already been applied to your order.</div>
-            </c:if>
-
+            </table>  
             <script>
                 function applyDiscount(e) {
                     e.preventDefault();
