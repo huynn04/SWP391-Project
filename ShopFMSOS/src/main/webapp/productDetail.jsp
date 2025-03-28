@@ -122,7 +122,8 @@
                             <%= product.getStatus() == 1 ? "In Stock" : "Out of Stock" %>
                         </p>
                         <div class="mt-3">
-                            <a href="AddToCart?productId=<%= product.getProductId() %>" class="btn btn-success">Add to Cart</a>
+                            <a href="<%= session.getAttribute("loggedInUser") != null ? "AddToCart?productId=" + product.getProductId() : "login.jsp" %>" 
+                               class="btn btn-success">Add to Cart</a>
                         </div>
                     </div>
                 </div>
