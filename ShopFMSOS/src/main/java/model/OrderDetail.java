@@ -87,18 +87,9 @@ public class OrderDetail {
     }
 
     public BigDecimal getTax() {
-    // Kiểm tra và gán giá trị mặc định nếu price hoặc quantity là null
-    BigDecimal price = this.price != null ? this.price : BigDecimal.ZERO;
-    BigDecimal quantity = BigDecimal.valueOf(this.quantity); // Nếu quantity là int, dùng BigDecimal.valueOf
-
-    // Tính tổng giá trị đơn hàng trước thuế (price * quantity)
-    BigDecimal totalPriceWithoutTax = price.multiply(quantity);
-
-    // Tính thuế (tax) là 5% của tổng giá trị đơn hàng
-    BigDecimal tax = totalPriceWithoutTax.multiply(BigDecimal.valueOf(0.05)); // 5% tax
-
-    return tax.setScale(2, BigDecimal.ROUND_HALF_UP);  // Trả về giá trị thuế tính được
-}
+        // Thuế luôn luôn bằng 1.25$
+        return BigDecimal.valueOf(1.25).setScale(2, BigDecimal.ROUND_HALF_UP);
+    }
 
 
     public void setTax(BigDecimal tax) {
@@ -114,22 +105,19 @@ public class OrderDetail {
         this.product = product;
     }
 
-public BigDecimal getSubtotal() {
-    // Kiểm tra và gán giá trị mặc định nếu price hoặc quantity là null
-    BigDecimal price = this.price != null ? this.price : BigDecimal.ZERO;
+ public BigDecimal getSubtotal() {
+        // Kiểm tra và gán giá trị mặc định nếu price hoặc quantity là null
+        BigDecimal price = this.price != null ? this.price : BigDecimal.ZERO;
 
-    // Nếu quantity là kiểu int hoặc Integer, chuyển trực tiếp sang BigDecimal
-    BigDecimal quantity = BigDecimal.valueOf(this.quantity); // Không cần kiểm tra null nếu quantity là kiểu int
+        // Nếu quantity là kiểu int hoặc Integer, chuyển trực tiếp sang BigDecimal
+        BigDecimal quantity = BigDecimal.valueOf(this.quantity); // Không cần kiểm tra null nếu quantity là kiểu int
 
-    // Tính phần bổ sung 5% của giá
-    BigDecimal additionalAmount = price.multiply(BigDecimal.valueOf(0.05)); // 5% giá trị của price
+        // Tính subtotal = quantity * price + 1.25 (thuế cố định)
+        BigDecimal subtotal = quantity.multiply(price).add(BigDecimal.valueOf(1.25));
 
-    // Tính subtotal = quantity * price + 5% * price
-    BigDecimal subtotal = quantity.multiply(price).add(additionalAmount);
-
-    // Đảm bảo kết quả chỉ có 2 chữ số thập phân
-    return subtotal.setScale(2, BigDecimal.ROUND_HALF_UP); // Làm tròn kết quả sau dấu thập phân
-}
+        // Đảm bảo kết quả chỉ có 2 chữ số thập phân
+        return subtotal.setScale(2, BigDecimal.ROUND_HALF_UP); // Làm tròn kết quả sau dấu thập phân
+    }
     public void setSubtotal(BigDecimal subtotal) {
         this.subtotal = subtotal;
     }
