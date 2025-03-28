@@ -97,7 +97,7 @@ public class OrderDetail {
     // Tính thuế (tax) là 5% của tổng giá trị đơn hàng
     BigDecimal tax = totalPriceWithoutTax.multiply(BigDecimal.valueOf(0.05)); // 5% tax
 
-    return tax.setScale(2, BigDecimal.ROUND_HALF_UP);  // Trả về giá trị thuế tính được
+    return tax;  // Trả về giá trị thuế tính được
 }
 
 

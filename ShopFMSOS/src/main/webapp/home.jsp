@@ -36,6 +36,7 @@
             main {
                 flex: 1;
                 padding-bottom: 50px;
+                padding-top: 50px; /* Khoảng cách trên cùng để tránh đẩy phần tử lên quá cao */
             }
 
             /* Stretch the container to full width */
@@ -158,7 +159,8 @@
             }
 
             .container {
-                padding-top: 500px;
+                padding-top: 0; /* Đảm bảo padding-top không gây khoảng cách quá lớn */
+                margin-top: 20px; /* Điều chỉnh margin-top nếu cần thiết */
             }
 
             /* Add News Button */

@@ -14,6 +14,7 @@ import com.google.api.services.people.v1.model.Person;
 
 import dal.UserDAO;
 import model.User;
+import utils.HashUtil;  // Import HashUtil để mã hóa mật khẩu nếu cần
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -25,12 +26,11 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Optional;
 
-@WebServlet("/callback")
 public class GoogleCallbackServlet extends HttpServlet {
 
     private static final String CLIENT_ID = "1096516353632-1h6nv5aigac6dr17ghph007vohfnjrh7.apps.googleusercontent.com";
     private static final String CLIENT_SECRET = "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";
-    private static final String REDIRECT_URI = "http://localhost:8080/callback";
+    private static final String REDIRECT_URI = "http://localhost:8080/FMSOS/callback"; // Đảm bảo URL chính xác
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
     @Override
