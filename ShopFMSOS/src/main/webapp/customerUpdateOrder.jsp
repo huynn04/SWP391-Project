@@ -134,21 +134,23 @@
                                 <!-- Payment Method -->
                                 <div class="mb-3">
                                     <label for="paymentMethod" class="form-label">Payment Method</label>
-                                    <select class="form-control" id="paymentMethod" name="paymentMethod" disabled>
-                                        <option value="COD" <%= order.getPaymentMethod().equals("COD") ? "selected" : "" %>>Cash on Delivery</option>
-                                        <option value="Online" <%= order.getPaymentMethod().equals("Online") ? "selected" : "" %>>Online Payment</option>
-                                    </select>
+                                    <!--                                    <select class="form-control" id="paymentMethod" name="paymentMethod" disabled>
+                                                                            <option value="COD" <%= order.getPaymentMethod().equals("COD") ? "selected" : "" %>>Cash on Delivery</option>
+                                                                            <option value="Online" <%= order.getPaymentMethod().equals("Online") ? "selected" : "" %>>Online Payment</option>
+                                                                        </select>-->
+                                    <input disabled type="text" class="form-control" id="paymentMethod" name="paymentMethod" value="<%= order.getPaymentMethod() %>">
                                 </div>
                             </div>
                         </div>
 
                         <h3>Order Details</h3>
                         <table class="table table-striped">
-                            <h4>Total Price: <span id="totalPrice"><%= request.getAttribute("totalPrice") %> VND</span></h4>
+                            <h4>Total Price: $<span id="totalPrice"><%= request.getAttribute("totalPrice") %></span></h4>
                             <thead>
                                 <tr>
                                     <th>Product</th>
                                     <th>Quantity</th>
+                                    <th>Tax</th>
                                     <th>Price</th>
                                 </tr>
                             </thead>
@@ -164,7 +166,8 @@
                                                name="quantity" value="<%= detail.getQuantity() %>" disabled>
                                         <input type="hidden" name="orderDetailId" value="<%= detail.getOrderDetailId() %>">
                                     </td>
-                                    <td><%= detail.getPrice() %></td>
+                                    <td>$<%= detail.getTax()%></td>
+                                    <td>$<%= detail.getPrice() %></td>
                                 </tr>
                                 <% } %>
                             </tbody>

@@ -31,7 +31,7 @@ public class CustomerUpdateOrderServlet extends HttpServlet {
             // Retrieve orderId from URL
             String orderIdParam = request.getParameter("orderId");
             if (orderIdParam == null || orderIdParam.trim().isEmpty()) {
-                response.sendRedirect("CustomerOrderHistory?error=Invalid order ID");
+                response.sendRedirect("CustomerOrderHistory?error=Invalid+order+ID");
                 return;
             }
 
@@ -42,7 +42,7 @@ public class CustomerUpdateOrderServlet extends HttpServlet {
             List<OrderDetail> orderDetails = orderDAO.getOrderDetailsByOrderId(orderId);
 
             if (order == null) {
-                response.sendRedirect("CustomerOrderHistory?error=Order not found");
+                response.sendRedirect("CustomerOrderHistory?error=Order+not+found");
                 return;
             }
 
@@ -66,7 +66,7 @@ public class CustomerUpdateOrderServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("CustomerOrderHistory?error=Error retrieving order details");
+            response.sendRedirect("CustomerOrderHistory?error=Error+retrieving+order+details");
         }
     }
 
@@ -92,8 +92,6 @@ public class CustomerUpdateOrderServlet extends HttpServlet {
             String receiverName = request.getParameter("receiverName");
             String receiverAddress = request.getParameter("receiverAddress");
             String receiverPhone = request.getParameter("receiverPhone");
-            String paymentMethod = request.getParameter("paymentMethod");
-
             // Retrieve order and order details
             Order order = orderDAO.getOrderById(orderId);
             List<OrderDetail> orderDetails = orderDAO.getOrderDetailsByOrderId(orderId);
@@ -113,8 +111,6 @@ public class CustomerUpdateOrderServlet extends HttpServlet {
             order.setReceiverName(receiverName);
             order.setReceiverAddress(receiverAddress);
             order.setReceiverPhone(receiverPhone);
-            order.setPaymentMethod(paymentMethod);
-
             // Update the order details (if quantities were changed)
             List<OrderDetail> updatedOrderDetails = new ArrayList<>();
             String[] orderDetailIds = request.getParameterValues("orderDetailId");
