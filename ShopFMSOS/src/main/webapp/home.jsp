@@ -252,9 +252,9 @@
                 display: flex;                 /* Enable flexbox */
                 justify-content: center;       /* Center horizontally */
                 align-items: center;           /* Center vertically */
-                height: 40vh;                 /* Set the container's height to fill the viewport */
-                margin: 0;                     /* Remove default margin */
-                padding: 0 0px;               /* Add padding if needed to adjust space around */
+                height: auto;                 /* Set the container's height to fill the viewport */
+                margin: auto;                     /* Remove default margin */
+                padding: auto auto;               /* Add padding if needed to adjust space around */
                 text-align: center;            /* Center the text inside the columns */
             }
 
@@ -383,20 +383,6 @@
             <%@ include file="footer.jsp" %>
         </div>
 
-        <!-- Chatra {literal} -->
-        <script>
-            (function (d, w, c) {
-                w.ChatraID = '6ttM7t2hWx4ta8j2Z';
-                var s = d.createElement('script');
-                w[c] = w[c] || function () {
-                    (w[c].q = w[c].q || []).push(arguments);
-                };
-                s.async = true;
-                s.src = 'https://call.chatra.io/chatra.js';
-                if (d.head)
-                    d.head.appendChild(s);
-            })(document, window, 'Chatra');
-        </script>
-        <!-- /Chatra {/literal} -->
+
     </body>
 </html>
