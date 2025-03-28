@@ -15,12 +15,12 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 
-@WebServlet("/googleLogin")
+
 public class GoogleLoginServlet extends HttpServlet {
 
     private static final String CLIENT_ID = "1096516353632-1h6nv5aigac6dr17ghph007vohfnjrh7.apps.googleusercontent.com";
     private static final String CLIENT_SECRET = "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";
-    private static final String REDIRECT_URI = "http://localhost:8080/callback";
+    private static final String REDIRECT_URI = "http://localhost:8080/FMSOS/callback";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
     @Override

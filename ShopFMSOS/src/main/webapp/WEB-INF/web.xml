@@ -165,14 +165,6 @@
         <servlet-class>controller.ProductControllerServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GoogleLoginServlet</servlet-name>
-        <servlet-class>controller.GoogleLoginServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GoogleCallbackServlet</servlet-name>
-        <servlet-class>controller.GoogleCallbackServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>ChangePasswordServlet</servlet-name>
         <servlet-class>controller.ChangePasswordServlet</servlet-class>
     </servlet>
@@ -405,14 +397,6 @@
         <url-pattern>/ProductController</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GoogleLoginServlet</servlet-name>
-        <url-pattern>/GoogleLoginServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GoogleCallbackServlet</servlet-name>
-        <url-pattern>/GoogleCallbackServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>ChangePasswordServlet</servlet-name>
         <url-pattern>/ChangePasswordServlet</url-pattern>
     </servlet-mapping>
@@ -472,6 +456,25 @@
         <servlet-name>AddCommentServlet</servlet-name>
         <servlet-class>controller.AddCommentServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GoogleLoginServlet</servlet-name>
+        <servlet-class>controller.GoogleLoginServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GoogleLoginServlet</servlet-name>
+        <url-pattern>/googleLogin</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GoogleCallbackServlet</servlet-name>
+        <servlet-class>controller.GoogleCallbackServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GoogleCallbackServlet</servlet-name>
+        <url-pattern>/callback</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AddCommentServlet</servlet-name>
         <url-pattern>/AddComment</url-pattern>
