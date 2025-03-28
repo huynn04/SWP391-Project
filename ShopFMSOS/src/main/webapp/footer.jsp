@@ -13,6 +13,8 @@
     <main>
         <!-- Nội dung của trang bạn đặt ở đây -->
     </main>
+
+    <footer id="footer">
         <!-- Chatra {literal} -->
         <script>
             (function (d, w, c) {
@@ -28,7 +30,6 @@
             })(document, window, 'Chatra');
         </script>
         <!-- /Chatra {/literal} -->
-    <footer id="footer">
         <div class="container">
             <nav>
                 <ul class="footer-nav">
@@ -36,14 +37,14 @@
                     <li><a href="products">Products</a></li>
                     <li><a href="<%= session.getAttribute("loggedInUser") != null ? "cartDetail.jsp" : "login.jsp" %>">Cart</a></li>
                     <li><a href="AllNews">News</a></li>
-                    <% if (loggedInUser == null) { %>
-                        <li><a href="login.jsp">Login</a></li>
-                    <% } else { %>
+                        <% if (loggedInUser == null) { %>
+                    <li><a href="login.jsp">Login</a></li>
+                        <% } else { %>
                         <% if (loggedInUser.getRoleId() == 1 || loggedInUser.getRoleId() == 2) { %>
-                            <li><a href="dashboard">Dashboard</a></li>
+                    <li><a href="dashboard">Dashboard</a></li>
                         <% } %>
-                        <li><a href="LogoutServlet" class="text-danger">Logout</a></li>
-                    <% } %>
+                    <li><a href="LogoutServlet" class="text-danger">Logout</a></li>
+                        <% } %>
                 </ul>
             </nav>
             <div class="footer-text">
