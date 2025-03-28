@@ -1,18 +1,9 @@
 <%-- 
     Document   : footer
     Created on : Feb 26, 2025
-    Author     : Nguyễn Ngọc Huy CE180178
+    Author     : Nguy?n Ng?c Huy CE180178
 --%>
-<%@ page contentType="text/html; charset=UTF-8" %>
 
-<link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-
-<div id="wrapper">
-    <!-- Nội dung chính của trang -->
-    <main>
-        <!-- Nội dung của trang bạn đặt ở đây -->
-    </main>
 
     <footer id="footer">
         <!-- Chatra {literal} -->
@@ -55,55 +46,49 @@
 </div>
 
 <style>
-    /* Đảm bảo footer nằm dưới cùng trang */
-    html, body {
-        height: 100%;
-        margin: 0;
-    }
+    /* ??m b?o footer n?m d??i c�ng trang */
+html, body {
+    height: 100%;
+    margin: 0;
+}
 
-    #wrapper {
-        min-height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
+#wrapper {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
 
-    main {
-        flex: 1;  /* Phần chính sẽ mở rộng để đẩy footer xuống dưới */
-    }
+main {
+    flex: 1;  /* Ph?n ch�nh s? m? r?ng ?? ??y footer xu?ng d??i */
+}
 
-    #footer {
-        background-color: #f8f9fa;
-        padding: 20px 0;
-        border-top: 1px solid #e7e7e7;
-        text-align: center;
-        width: 100%;
-    }
 
-    .footer-nav {
-        list-style: none;
-        padding: 0;
-        margin: 0 0 10px 0;
-        display: flex;
-        justify-content: center;
-        gap: 20px;  /* Khoảng cách giữa các mục */
-    }
+.footer-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px 0;
+    display: flex;
+    justify-content: center;
+    gap: 15px;  /* Gi?m kho?ng c�ch gi?a c�c m?c */
+}
 
-    .footer-nav li {
-        display: inline;
-    }
+.footer-nav li {
+    display: inline;
+}
 
-    .footer-nav a {
-        text-decoration: none;
-        color: #333;
-        font-size: 14px;
-    }
+.footer-nav a {
+    text-decoration: none;
+    color: #333;
+    font-size: 13px;  /* Gi?m font-size ?? menu trong footer nh? g?n h?n */
+}
 
-    .footer-nav a:hover {
-        color: #007bff;
-    }
+.footer-nav a:hover {
+    color: #007bff;
+}
 
-    .footer-text {
-        font-size: 12px;
-        color: #666;
-    }
+.footer-text {
+    font-size: 11px;  /* Gi?m font-size cho text trong footer */
+    color: #666;
+}
+
 </style>
