@@ -16,8 +16,8 @@
     <%@ include file="header.jsp" %>
     <div class="container mt-5">
         <div class="alert alert-success">
-            <h3>Thanh toán thành công!</h3>
-            <p>Cảm ơn bạn đã mua hàng. Đơn hàng của bạn sẽ được giao đến địa chỉ sau: <%= request.getAttribute("address") %></p>
+            <h3>Payment successful!</h3>
+            <p>Thank you for your purchase. Your order will be delivered to the following address: <%= request.getAttribute("address") %></p>
         </div>
     </div>
     <%@ include file="footer.jsp" %>
