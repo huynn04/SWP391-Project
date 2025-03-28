@@ -214,7 +214,7 @@
                                         <i class="fas fa-eye"></i> View Order Detail
                                     </a>
                                     <% if (order.getStatus() == 0) { %>
-                                    <a href="CustomerCancelOrder?orderId=<%= order.getOrderId() %>" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn huỷ đơn hàng này?')">Cancel</a>
+                                    <a href="CustomerCancelOrder?orderId=<%= order.getOrderId() %>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to cancel this order?')">Cancel</a>
                                     <a href="CustomerUpdateOrder?orderId=<%= order.getOrderId() %>" class="btn btn-sm btn-primary">Update</a>
                                     <% } else if (order.getStatus() == 1) { %>
                                     <a href="CustomerReceivedOrder?orderId=<%= order.getOrderId() %>" class="btn btn-sm btn-success">Received</a>
@@ -265,8 +265,8 @@
                     dataType: "json",
                     success: function (response) {
                         if (response.success) {
-                            row.find(".subtotal").text(response.newSubtotal + " VNĐ");
-                            $(".total-price[data-order-id='" + orderId + "']").text(response.newTotal + " VNĐ");
+                            row.find(".subtotal").text(response.newSubtotal + " $");
+                            $(".total-price[data-order-id='" + orderId + "']").text(response.newTotal + " $");
                         } else {
                             alert("Update fail");
                         }
