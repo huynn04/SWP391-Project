@@ -192,7 +192,7 @@
                             <td>$<%= detail.getSubtotal() %></td>
                         </tr>
                         <tr>
-                            <th>Ship</th>
+                            <th>Tax</th>
                             <td>$<%= detail.getTax() %></td>
                         </tr>
                     </table>

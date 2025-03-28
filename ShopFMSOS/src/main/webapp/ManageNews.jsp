@@ -1,6 +1,6 @@
 <%-- 
     Document   : ManageNews
-    Created on : Mar 17, 2025, 19:24:24
+    Created on : 17 thg 3, 2025, 19:24:24
     Author     : Tran Huy Lam CE180899 
 --%>
 
@@ -9,7 +9,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
     <head>
         <meta charset="UTF-8">
         <title>News Management</title>
@@ -36,10 +36,6 @@
                 width: 100px;
                 height: 100px;
                 object-fit: cover;
-            }
-            .pagination {
-                justify-content: center;
-                margin-top: 20px;
             }
         </style>
     </head>
@@ -91,7 +87,7 @@
                         </form>
                     </div>
 
-                    <!-- Display news list -->
+                    <!-- Hiển thị danh sách tin tức -->
                     <c:choose>
                         <c:when test="${empty newsList}">
                             <div class="alert alert-warning">No news found.</div>
@@ -131,12 +127,13 @@
                                                     </c:choose>
                                                 </td>
                                                 <td>
+                                                    <!-- Formater la date pour afficher jour, mois, année, heure, minute, seconde -->
                                                     <fmt:formatDate value="${news.createdAt}" pattern="yyyy-MM-dd HH:mm:ss" />
                                                 </td>
                                                 <td>
                                                     <a href="ViewNews?id=${news.newsId}" class="btn btn-info btn-sm">View</a>
                                                     <a href="EditNews?newsId=${news.newsId}" class="btn btn-primary btn-sm">Edit</a>
-                                                    <a href="DeleteNews?id=${news.newsId}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this news?');">Delete</a>
+                                                    <a href="DeleteNews?id=${news.newsId}" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa tin tức này?');">Delete</a>
                                                 </td>
                                             </tr>
                                         </c:forEach>
@@ -144,26 +141,18 @@
                                 </table>
                             </div>
 
-                            <!-- Pagination -->
-                            <nav aria-label="Page navigation">
-                                <ul class="pagination">
-                                    <c:if test="${currentPage > 1}">
-                                        <li class="page-item">
-                                            <a class="page-link" href="ManageNews?page=${currentPage - 1}&searchQuery=${param.searchQuery}&searchBy=${param.searchBy}&sortBy=${param.sortBy}">Previous</a>
-                                        </li>
-                                    </c:if>
-                                    <c:forEach begin="1" end="${totalPages}" var="i">
-                                        <li class="page-item ${currentPage == i ? 'active' : ''}">
-                                            <a class="page-link" href="ManageNews?page=${i}&searchQuery=${param.searchQuery}&searchBy=${param.searchBy}&sortBy=${param.sortBy}">${i}</a>
-                                        </li>
-                                    </c:forEach>
-                                    <c:if test="${currentPage < totalPages}">
-                                        <li class="page-item">
-                                            <a class="page-link" href="ManageNews?page=${currentPage + 1}&searchQuery=${param.searchQuery}&searchBy=${param.searchBy}&sortBy=${param.sortBy}">Next</a>
-                                        </li>
-                                    </c:if>
-                                </ul>
-                            </nav>
+                            <!-- Phân trang -->
+                            <div class="d-flex justify-content-between">
+                                <c:if test="${currentPage > 1}">
+                                    <a href="ManageNews?page=${currentPage - 1}&searchQuery=${param.searchQuery}&searchBy=${param.searchBy}&sortBy=${param.sortBy}" class="btn btn-secondary">Previous</a>
+                                </c:if>
+
+                                <span>Page ${currentPage} of ${totalPages}</span>
+
+                                <c:if test="${currentPage < totalPages}">
+                                    <a href="ManageNews?page=${currentPage + 1}&searchQuery=${param.searchQuery}&searchBy=${param.searchBy}&sortBy=${param.sortBy}" class="btn btn-secondary">Next</a>
+                                </c:if>
+                            </div>
                         </c:otherwise>
                     </c:choose>
                 </main>
