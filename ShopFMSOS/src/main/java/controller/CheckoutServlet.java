@@ -1,13 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import dal.CartDAO;
 import dal.OrderDAO;
 import dal.OrderDetailDAO;
 import dal.ProductDAO;
+import dal.DiscountDAO; // Import DiscountDAO
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -22,16 +19,11 @@ import model.OrderDetail;
 import model.Product;
 import model.User;
 
-/**
- *
- * @author Dang Chi Vi CE182507
- */
 public class CheckoutServlet extends HttpServlet {
 
     protected void doPost(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Log để xác nhận servlet được gọi
         System.out.println(">>> [DEBUG] CheckoutServlet doPost()");
 
         HttpSession session = request.getSession(true);
@@ -42,17 +34,14 @@ public class CheckoutServlet extends HttpServlet {
         User user = (User) session.getAttribute("loggedInUser");
         List<Product> cart = (List<Product>) session.getAttribute("cart");
 
-        // Kiểm tra giỏ hàng
         if (cart == null || cart.isEmpty()) {
             System.out.println(">>> [DEBUG] Giỏ hàng trống, return sớm.");
             response.sendRedirect("cartDetail.jsp?error=CartEmpty");
             return;
         }
 
-        // Lấy thông tin thanh toán từ session
         int userId = user.getId();
         String fullName = request.getParameter("fullName");
-        
         String phone = request.getParameter("phone");
         String specificAddress = request.getParameter("specificAddress");
         String ward = request.getParameter("ward");
@@ -62,27 +51,22 @@ public class CheckoutServlet extends HttpServlet {
         String discountCode = request.getParameter("discountCode");
         String address = String.join(", ", specificAddress, ward, district, city);
 
-        // Kiểm tra thông tin bắt buộc
         if (user == null || fullName == null || address == null || phone == null || paymentMethod == null) {
             System.out.println(">>> [DEBUG] Thiếu thông tin nhận hàng, return sớm.");
             response.sendRedirect("checkoutInfo.jsp?error=Missing delivery information");
             return;
         }
 
-        // Khởi tạo các DAO cần thiết
         CartDAO cartDAO = new CartDAO();
         ProductDAO productDAO = new ProductDAO();
         OrderDAO orderDAO = new OrderDAO();
         OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
+        DiscountDAO discountDAO = new DiscountDAO(); // Tạo đối tượng DiscountDAO
 
-        // Tính tổng tiền đơn hàng
         BigDecimal totalPrice = cartDAO.getTotalPrice(userId, discountCode);
 
-        // Kiểm tra số lượng tồn kho cho từng sản phẩm
         for (Product product : cart) {
             Product dbProduct = productDAO.getProductById(product.getProductId());
-            System.out.println("quantity product: " + dbProduct.getQuantity());
-            System.out.println("quantity actual: " + product.getQuantity());
             if (dbProduct.getQuantity() < product.getQuantity()) {
                 session.setAttribute("error", "Product " + dbProduct.getProductName() + " insuffiction.");
                 response.sendRedirect("cartDetail.jsp");
@@ -90,7 +74,6 @@ public class CheckoutServlet extends HttpServlet {
             }
         }
 
-        // Tạo đối tượng Order
         Order order = new Order();
         order.setUserId(userId);
         order.setTotalPrice(totalPrice);
@@ -102,15 +85,12 @@ public class CheckoutServlet extends HttpServlet {
         order.setPaymentMethod(paymentMethod);
         order.setDiscountCode(discountCode);
 
-        // Tạo order trong DB và lấy orderId
         int orderId = orderDAO.createOrder(order);
         if (orderId > 0) {
             System.out.println(">>> [DEBUG] Order được tạo thành công với orderId = " + orderId);
             boolean allStockUpdated = true;
 
-            // Xử lý từng sản phẩm trong giỏ hàng: tạo OrderDetail và cập nhật tồn kho
             for (Product product : cart) {
-                // Tạo OrderDetail
                 OrderDetail orderDetail = new OrderDetail();
                 orderDetail.setOrderId(orderId);
                 orderDetail.setProductId(product.getProductId());
@@ -128,12 +108,10 @@ public class CheckoutServlet extends HttpServlet {
                     allStockUpdated = false;
                 }
 
-                // Log trước khi gọi updateProductStock
                 System.out.println(">>> [DEBUG] Đang gọi updateProductStock cho ProductID = "
                         + product.getProductId()
                         + ", Số lượng mua = " + product.getQuantity());
 
-                // Cập nhật tồn kho
                 if (!productDAO.updateProductStock(product.getProductId(), product.getQuantity())) {
                     System.out.println(">>> [DEBUG] Lỗi updateProductStock cho ProductID = "
                             + product.getProductId());
@@ -142,11 +120,17 @@ public class CheckoutServlet extends HttpServlet {
             }
 
             if (allStockUpdated) {
-                // Xóa giỏ hàng sau khi thanh toán thành công
                 cartDAO.clearCart(userId);
                 session.removeAttribute("cart");
                 session.removeAttribute("discountCode");
                 System.out.println(">>> [DEBUG] Thanh toán thành công, giỏ hàng đã được xoá.");
+
+                // Cập nhật trạng thái mã giảm giá sau khi thanh toán thành công
+                if (discountCode != null && !discountCode.isEmpty()) {
+                    discountDAO.updateDiscountStatus(discountCode, 0);  // Cập nhật trạng thái mã giảm giá
+                    System.out.println(">>> [DEBUG] Mã giảm giá đã được sử dụng, cập nhật trạng thái thành 0.");
+                }
+
                 response.sendRedirect("thongbao.jsp?message=success");
             } else {
                 System.out.println(">>> [DEBUG] Lỗi cập nhật tồn kho hoặc thêm chi tiết đơn hàng, rollback.");

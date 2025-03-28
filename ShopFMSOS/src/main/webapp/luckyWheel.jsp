@@ -1,110 +1,144 @@
+<%@ include file="header.jsp" %>
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Lucky Wheel - FMSOS</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <title>Lucky Spin</title>
         <style>
-            .wheel-container { text-align: center; margin-top: 50px; }
-            .spin-btn { padding: 10px 20px; font-size: 18px; }
-            .check-btn { padding: 10px 20px; font-size: 18px; margin-left: 10px; }
-            .result { margin-top: 20px; font-size: 20px; }
-        </style>
-    </head>
-    <body>
-        <div id="wrapper">
-            <main>
-                <div class="wheel-container">
-                    <h1>Lucky Wheel</h1>
-                    <p>Spin the wheel for a chance to win a discount coupon!</p>
-                    <div id="wheel">
-                        <!-- Wheel sections here (có th? thêm hình ?nh ho?c canvas n?u c?n) -->
-                    </div>
-                    <button class="spin-btn" id="spinButton" onclick="spinWheel()">Spin Now</button>
-                    <button class="check-btn" id="checkButton" onclick="checkCouponCode()">Check Coupon Code</button>
-                    <div class="result" id="result">
-                        <c:choose>
-                            <c:when test="${not empty sessionScope.couponCode}">
-                                Congratulations! Your coupon code is: <strong>${sessionScope.couponCode}</strong>
-                            </c:when>
-                            <c:otherwise>
-                                Spin to try your luck!
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
-                </div>
-            </main>
-        </div>
 
-        <script>
-            let isSpinning = false;
-            const spinButton = document.getElementById("spinButton");
-            const wheel = document.getElementById("wheel");
-            let currentRotation = 0;
-
-            function spinWheel() {
-                if (isSpinning) return;
-                isSpinning = true;
-                spinButton.disabled = true;
-
-                const result = document.getElementById("result");
-
-                // Reset vòng quay
-                wheel.style.transition = "none";
-                wheel.style.transform = `rotate(0deg)`;
-                void wheel.offsetWidth;
-                wheel.style.transition = "transform 4s ease-out";
-
-                // G?i AJAX
-                fetch('LuckyWheelServlet', {
-                    method: 'POST',
-                    credentials: 'same-origin'
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok: ' + response.status);
-                        }
-                        return response.text();
-                    })
-                    .then(couponCode => {
-                        console.log("Coupon code received from servlet: '" + couponCode + "'");
-                        console.log("Coupon code length: " + (couponCode ? couponCode.length : "undefined"));
-                        console.log("Is couponCode empty or whitespace?: " + (!couponCode || couponCode.trim() === ""));
-
-                        let extraDeg = currentRotation + Math.floor(Math.random() * 360) + 1800;
-                        wheel.style.transform = `rotate(${extraDeg}deg)`;
-                        currentRotation = extraDeg % 360;
-
-                        setTimeout(() => {
-                            isSpinning = false;
-                            spinButton.disabled = false;
-                            if (couponCode && couponCode.trim() !== "") {
-                                console.log("Displaying coupon code: " + couponCode);
-                                result.innerHTML = `Congratulations! Your coupon code is: <strong>${couponCode}</strong>`;
-                            } else if (couponCode === "Please log in to spin!") {
-                                result.innerHTML = couponCode;
-                            } else {
-                                console.log("No coupon code received or empty, showing 'Better luck next time!'");
-                                result.innerHTML = "Better luck next time!";
-                            }
-                        }, 4200);
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        isSpinning = false;
-                        spinButton.disabled = false;
-                        result.innerHTML = "Something went wrong! Check console for details.";
-                    });
+            body {
+                display: flex;
+                flex-direction: column;
+                height: 100vh; /* Chi?u cao toàn b? trang */
+                margin: 0;
             }
 
-            // Hàm ki?m tra mã gi?m giá trong session
-            function checkCouponCode() {
-                const couponCode = "${sessionScope.couponCode}";
-                console.log("Checking session coupon code...");
-                console.log("Coupon code in session (via JSP): '" + couponCode + "'");
-                alert("Current coupon code in session: " + (couponCode || "No coupon code found"));
+            .main-content {
+                flex: 1; /* Ph?n chính chi?m toàn b? không gian còn l?i */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                padding-top: 100px; /* ?i?u ch?nh ?? vòng quay xu?ng th?p h?n */
+            }
+
+            .spin-container {
+                position: relative;
+                width: 300px;
+                height: 300px;
+                border-radius: 50%;
+                background-color: #f5f5f5;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 5px solid #333;
+                background: conic-gradient(
+                    #4db8ff 0deg 45deg,
+                    #ff4d4d 45deg 90deg,
+                    #ffcc00 90deg 135deg,
+                    #66ff66 135deg 180deg,
+                    #ff3399 180deg 225deg,
+                    #66ccff 225deg 270deg,
+                    #ff9933 270deg 315deg,
+                    #9966ff 315deg 360deg
+                    );
+            }
+
+            .spin-btn {
+                position: absolute;
+                width: 60px;
+                height: 60px;
+                background-color: #007bff;
+                border-radius: 50%;
+                color: white;
+                border: none;
+                font-size: 20px;
+                cursor: pointer;
+                font-weight: bold;
+                z-index: 1;
+            }
+
+            .result {
+                margin-top: 20px;
+                font-size: 18px;
+                font-weight: bold;
+                color: #333;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <div class="main-content">
+            <div class="spin-container">
+                <button class="spin-btn" onclick="spinWheel()">SPIN</button>
+            </div>
+            <div class="result" id="result"></div>
+        </div>
+
+        <%@ include file="footer.jsp" %>
+
+        <script>
+            // D? li?u c?a các mã gi?m giá
+            const discountCodes = ['SALE10', 'FIXED50', 'FREESHIP', 'GIAM10', 'NEWDISCOUNT'];
+
+            // Hàm quay vòng
+            function spinWheel() {
+                let deg = Math.floor(Math.random() * 360);
+                document.querySelector(".spin-container").style.transition = "transform 3s ease-out";
+                document.querySelector(".spin-container").style.transform = "rotate(" + deg + "deg)";
+
+                // Sau khi vòng quay k?t thúc, tính k?t qu?
+                setTimeout(() => {
+                    const resultIndex = Math.floor(deg / 45) % discountCodes.length; // Tính mã gi?m giá d?a trên v? trí c?a vòng quay
+                    const resultCode = discountCodes[resultIndex];
+                    document.getElementById('result').textContent = "Congratulations! You won: " + resultCode;
+
+                    // G?i k?t qu? cho server x? lý
+                    sendDiscountToServer(resultCode);
+                }, 2000);
+            }
+
+            // G?i mã gi?m giá cho server
+            function sendDiscountToServer(discountCode) {
+                fetch('/applyDiscount', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({discountCode: discountCode})
+                })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log("Discount applied successfully!");
+                            } else {
+                                console.log("Error applying discount");
+                            }
+                        });
+            }
+
+            let hasSpun = false;
+
+            function spinWheel() {
+                if (hasSpun) {
+                    alert("You can only spin once.");
+                    return;
+                }
+
+                let deg = Math.floor(Math.random() * 360);
+                document.querySelector(".spin-container").style.transition = "transform 3s ease-out";
+                document.querySelector(".spin-container").style.transform = "rotate(" + deg + "deg)";
+
+                setTimeout(() => {
+                    const resultIndex = Math.floor(deg / 45) % discountCodes.length;
+                    const resultCode = discountCodes[resultIndex];
+                    document.getElementById('result').textContent = "Congratulations! You won: " + resultCode;
+                    sendDiscountToServer(resultCode);
+
+                    hasSpun = true;
+                }, 2000);
             }
         </script>
     </body>

@@ -9,41 +9,9 @@
         <title>Your Shopping Cart</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <style>
-            /* Đảm bảo rằng body và html chiếm 100% chiều cao */
-            html, body {
-                height: 100%;
-                margin: 0;
-            }
-
-            /* Container chính chứa tất cả phần tử */
-            #wrapper {
-                min-height: 100vh; /* Đảm bảo chiều cao đầy đủ */
-                display: flex;
-                flex-direction: column;
-            }
-
-            /* Phần nội dung chính */
-            main {
-                flex: 1; /* Chiếm không gian còn lại giữa header và footer */
-                padding-bottom: 50px;
-                padding-top:50px;/* Đảm bảo có khoảng trống dưới cùng để footer không đè lên */
-            }
-
-            /* Đảm bảo container trong main không có padding-top quá lớn */
-            .container {
-                padding-top: 0;
-            }
-            h2 {
-                margin-top: 30px; /* Thêm khoảng cách phía trên cho thẻ h2 */
-            }
-        </style>
     </head>
-
     <body>
-        <div id="wrapper">
         <%@ include file="header.jsp" %>
-        <main>
         <div class="container mt-5">
             <h2 class="mb-4">Your Shopping Cart</h2>
 
@@ -60,6 +28,7 @@
                 List<Product> cart = (List<Product>) session.getAttribute("cart");
                 Object totalPriceObj = session.getAttribute("totalPrice");
                 double totalPrice = (totalPriceObj != null) ? (double) totalPriceObj : 0;
+                boolean discountApplied = (session.getAttribute("discountApplied") != null) && (boolean) session.getAttribute("discountApplied");
                 if (cart != null && !cart.isEmpty()) {
             %>
             <table class="table table-bordered">
@@ -102,11 +71,19 @@
                 </tbody>
             </table>
 
-            <form onsubmit="doDiscount(event)" class="mb-3">
-                <label for="discountCode">Enter Discount Code:</label>
-                <input type="text" name="discountCode" id="discountCode" class="form-control w-50 d-inline">
-                <button type="submit" class="btn btn-primary">Apply</button>
-            </form>
+            <%-- Show discount code input only if discount hasn't been applied --%>
+            <c:if test="${not discountApplied}">
+                <form onsubmit="doDiscount(event)" class="mb-3">
+                    <label for="discountCode">Enter Discount Code:</label>
+                    <input type="text" name="discountCode" id="discountCode" class="form-control w-50 d-inline" 
+                           placeholder="Enter code here">
+                    <button type="submit" class="btn btn-primary">Apply</button>
+                </form>
+            </c:if>
+
+            <c:if test="${discountApplied}">
+                <div class="alert alert-info">A discount code has already been applied to your order.</div>
+            </c:if>
 
             <script>
                 function applyDiscount(e) {
@@ -133,6 +110,9 @@
                                 } else {
                                     document.querySelector('#cart-total').textContent = "$" + parseFloat(data.newTotal).toFixed(2);
                                     alert(data.success);
+                                    // Disable discount input and button after successful application
+                                    document.querySelector('#discountCode').disabled = true;
+                                    document.querySelector('button[type="submit"]').disabled = true;
                                 }
                             })
                             .catch(error => console.error("Error:", error));
@@ -150,7 +130,6 @@
             <div class="alert alert-warning text-center">Your cart is empty.</div>
             <% } %>
         </div>
-        </main>
         <%@ include file="footer.jsp" %>
         <script>
             function changeQuantity(input, id) {
@@ -158,7 +137,7 @@
                 const itemPrice = input.parentElement.parentElement.querySelector('.item-price');
                 const currPrice = input.parentElement.parentElement.querySelector('.item-total');
 
-                let initPriceVal = Number(itemPrice.textContent.replace(/[^0-9]/g, ''));
+                let initPriceVal = Number(itemPrice.textContent.replace(/[^0-9.]/g, ''));
                 let quantity = Number(input.value);
 
                 // Check if quantity is negative
@@ -186,7 +165,7 @@
 
                 if (getAllInputs) {
                     Array.from(getAllInputs).forEach(input => {
-                        let currentVal = Number(input.textContent.replace(/[^0-9]/g, ''));
+                        let currentVal = Number(input.textContent.replace(/[^0-9.]/g, ''));
                         totalPrice += currentVal;
                     });
                     totalPrice = totalPrice.toLocaleString('en-US');
@@ -241,11 +220,12 @@
                             // Update total cart value
                             cartTotal.textContent = "$" + data;
                             alert("Discount code applied successfully!");
+                            // Disable discount input and button after successful application
+                            document.querySelector('#discountCode').disabled = true;
+                            document.querySelector('button[type="submit"]').disabled = true;
                         })
                         .catch(err => console.log("Error:", err));
             }
-
         </script>
-        </div>
     </body>
 </html>

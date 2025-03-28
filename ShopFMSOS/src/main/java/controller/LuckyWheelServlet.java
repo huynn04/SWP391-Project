@@ -12,6 +12,7 @@ import model.Discount;
 import java.util.Random;
 
 public class LuckyWheelServlet extends HttpServlet {
+
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -35,22 +36,24 @@ public class LuckyWheelServlet extends HttpServlet {
             return;
         }
 
-        // Tăng số lần quay
+        // Kiểm tra số lần quay
         Integer spins = (Integer) session.getAttribute("spins");
+        if (spins != null && spins >= 1) {  // Giới hạn chỉ cho phép quay 1 lần
+            response.setContentType("text/plain;charset=UTF-8");
+            response.getWriter().write("You have already spun the wheel.");
+            return;  // Nếu đã quay rồi, không cho phép quay nữa
+        }
+
+        // Tăng số lần quay
         spins = (spins == null) ? 1 : spins + 1;
         session.setAttribute("spins", spins);
 
-        // Quyết định ngẫu nhiên xem có thắng không (tạm thời đặt true để debug)
-        boolean isWinner = true; // Thay vì rand.nextInt(100) < 20 để đảm bảo luôn thắng
+        // Quyết định ngẫu nhiên xem có thắng không (50% cơ hội thắng, 50% thua)
+        Random rand = new Random();
+        boolean isWinner = rand.nextInt(100) < 50; // 50% cơ hội thắng
         String couponCode = "";
 
         if (isWinner) {
-            couponCode = generateCouponCode();
-            if (couponCode == null || couponCode.isEmpty()) {
-                System.out.println("Error: Coupon code is null or empty! Using fallback code.");
-                couponCode = "TESTCODE123"; // Mã cứng để kiểm tra
-            }
-            System.out.println("Generated coupon code: " + couponCode);
 
             // Lưu vào cơ sở dữ liệu
             try {
@@ -66,37 +69,13 @@ public class LuckyWheelServlet extends HttpServlet {
             session.setAttribute("couponCode", couponCode);
             System.out.println("Coupon code saved to session: " + session.getAttribute("couponCode"));
         } else {
-            System.out.println("User did not win this time.");
+            System.out.println("Better luck next time"); // In thông báo khi không thắng
         }
 
-        // Trả về mã giảm giá (hoặc chuỗi rỗng nếu không thắng) cho AJAX
+        // Trả về mã giảm giá (hoặc thông báo "Better luck next time" nếu không thắng) cho AJAX
         response.setContentType("text/plain;charset=UTF-8");
-        response.getWriter().write(couponCode != null ? couponCode : "");
-        System.out.println("Response sent to AJAX: " + couponCode);
+        response.getWriter().write(couponCode != null ? couponCode : "Better luck next time");
+        System.out.println("Response sent to AJAX: " + (couponCode != null ? couponCode : "Better luck next time"));
     }
 
-    private String generateCouponCode() {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder coupon = new StringBuilder();
-        Random rand = new Random();
-        DiscountDAO discountDAO = new DiscountDAO();
-        String code;
-
-        try {
-            // Kiểm tra mã cho đến khi nó không trùng trong cơ sở dữ liệu
-            do {
-                coupon.setLength(0);
-                for (int i = 0; i < 8; i++) {
-                    coupon.append(chars.charAt(rand.nextInt(chars.length())));
-                }
-                code = coupon.toString();
-            } while (discountDAO.getDiscountByCode(code) != null);
-
-            System.out.println("Generated code in generateCouponCode: " + code);
-            return code;
-        } catch (Exception e) {
-            System.out.println("Error in generateCouponCode: " + e.getMessage());
-            return null;
-        }
-    }
 }
