@@ -92,7 +92,6 @@ public class CustomerUpdateOrderServlet extends HttpServlet {
             String receiverName = request.getParameter("receiverName");
             String receiverAddress = request.getParameter("receiverAddress");
             String receiverPhone = request.getParameter("receiverPhone");
-            String paymentMethod = request.getParameter("paymentMethod");
 
             // Retrieve order and order details
             Order order = orderDAO.getOrderById(orderId);
@@ -113,7 +112,6 @@ public class CustomerUpdateOrderServlet extends HttpServlet {
             order.setReceiverName(receiverName);
             order.setReceiverAddress(receiverAddress);
             order.setReceiverPhone(receiverPhone);
-            order.setPaymentMethod(paymentMethod);
 
             // Update the order details (if quantities were changed)
             List<OrderDetail> updatedOrderDetails = new ArrayList<>();

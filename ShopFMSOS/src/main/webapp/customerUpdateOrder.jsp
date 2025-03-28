@@ -134,7 +134,7 @@
                                 <!-- Payment Method -->
                                 <div class="mb-3">
                                     <label for="paymentMethod" class="form-label">Payment Method</label>
-                                    <select class="form-control" id="paymentMethod" name="paymentMethod" disabled>
+                                    <select class="form-control" id="paymentMethod" name="paymentMethod" disabled >
                                         <option value="COD" <%= order.getPaymentMethod().equals("COD") ? "selected" : "" %>>Cash on Delivery</option>
                                         <option value="Online" <%= order.getPaymentMethod().equals("Online") ? "selected" : "" %>>Online Payment</option>
                                     </select>
@@ -180,38 +180,41 @@
 
         <script>
             $(document).ready(function () {
-            $(".update-quantity").on("change", function () {
-            let $input = $(this);
+                $(".update-quantity").on("change", function () {
+                    let $input = $(this);
                     let orderDetailId = $input.data("order-detail-id");
+                    let orderId = $input.data("order-id");
                     let newQuantity = parseInt($input.val());
-                    // Kiểm tra số lượng
-                    if (newQuantity <= 0) {
-            alert("Quantity must be greater than 0!");
-                    return;
-            }
 
-            $.ajax({
-            type: "POST",
-                    url: "UpdateOrderDetail", // Đảm bảo rằng URL này đúng
-                    data: {
-                    orderDetailId: orderDetailId,
+                    if (newQuantity <= 0) {
+                        alert("Quantity must be greater than 0!");
+                        $input.val($input.data("original-quantity"));
+                        return;
+                    }
+
+                    $.ajax({
+                        type: "POST",
+                        url: "UpdateOrderDetail",
+                        data: {
+                            orderDetailId: orderDetailId,
                             quantity: newQuantity
-                    },
-                    dataType: "json",
-                    success: function (response) {
-                    if (response.success) {
-                    // Cập nhật subtotal và total price
-                    $("#totalPrice").text(response.newTotal + " VND");
-                    } else {
-                    alert("Update failed!");
-                            $input.val($input.data("original-quantity")); // Khôi phục số lượng ban đầu
-                    }
-                    },
-                    error: function () {
-                    alert("An error occurred. Please try again.");
-                            $input.val($input.data("original-quantity")); // Khôi phục số lượng ban đầu
-                    }
-            });
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            if (response.success) {
+                                $("#totalPrice").text(response.newTotal + " VND");
+                                $input.data("original-quantity", newQuantity); // Update original quantity
+                            } else {
+                                alert("Update failed!");
+                                $input.val($input.data("original-quantity"));
+                            }
+                        },
+                        error: function () {
+                            alert("An error occurred. Please try again.");
+                            $input.val($input.data("original-quantity"));
+                        }
+                    });
+                });
             });
         </script>
     </body>
