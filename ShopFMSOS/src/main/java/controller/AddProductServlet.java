@@ -1,9 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
-
 package controller;
+
 import dal.CategoryDAO;
 import dal.ProductDAO;
 import model.Category;
@@ -17,10 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
-/**
- *
- * @author Tran Huy Lam CE180899 
- */
+
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
                  maxFileSize = 1024 * 1024 * 10,      // 10MB
                  maxRequestSize = 1024 * 1024 * 50)   // 50MB
@@ -73,11 +66,19 @@ public class AddProductServlet extends HttpServlet {
             String imageName = null;
             if (filePart != null && filePart.getSize() > 0) {
                 String fileName = System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
-                String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
-                File uploadDir = new File(uploadPath);
+                
+                // Định nghĩa đường dẫn lưu ảnh vào thư mục src/main/webapp/image
+                String picFolder = "src/main/webapp/image"; // Thư mục lưu ảnh
+                String projectPath = getServletContext().getRealPath("/").split("target")[0];
+                String realPath = projectPath + picFolder;
+
+                // Tạo thư mục nếu chưa có
+                File uploadDir = new File(realPath);
                 if (!uploadDir.exists()) uploadDir.mkdirs();
-                filePart.write(uploadPath + File.separator + fileName);
-                imageName = "uploads/" + fileName;
+
+                // Lưu ảnh lên server
+                filePart.write(realPath + File.separator + fileName);
+                imageName = "image/" + fileName;  // Đường dẫn ảnh trong thư mục image
             }
 
             // Tạo đối tượng Product

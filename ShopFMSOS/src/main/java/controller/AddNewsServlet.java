@@ -56,16 +56,20 @@ public class AddNewsServlet extends HttpServlet {
                 // Tạo tên file duy nhất bằng thời gian
                 String fileName = System.currentTimeMillis() + "_" + Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
 
-                // Định nghĩa đường dẫn lưu ảnh
-                String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
-                File uploadDir = new File(uploadPath);
+                // Định nghĩa đường dẫn lưu ảnh vào src/main/webapp/image
+                String picFolder = "src/main/webapp/image"; // Thư mục lưu ảnh
+                String projectPath = getServletContext().getRealPath("/").split("target")[0];
+                String realPath = projectPath + picFolder;
+
+                // Tạo thư mục nếu chưa có
+                File uploadDir = new File(realPath);
                 if (!uploadDir.exists()) {
                     uploadDir.mkdirs();  // Tạo thư mục nếu chưa có
                 }
 
                 // Lưu ảnh lên server
-                filePart.write(uploadPath + File.separator + fileName);
-                imageFileName = "/uploads/" + fileName;  // Đường dẫn lưu trên server
+                filePart.write(realPath + File.separator + fileName);
+                imageFileName = "image/" + fileName;  // Đường dẫn lưu trên server
             } else {
                 // Nếu không thay đổi ảnh, giữ ảnh cũ
                 imageFileName = request.getParameter("existingImage");

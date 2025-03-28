@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import dal.CategoryDAO;
@@ -15,10 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import model.Category;
 
-/**
- *
- * @author Dang Chi Vi CE182507
- */
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
                  maxFileSize = 1024 * 1024 * 10,      // 10MB
                  maxRequestSize = 1024 * 1024 * 50)   // 50MB
@@ -60,11 +52,19 @@ public class UpdateCategoryServlet extends HttpServlet {
         Part filePart = request.getPart("imageFile");
         if (filePart != null && filePart.getSize() > 0) { // Nếu có ảnh mới được upload
             String fileName = System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
-            String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) uploadDir.mkdirs();
-            filePart.write(uploadPath + File.separator + fileName);
-            image = "uploads/" + fileName; // Cập nhật đường dẫn ảnh mới
+            String picFolder = "src/main/webapp/image"; // Đường dẫn thư mục lưu ảnh
+            String projectPath = getServletContext().getRealPath("/").split("target")[0];
+            String realPath = projectPath + picFolder;
+
+            // Tạo thư mục nếu chưa có
+            File uploadDir = new File(realPath);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+
+            // Lưu ảnh lên server
+            filePart.write(realPath + File.separator + fileName);
+            image = "image/" + fileName; // Cập nhật đường dẫn ảnh mới
         }
 
         // Tạo đối tượng Category để lưu thông tin cập nhật

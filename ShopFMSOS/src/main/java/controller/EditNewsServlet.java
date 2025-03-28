@@ -1,8 +1,10 @@
 package controller;
 
 import dal.NewsDAO;
-import java.io.IOException;
+import model.News;
+
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import jakarta.servlet.ServletException;
@@ -78,21 +80,26 @@ public class EditNewsServlet extends HttpServlet {
             String imagePath = oldImage; // default to old image
 
             if (filePart != null && filePart.getSize() > 0) {
-                String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-                String uploadPath = getServletContext().getRealPath("") + File.separator + "image";
-                File uploadDir = new File(uploadPath);
+                // Xử lý ảnh mới
+                String fileName = filePart.getSubmittedFileName();
+                
+                // Định nghĩa đường dẫn lưu ảnh vào src/main/webapp/image
+                String picFolder = "src/main/webapp/image"; // Thư mục lưu ảnh
+                String projectPath = getServletContext().getRealPath("/").split("target")[0];
+                String realPath = projectPath + picFolder;
+
+                // Tạo thư mục nếu chưa có
+                File uploadDir = new File(realPath);
                 if (!uploadDir.exists()) {
                     uploadDir.mkdirs();
                 }
 
-                String savedFileName = System.currentTimeMillis() + "_" + fileName;
-                File savedFile = new File(uploadDir, savedFileName);
-                filePart.write(savedFile.getAbsolutePath());
-
-                imagePath = "/image/" + savedFileName; // use relative path to /image
+                // Lưu ảnh lên server
+                filePart.write(realPath + File.separator + fileName);
+                imagePath = "image/" + fileName;  // Đường dẫn lưu trên server
             }
 
-            // Prepare updated news object
+            // Tiến hành cập nhật tin tức
             News news = new News();
             news.setNewsId(newsId);
             news.setTitle(title);

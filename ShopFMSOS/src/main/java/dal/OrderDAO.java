@@ -349,8 +349,49 @@ public class OrderDAO extends DBContext {
             e.printStackTrace();
         }
     }
-//Lay Order Detail
 
+    public void cancelOrderAndReturnStock(int orderId) {
+        String updateOrderSql = "UPDATE orders SET status = -1, canceled_at = GETDATE() WHERE order_id = ? AND status = 0";
+        String updateProductSql = "UPDATE products SET quantity = quantity + ? WHERE product_id = ?";
+        String selectDetailsSql = "SELECT product_id, quantity FROM order_details WHERE order_id = ?";
+
+        try ( Connection con = getConnection()) {
+            con.setAutoCommit(false); // Bắt đầu transaction
+
+            // Bước 1: Lấy danh sách sản phẩm trong đơn
+            try ( PreparedStatement ps = con.prepareStatement(selectDetailsSql)) {
+                ps.setInt(1, orderId);
+                ResultSet rs = ps.executeQuery();
+
+                // Bước 2: Cập nhật lại số lượng kho cho từng sản phẩm
+                try ( PreparedStatement updateProductStmt = con.prepareStatement(updateProductSql)) {
+                    while (rs.next()) {
+                        int productId = rs.getInt("product_id");
+                        int quantity = rs.getInt("quantity");
+
+                        updateProductStmt.setInt(1, quantity);
+                        updateProductStmt.setInt(2, productId);
+                        updateProductStmt.addBatch(); // Gom lại thực hiện 1 lần
+                    }
+                    updateProductStmt.executeBatch();
+                }
+            }
+
+            // Bước 3: Cập nhật trạng thái đơn hàng sang -1
+            try ( PreparedStatement ps = con.prepareStatement(updateOrderSql)) {
+                ps.setInt(1, orderId);
+                ps.executeUpdate();
+            }
+
+            con.commit(); // Thành công thì commit
+            System.out.println("Canceled order and returned stock to warehouse.");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+//Lay Order Detail
     public List<OrderDetail> getOrderDetailsByOrderId(int orderId) {
         List<OrderDetail> orderDetails = new ArrayList<>();
         String sql = "SELECT od.order_detail_id, od.order_id, od.product_id, od.quantity, od.price, od.subtotal, od.tax, "
@@ -423,19 +464,37 @@ public class OrderDAO extends DBContext {
     }
     // Cập nhật thông tin đơn hàng trong bảng orders
 
-    public void updateOrderInfo(Order order) {
-        String sql = "UPDATE orders SET receiver_name = ?, receiver_address = ?, receiver_phone = ?, payment_method = ?, updated_at = NOW() WHERE order_id = ?";
+    public boolean updateOrderInfo(Order order) {
+        Connection con = null;
+        boolean success = false;
 
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, order.getReceiverName());
-            ps.setString(2, order.getReceiverAddress());
-            ps.setString(3, order.getReceiverPhone());
-            ps.setString(4, order.getPaymentMethod());
-            ps.setInt(5, order.getOrderId());
-            ps.executeUpdate();  // Thực thi cập nhật thông tin đơn hàng
+        try {
+            con = getConnection();
+            String sql = "UPDATE orders SET receiver_name = ?, receiver_address = ?, receiver_phone = ?, payment_method = ? WHERE order_id = ?";
+            try ( PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setString(1, order.getReceiverName());
+                ps.setString(2, order.getReceiverAddress());
+                ps.setString(3, order.getReceiverPhone());
+                ps.setString(4, order.getPaymentMethod());
+                ps.setInt(5, order.getOrderId());
+
+                int rowsAffected = ps.executeUpdate();
+                if (rowsAffected > 0) {
+                    success = true;
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+        return success;
     }
 
     // Cập nhật thông tin chi tiết đơn hàng trong bảng order_details
@@ -519,84 +578,84 @@ public class OrderDAO extends DBContext {
             }
         }
     }
+
     public OrderDetail getOrderDetailById(int orderDetailId) {
-    OrderDetail orderDetail = null;
-    String sql = "SELECT * FROM order_details WHERE order_detail_id = ?";
-    
-    try (Connection con = getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
-        ps.setInt(1, orderDetailId);
-        ResultSet rs = ps.executeQuery();
+        OrderDetail orderDetail = null;
+        String sql = "SELECT * FROM order_details WHERE order_detail_id = ?";
 
-        if (rs.next()) {
-            orderDetail = new OrderDetail(
-                    rs.getInt("order_detail_id"),
-                    rs.getInt("order_id"),
-                    rs.getInt("product_id"),
-                    rs.getInt("quantity"),
-                    rs.getBigDecimal("price"),
-                    rs.getBigDecimal("subtotal"),
-                    rs.getBigDecimal("tax")
-            );
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, orderDetailId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                orderDetail = new OrderDetail(
+                        rs.getInt("order_detail_id"),
+                        rs.getInt("order_id"),
+                        rs.getInt("product_id"),
+                        rs.getInt("quantity"),
+                        rs.getBigDecimal("price"),
+                        rs.getBigDecimal("subtotal"),
+                        rs.getBigDecimal("tax")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return orderDetail;
     }
-    return orderDetail;
-}
+
     public void updateOrderDetail(int orderDetailId, int quantity, BigDecimal subtotal, BigDecimal tax) {
-    String sql = "UPDATE order_details SET quantity = ?, subtotal = ?, tax = ? WHERE order_detail_id = ?";
+        String sql = "UPDATE order_details SET quantity = ?, subtotal = ?, tax = ? WHERE order_detail_id = ?";
 
-    try (Connection con = getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
-        ps.setInt(1, quantity);
-        ps.setBigDecimal(2, subtotal);
-        ps.setBigDecimal(3, tax);
-        ps.setInt(4, orderDetailId);
-        ps.executeUpdate();
-    } catch (SQLException e) {
-        e.printStackTrace();
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, quantity);
+            ps.setBigDecimal(2, subtotal);
+            ps.setBigDecimal(3, tax);
+            ps.setInt(4, orderDetailId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
-}
+
     public BigDecimal getTotalPriceByOrderId(int orderId) {
-    BigDecimal total = BigDecimal.ZERO;
-    String sql = "SELECT SUM(subtotal) FROM order_details WHERE order_id = ?";
+        BigDecimal total = BigDecimal.ZERO;
+        String sql = "SELECT SUM(subtotal) FROM order_details WHERE order_id = ?";
 
-    try (Connection con = getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
-        ps.setInt(1, orderId);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            total = rs.getBigDecimal(1);
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                total = rs.getBigDecimal(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return total;
     }
-    return total;
-}
+
     public BigDecimal calculateTotalPrice(int orderId) {
-    BigDecimal total = BigDecimal.ZERO;
-    String sql = "SELECT SUM(subtotal) FROM order_details WHERE order_id = ?";
+        BigDecimal total = BigDecimal.ZERO;
+        String sql = "SELECT SUM(subtotal) FROM order_details WHERE order_id = ?";
 
-    try (Connection con = getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
-        ps.setInt(1, orderId);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            total = rs.getBigDecimal(1);
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                total = rs.getBigDecimal(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return total;
     }
-    return total;
-}
+
     public int createOrder(Order order) {
         String sql = "INSERT INTO orders (user_id, total_price, order_date, status, receiver_name, receiver_address, receiver_phone, payment_method, discount_code) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         int orderId = -1;
 
-        try (Connection con = getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setInt(1, order.getUserId());
             ps.setBigDecimal(2, order.getTotalPrice());
@@ -620,13 +679,14 @@ public class OrderDAO extends DBContext {
         }
         return orderId;
     }
+
     public boolean updateOrderStatus(int orderId, int status) {
         String sql = "UPDATE orders SET status = ? WHERE order_id = ?";
-        
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        try ( Connection conn = getConnection();  PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, status); // Tham số trạng thái mới (2 cho "Completed")
             stmt.setInt(2, orderId); // Tham số ID đơn hàng
-            
+
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0; // Nếu có dòng bị ảnh hưởng, trả về true
         } catch (SQLException e) {
@@ -634,24 +694,56 @@ public class OrderDAO extends DBContext {
             return false; // Nếu có lỗi xảy ra, trả về false
         }
     }
-        public boolean cancelCustomerOrder(int orderId) {
-        String sql = "UPDATE orders SET status = -1, canceled_at = GETDATE() WHERE order_id = ? AND status = 0"; // Trạng thái -1 là "Đã hủy"
-        
-        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, orderId);
-            
-            int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0;  // Nếu có bản ghi bị ảnh hưởng, trả về true
+
+    public boolean cancelCustomerOrder(int orderId) {
+        String updateOrderSql = "UPDATE orders SET status = -1, canceled_at = GETDATE() WHERE order_id = ? AND status = 0";
+        String updateProductSql = "UPDATE products SET quantity = quantity + ? WHERE product_id = ?";
+        String selectDetailsSql = "SELECT product_id, quantity FROM order_details WHERE order_id = ?";
+
+        try ( Connection con = getConnection()) {
+            con.setAutoCommit(false); // Bắt đầu transaction
+
+            // Lấy danh sách sản phẩm trong đơn
+            try ( PreparedStatement ps = con.prepareStatement(selectDetailsSql)) {
+                ps.setInt(1, orderId);
+                ResultSet rs = ps.executeQuery();
+
+                try ( PreparedStatement updateProductStmt = con.prepareStatement(updateProductSql)) {
+                    while (rs.next()) {
+                        int productId = rs.getInt("product_id");
+                        int quantity = rs.getInt("quantity");
+
+                        updateProductStmt.setInt(1, quantity);
+                        updateProductStmt.setInt(2, productId);
+                        updateProductStmt.addBatch();
+                    }
+                    updateProductStmt.executeBatch(); // Cập nhật kho
+                }
+            }
+
+            // Cập nhật trạng thái đơn hàng
+            try ( PreparedStatement ps = con.prepareStatement(updateOrderSql)) {
+                ps.setInt(1, orderId);
+                int rowsAffected = ps.executeUpdate();
+                if (rowsAffected > 0) {
+                    con.commit(); // Mọi thứ ok thì commit
+                    return true;
+                } else {
+                    con.rollback(); // Không update được đơn hàng thì rollback
+                }
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
-        return false;  // Nếu có lỗi hoặc không có bản ghi bị ảnh hưởng, trả về false
+
+        return false; // Có lỗi xảy ra hoặc không thành công
     }
-        public boolean updateOrderStatusToReceived(int orderId) {
+
+    public boolean updateOrderStatusToReceived(int orderId) {
         String sql = "UPDATE orders SET status = 2 WHERE order_id = ? AND status = 1"; // Cập nhật trạng thái từ 1 (Đang giao) thành 2 (Đã giao)
 
-        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, orderId);
 
             int rowsAffected = ps.executeUpdate();
@@ -662,7 +754,8 @@ public class OrderDAO extends DBContext {
 
         return false;  // Nếu không có bản ghi nào được cập nhật hoặc xảy ra lỗi
     }
-        public List<Order> getAllOrdersSorted(String sortOption) throws SQLException {
+
+    public List<Order> getAllOrdersSorted(String sortOption) throws SQLException {
         List<Order> orders = new ArrayList<>();
         String orderBy = "total_price DESC"; // Mặc định giảm dần
 
@@ -672,9 +765,7 @@ public class OrderDAO extends DBContext {
 
         String sql = "SELECT * FROM orders ORDER BY " + orderBy;
 
-        try (Connection con = getConnection(); 
-             PreparedStatement ps = con.prepareStatement(sql); 
-             ResultSet rs = ps.executeQuery()) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql);  ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 orders.add(new Order(
@@ -696,7 +787,8 @@ public class OrderDAO extends DBContext {
         }
         return orders;
     }
-public List<Order> searchOrdersSorted(String filterType, String filterValue, String sortOption) throws SQLException {
+
+    public List<Order> searchOrdersSorted(String filterType, String filterValue, String sortOption) throws SQLException {
         List<Order> orders = new ArrayList<>();
         String orderBy = "total_price DESC"; // Mặc định giảm dần
 
@@ -711,8 +803,7 @@ public List<Order> searchOrdersSorted(String filterType, String filterValue, Str
             sql = "SELECT * FROM orders WHERE CAST(order_date AS DATE) = ? ORDER BY " + orderBy;
         }
 
-        try (Connection con = getConnection(); 
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, filterValue);
             ResultSet rs = ps.executeQuery();
 

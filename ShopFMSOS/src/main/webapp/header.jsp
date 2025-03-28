@@ -46,14 +46,21 @@
                 id="settingsDropdown" 
                 data-bs-toggle="dropdown" 
                 aria-expanded="false">
-                👤 <%= loggedInUser.getFullName() %>
+                <% if (loggedInUser.getAvatar() == null || loggedInUser.getAvatar().isEmpty()) { %>
+                <!-- Hiển thị icon nếu không có ảnh đại diện -->
+                👤
+                <% } else { %>
+                <!-- Hiển thị ảnh đại diện 5x5px nếu có -->
+                <img src="<%= loggedInUser.getAvatar() %>" alt="Avatar" style="width: 40px; height: 40px; border-radius: 40%;">
+                <% } %>
+                <%= loggedInUser.getFullName() %>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
                 <% if (loggedInUser.getRoleId() == 1 || loggedInUser.getRoleId() == 2) { %>  
                 <!-- Nếu là Admin, hiển thị Dashboard -->
                 <li><a class="dropdown-item" href="dashboard">Admin Dashboard</a></li>
                     <% } %>
-                <li><a class="dropdown-item" href="updateProfile.jsp">Update Profile</a></li>
+                <li><a class="dropdown-item" href="viewProfile.jsp">Update Profile</a></li>
                 <li><a class="dropdown-item" href="changePassword.jsp">Change Password</a></li>
                 <li><a class="dropdown-item" href="CustomerOrderHistory">Order History</a></li>
                 <li><a class="dropdown-item" href="managePayment.jsp">Manage Payment</a></li>

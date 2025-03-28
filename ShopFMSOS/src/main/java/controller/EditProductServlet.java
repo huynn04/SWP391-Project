@@ -1,7 +1,9 @@
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
+
 package controller;
 
 import dal.CategoryDAO;
@@ -92,14 +94,14 @@ public class EditProductServlet extends HttpServlet {
             // Lấy tên file gốc
             String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
 
-            // Xác định đường dẫn thư mục lưu file (ví dụ: thư mục "uploads" trong webapps)
-            String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
+            // Xác định đường dẫn thư mục lưu file (ví dụ: thư mục "image" trong webapp)
+            String picFolder = "src/main/webapp/image"; // Đường dẫn thư mục lưu ảnh
+            String projectPath = getServletContext().getRealPath("/").split("target")[0];
+            String realPath = projectPath + picFolder;
 
-            // Tạo thư mục nếu chưa tồn tại
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdir();
-            }
+            // Tạo thư mục nếu chưa có
+            File uploadDir = new File(realPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
 
             // Đổi tên file để tránh trùng lặp (ví dụ: sử dụng productId + "_" + fileName)
             String savedFileName = productId + "_" + fileName;
@@ -108,8 +110,8 @@ public class EditProductServlet extends HttpServlet {
             // Ghi file lên server
             filePart.write(fileToSave.getAbsolutePath());
 
-            // Lưu đường dẫn tương đối (có thể thay đổi theo cấu trúc project)
-            newImagePath = "/uploads/" + savedFileName;
+            // Lưu đường dẫn tương đối
+            newImagePath = "image/" + savedFileName; // Đường dẫn ảnh trong thư mục image
         }
 
         // Chuyển đổi giá trị từ String sang BigDecimal
