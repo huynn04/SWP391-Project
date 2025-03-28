@@ -121,7 +121,6 @@
                                                     </c:choose>
                                                 </td>
                                                 <td>
-                                                    <a href="ViewDiscount?id=${discount.discountId}" class="btn btn-info btn-sm">View</a>
                                                     <a href="EditDiscount?id=${discount.discountId}" class="btn btn-primary btn-sm">Edit</a>
                                                     <a href="DeleteDiscount?id=${discount.discountId}" 
                                                        class="btn btn-danger btn-sm"
