@@ -464,19 +464,37 @@ public class OrderDAO extends DBContext {
     }
     // Cập nhật thông tin đơn hàng trong bảng orders
 
-    public void updateOrderInfo(Order order) {
-        String sql = "UPDATE orders SET receiver_name = ?, receiver_address = ?, receiver_phone = ?, payment_method = ?, updated_at = NOW() WHERE order_id = ?";
+    public boolean updateOrderInfo(Order order) {
+        Connection con = null;
+        boolean success = false;
 
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, order.getReceiverName());
-            ps.setString(2, order.getReceiverAddress());
-            ps.setString(3, order.getReceiverPhone());
-            ps.setString(4, order.getPaymentMethod());
-            ps.setInt(5, order.getOrderId());
-            ps.executeUpdate();  // Thực thi cập nhật thông tin đơn hàng
+        try {
+            con = getConnection();
+            String sql = "UPDATE orders SET receiver_name = ?, receiver_address = ?, receiver_phone = ?, payment_method = ? WHERE order_id = ?";
+            try ( PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setString(1, order.getReceiverName());
+                ps.setString(2, order.getReceiverAddress());
+                ps.setString(3, order.getReceiverPhone());
+                ps.setString(4, order.getPaymentMethod());
+                ps.setInt(5, order.getOrderId());
+
+                int rowsAffected = ps.executeUpdate();
+                if (rowsAffected > 0) {
+                    success = true;
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+        return success;
     }
 
     // Cập nhật thông tin chi tiết đơn hàng trong bảng order_details
