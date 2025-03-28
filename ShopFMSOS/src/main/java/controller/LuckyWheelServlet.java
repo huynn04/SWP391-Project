@@ -12,6 +12,7 @@ import model.Discount;
 import java.util.Random;
 
 public class LuckyWheelServlet extends HttpServlet {
+
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -40,8 +41,9 @@ public class LuckyWheelServlet extends HttpServlet {
         spins = (spins == null) ? 1 : spins + 1;
         session.setAttribute("spins", spins);
 
-        // Quyết định ngẫu nhiên xem có thắng không (tạm thời đặt true để debug)
-        boolean isWinner = true; // Thay vì rand.nextInt(100) < 20 để đảm bảo luôn thắng
+        // Quyết định ngẫu nhiên xem có thắng không (70% cơ hội thắng, 30% thua)
+        Random rand = new Random();
+        boolean isWinner = rand.nextInt(100) < 70; // 70% cơ hội thắng
         String couponCode = "";
 
         if (isWinner) {
@@ -66,13 +68,13 @@ public class LuckyWheelServlet extends HttpServlet {
             session.setAttribute("couponCode", couponCode);
             System.out.println("Coupon code saved to session: " + session.getAttribute("couponCode"));
         } else {
-            System.out.println("User did not win this time.");
+            System.out.println("Better luck next time"); // In thông báo khi không thắng
         }
 
-        // Trả về mã giảm giá (hoặc chuỗi rỗng nếu không thắng) cho AJAX
+        // Trả về mã giảm giá (hoặc thông báo "Better luck next time" nếu không thắng) cho AJAX
         response.setContentType("text/plain;charset=UTF-8");
-        response.getWriter().write(couponCode != null ? couponCode : "");
-        System.out.println("Response sent to AJAX: " + couponCode);
+        response.getWriter().write(couponCode != null ? couponCode : "Better luck next time");
+        System.out.println("Response sent to AJAX: " + (couponCode != null ? couponCode : "Better luck next time"));
     }
 
     private String generateCouponCode() {

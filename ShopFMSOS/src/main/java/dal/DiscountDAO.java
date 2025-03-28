@@ -47,22 +47,28 @@ public class DiscountDAO extends DBContext {
         }
     }
 
-    public void insertDiscount(Discount discount) {
-        String sql = "INSERT INTO discounts (code, discount_value, discount_type, min_order_value, expiry_date, status) VALUES (?, ?, ?, ?, ?, ?)";
-        try ( Connection conn = getConnection();  PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, discount.getCode());
-            stmt.setDouble(2, discount.getDiscountValue());
-            stmt.setString(3, discount.getDiscountType());
-            stmt.setDouble(4, discount.getMinOrderValue());
-            stmt.setDate(5, new java.sql.Date(discount.getExpiryDate().getTime()));
-            stmt.setInt(6, discount.getStatus());
-            int rowsAffected = stmt.executeUpdate();
-            System.out.println("Inserted discount with code: " + discount.getCode() + ", Rows affected: " + rowsAffected);
-        } catch (SQLException e) {
-            System.err.println("Error in insertDiscount: " + e.getMessage());
-            e.printStackTrace();
+   public void insertDiscount(Discount discount) {
+    String sql = "INSERT INTO discounts (code, discount_value, discount_type, min_order_value, expiry_date, status) VALUES (?, ?, ?, ?, ?, ?)";
+    try ( Connection conn = getConnection();  PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setString(1, discount.getCode());
+        stmt.setDouble(2, discount.getDiscountValue());
+        stmt.setString(3, discount.getDiscountType());
+        stmt.setDouble(4, discount.getMinOrderValue());
+        stmt.setDate(5, new java.sql.Date(discount.getExpiryDate().getTime()));
+        stmt.setInt(6, discount.getStatus());
+
+        int rowsAffected = stmt.executeUpdate();
+        if (rowsAffected > 0) {
+            System.out.println("Coupon inserted successfully into the database: " + discount.getCode());
+        } else {
+            System.out.println("Failed to insert coupon into the database.");
         }
+    } catch (SQLException e) {
+        System.err.println("Error in insertDiscount: " + e.getMessage());
+        e.printStackTrace();
     }
+}
+
 
     public List<Discount> getAllActiveDiscounts() {
         List<Discount> discountList = new ArrayList<>();
