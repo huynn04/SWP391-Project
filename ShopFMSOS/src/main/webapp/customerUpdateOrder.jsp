@@ -144,7 +144,7 @@
 
                         <h3>Order Details</h3>
                         <table class="table table-striped">
-                            <h4>Total Price: <span id="totalPrice"><%= order.getTotalPrice() %> VND</span></h4>
+                            <h4>Total Price: <span id="totalPrice"><%= request.getAttribute("totalPrice") %> VND</span></h4>
                             <thead>
                                 <tr>
                                     <th>Product</th>
