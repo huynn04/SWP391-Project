@@ -2,6 +2,7 @@ package controller;
 
 import dal.PasswordResetDAO;
 import dal.UserDAO;
+import utils.HashUtil;  // Import HashUtil để mã hóa mật khẩu
 
 import java.io.IOException;
 import java.util.Optional;
@@ -43,8 +44,11 @@ public class ResetPasswordServlet extends HttpServlet {
         if (userIdOpt.isPresent()) {
             int userId = userIdOpt.get();
 
+            // Mã hóa mật khẩu mới với MD5
+            String hashedNewPassword = HashUtil.md5(newPassword);
+
             // Cập nhật mật khẩu mới
-            boolean isUpdated = userDAO.updateUserPassword(userId, newPassword);
+            boolean isUpdated = userDAO.updateUserPassword(userId, hashedNewPassword);
             if (isUpdated) {
                 resetDAO.deleteToken(token); // Xóa token sau khi sử dụng
                 request.setAttribute("successMessage", "Password reset successfully. You can now login.");

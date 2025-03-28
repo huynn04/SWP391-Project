@@ -28,7 +28,7 @@ public class CustomerUpdateOrderServlet extends HttpServlet {
         }
 
         try {
-            // Retrieve orderId from URL
+            // Lấy orderId từ URL
             String orderIdParam = request.getParameter("orderId");
             if (orderIdParam == null || orderIdParam.trim().isEmpty()) {
                 response.sendRedirect("CustomerOrderHistory?error=Invalid order ID");
@@ -37,7 +37,7 @@ public class CustomerUpdateOrderServlet extends HttpServlet {
 
             int orderId = Integer.parseInt(orderIdParam);
 
-            // Get order and order details
+            // Lấy thông tin đơn hàng và chi tiết đơn hàng
             Order order = orderDAO.getOrderById(orderId);
             List<OrderDetail> orderDetails = orderDAO.getOrderDetailsByOrderId(orderId);
 
@@ -46,24 +46,20 @@ public class CustomerUpdateOrderServlet extends HttpServlet {
                 return;
             }
 
-            // Check if the user is authorized to update the order
+            // Kiểm tra quyền cập nhật: chỉ cho phép khách hàng sửa đơn hàng của chính mình
             if (loggedInUser.getRoleId() == 3 && order.getUserId() != loggedInUser.getUserId()) {
                 response.sendRedirect("CustomerOrderHistory?error=Unauthorized");
                 return;
             }
 
-            // Calculate the total price
-            BigDecimal totalPrice = BigDecimal.ZERO;
-            for (OrderDetail detail : orderDetails) {
-                totalPrice = totalPrice.add(detail.getSubtotal());
-            }
+            // Lấy danh sách đơn hàng của người dùng và truyền vào request
+            List<Order> orders = orderDAO.getOrdersByUserId(loggedInUser.getUserId());
+            request.setAttribute("orders", orders);  // Truyền orders vào request
 
-            // Pass data to the JSP
+            // Đặt đối tượng vào request và chuyển tiếp tới JSP
             request.setAttribute("order", order);
             request.setAttribute("orderDetails", orderDetails);
-            request.setAttribute("totalPrice", totalPrice);  // Pass totalPrice to the JSP
             request.getRequestDispatcher("customerUpdateOrder.jsp").forward(request, response);
-
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("CustomerOrderHistory?error=Error retrieving order details");
@@ -81,7 +77,7 @@ public class CustomerUpdateOrderServlet extends HttpServlet {
         }
 
         try {
-            // Retrieve form data
+            // Lấy các tham số từ form
             String orderIdParam = request.getParameter("orderId");
             if (orderIdParam == null || orderIdParam.trim().isEmpty()) {
                 response.sendRedirect("CustomerOrderHistory?error=Invalid order ID");
@@ -92,28 +88,36 @@ public class CustomerUpdateOrderServlet extends HttpServlet {
             String receiverName = request.getParameter("receiverName");
             String receiverAddress = request.getParameter("receiverAddress");
             String receiverPhone = request.getParameter("receiverPhone");
+            String paymentMethod = request.getParameter("paymentMethod");
 
-            // Retrieve order and order details
+            // Lấy thông tin đơn hàng và chi tiết đơn hàng từ database
             Order order = orderDAO.getOrderById(orderId);
             List<OrderDetail> orderDetails = orderDAO.getOrderDetailsByOrderId(orderId);
+
+            BigDecimal total = BigDecimal.ZERO;  // Khởi tạo giá trị ban đầu là 0
+
+            for (OrderDetail o : orderDetails) {
+                total = total.add(o.getSubtotal());  // Dùng phương thức add để cộng dồn
+            }
 
             if (order == null) {
                 response.sendRedirect("CustomerOrderHistory?error=Order not found");
                 return;
             }
 
-            // Check for permissions to update: Only allow customers to update their own orders
+            // Kiểm tra quyền cập nhật: chỉ cho phép khách hàng sửa đơn hàng của chính mình
             if (loggedInUser.getRoleId() == 3 && order.getUserId() != loggedInUser.getUserId()) {
                 response.sendRedirect("CustomerOrderHistory?error=Unauthorized");
                 return;
             }
 
-            // Update the order object with new values
+            // Cập nhật thông tin đơn hàng
             order.setReceiverName(receiverName);
             order.setReceiverAddress(receiverAddress);
             order.setReceiverPhone(receiverPhone);
+            order.setPaymentMethod(paymentMethod);
 
-            // Update the order details (if quantities were changed)
+            // Cập nhật số lượng sản phẩm trong order_details
             List<OrderDetail> updatedOrderDetails = new ArrayList<>();
             String[] orderDetailIds = request.getParameterValues("orderDetailId");
             String[] quantities = request.getParameterValues("quantity");
@@ -133,21 +137,24 @@ public class CustomerUpdateOrderServlet extends HttpServlet {
                 }
             }
 
-            // Update order in the database
+            // Cập nhật vào cơ sở dữ liệu
             boolean isUpdated = orderDAO.updateOrder(order, updatedOrderDetails);
 
             if (isUpdated) {
-                // Update the total price after the change
-                BigDecimal total = BigDecimal.ZERO;
-                for (OrderDetail detail : updatedOrderDetails) {
-                    total = total.add(detail.getSubtotal());
-                }
-                orderDAO.setTotalPrice(total, orderId); // Update total price in the database
+                orderDAO.setTotalPrice(total, orderId);  // Cập nhật giá trị total_price trong database
 
-                // Redirect to order history page after update
-                response.sendRedirect("CustomerOrderHistory?success=Order updated successfully");
+                // Lấy lại danh sách đơn hàng của người dùng sau khi cập nhật
+                List<Order> orders = orderDAO.getOrdersByUserId(loggedInUser.getUserId());
+
+                // Đặt danh sách đơn hàng vào request
+                request.setAttribute("orders", orders);  // Truyền lại danh sách đơn hàng
+
+                // Chuyển tiếp đến trang lịch sử đơn hàng
+                request.getRequestDispatcher("customerOrderHistory.jsp").forward(request, response);
+                return;
             } else {
-                // If update failed, display error message
+                request.setAttribute("order", order);
+                request.setAttribute("orderDetails", orderDetails);
                 request.setAttribute("errorMessage", "Failed to update order.");
                 request.getRequestDispatcher("customerUpdateOrder.jsp").forward(request, response);
             }
@@ -156,5 +163,4 @@ public class CustomerUpdateOrderServlet extends HttpServlet {
             response.sendRedirect("customerOrderHistory.jsp");
         }
     }
-
 }

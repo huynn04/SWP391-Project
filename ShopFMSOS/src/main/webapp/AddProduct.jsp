@@ -66,7 +66,6 @@
 
                     <div class="form-container">
                         <form id="addProductForm" action="AddProduct" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
-                            <!-- Existing form fields remain the same -->
                             <div class="form-group">
                                 <label for="productName">Product Name:</label>
                                 <input type="text" class="form-control" id="productName" name="productName" required>
@@ -77,6 +76,7 @@
                                 <label for="categoryId">Category:</label>
                                 <select class="form-control" id="categoryId" name="categoryId" required>
                                     <option value="" disabled selected>Select Category</option>
+                                    <!-- Hiển thị danh sách category từ categoryList -->
                                     <c:forEach var="category" items="${categoryList}">
                                         <option value="${category.categoryId}">
                                             ${category.categoryName}
@@ -127,7 +127,7 @@
 
                             <div class="form-group">
                                 <label for="status">Status:</label>
-                                <select class="-control" id="status" name="status">
+                                <select class="form-control" id="status" name="status">
                                     <option value="1" selected>Active</option>
                                     <option value="0">Inactive</option>
                                 </select>
@@ -141,100 +141,66 @@
             </div>
         </div>
 
-        <!-- Success Modal -->
-        <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="successModalLabel">Success</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        Product has been successfully added!
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="resetFormAndContinue()">Add Another Product</button>
-                        <a href="ManageProduct" class="btn btn-secondary">Return to Product Management</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Scripts -->
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
         <script>
-                            function validateForm() {
-                                let isValid = true;
+            function validateForm() {
+                let isValid = true;
 
-                                // Clear previous errors
-                                document.querySelectorAll('.error').forEach(function (element) {
-                                    element.innerHTML = '';
-                                });
+                // Clear previous errors
+                document.querySelectorAll('.error').forEach(function(element) {
+                    element.innerHTML = '';
+                });
 
-                                // Validate Product Name
-                                const productName = document.getElementById('productName').value;
-                                if (productName.trim() === '') {
-                                    isValid = false;
-                                    document.getElementById('productNameError').innerText = 'Product name is required.';
-                                }
+                // Validate Product Name
+                const productName = document.getElementById('productName').value;
+                if (productName.trim() === '') {
+                    isValid = false;
+                    document.getElementById('productNameError').innerText = 'Product name is required.';
+                }
 
-                                // Validate Description
-                                const detailDesc = document.getElementById('detailDesc').value;
-                                if (detailDesc.trim() === '') {
-                                    isValid = false;
-                                    document.getElementById('detailDescError').innerText = 'Description is required.';
-                                }
+                // Validate Description
+                const detailDesc = document.getElementById('detailDesc').value;
+                if (detailDesc.trim() === '') {
+                    isValid = false;
+                    document.getElementById('detailDescError').innerText = 'Description is required.';
+                }
 
-                                // Validate Price
-                                const price = parseFloat(document.getElementById('price').value);
-                                if (isNaN(price) || price <= 0) {
-                                    isValid = false;
-                                    document.getElementById('priceError').innerText = 'Price must be a positive number.';
-                                }
+                // Validate Price
+                const price = parseFloat(document.getElementById('price').value);
+                if (isNaN(price) || price <= 0) {
+                    isValid = false;
+                    document.getElementById('priceError').innerText = 'Price must be a positive number.';
+                }
 
-                                // Validate Quantity
-                                const quantity = parseInt(document.getElementById('quantity').value);
-                                if (isNaN(quantity) || quantity <= 0) {
-                                    isValid = false;
-                                    document.getElementById('quantityError').innerText = 'Quantity must be a positive number.';
-                                }
+                // Validate Quantity
+                const quantity = parseInt(document.getElementById('quantity').value);
+                if (isNaN(quantity) || quantity <= 0) {
+                    isValid = false;
+                    document.getElementById('quantityError').innerText = 'Quantity must be a positive number.';
+                }
 
-                                // Validate Discount
-                                const discount = parseFloat(document.getElementById('discount').value);
-                                if (discount < 0 || discount > 100 || isNaN(discount)) {
-                                    isValid = false;
-                                    document.getElementById('discountError').innerText = 'Discount must be between 0 and 100.';
-                                }
+                // Validate Discount
+                const discount = parseFloat(document.getElementById('discount').value);
+                if (discount < 0 || discount > 100 || isNaN(discount)) {
+                    isValid = false;
+                    document.getElementById('discountError').innerText = 'Discount must be between 0 and 100.';
+                }
 
-                                // Validate Image File
-                                const image = document.getElementById('image').files[0];
-                                if (image) {
-                                    const fileType = image.type;
-                                    if (fileType !== 'image/png' && fileType !== 'image/jpeg') {
-                                        isValid = false;
-                                        document.getElementById('imageError').innerText = 'Only PNG and JPEG images are allowed.';
-                                    }
-                                }
+                // Validate Image File
+                const image = document.getElementById('image').files[0];
+                if (image) {
+                    const fileType = image.type;
+                    if (fileType !== 'image/png' && fileType !== 'image/jpeg') {
+                        isValid = false;
+                        document.getElementById('imageError').innerText = 'Only PNG and JPEG images are allowed.';
+                    }
+                }
 
-                                return isValid;
-                            }
-
-                            // Function to reset form and close modal
-                            function resetFormAndContinue() {
-                                document.getElementById('addProductForm').reset();
-                                $('#successModal').modal('hide');
-                            }
-
-                            // Show modal if success message exists
-            <c:if test="${not empty success}">
-                            $(document).ready(function () {
-                                $('#successModal').modal('show');
-                            });
-            </c:if>
+                return isValid;
+            }
         </script>
     </body>
 </html>

@@ -9,9 +9,41 @@
         <title>Your Shopping Cart</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <style>
+            /* Đảm bảo rằng body và html chiếm 100% chiều cao */
+            html, body {
+                height: 100%;
+                margin: 0;
+            }
+
+            /* Container chính chứa tất cả phần tử */
+            #wrapper {
+                min-height: 100vh; /* Đảm bảo chiều cao đầy đủ */
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Phần nội dung chính */
+            main {
+                flex: 1; /* Chiếm không gian còn lại giữa header và footer */
+                padding-bottom: 50px;
+                padding-top:50px;/* Đảm bảo có khoảng trống dưới cùng để footer không đè lên */
+            }
+
+            /* Đảm bảo container trong main không có padding-top quá lớn */
+            .container {
+                padding-top: 0;
+            }
+            h2 {
+                margin-top: 30px; /* Thêm khoảng cách phía trên cho thẻ h2 */
+            }
+        </style>
     </head>
+
     <body>
+        <div id="wrapper">
         <%@ include file="header.jsp" %>
+        <main>
         <div class="container mt-5">
             <h2 class="mb-4">Your Shopping Cart</h2>
 
@@ -69,7 +101,7 @@
                     %>
                 </tbody>
             </table>
-                
+
             <form onsubmit="doDiscount(event)" class="mb-3">
                 <label for="discountCode">Enter Discount Code:</label>
                 <input type="text" name="discountCode" id="discountCode" class="form-control w-50 d-inline">
@@ -118,6 +150,7 @@
             <div class="alert alert-warning text-center">Your cart is empty.</div>
             <% } %>
         </div>
+        </main>
         <%@ include file="footer.jsp" %>
         <script>
             function changeQuantity(input, id) {
@@ -213,5 +246,6 @@
             }
 
         </script>
+        </div>
     </body>
 </html>

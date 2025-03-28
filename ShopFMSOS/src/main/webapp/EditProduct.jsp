@@ -80,12 +80,11 @@
                     <div class="edit-card">
                         <h3>Edit Product Information</h3>
                         <!-- Form to edit product: include enctype to upload file -->
-                        <form action="EditProduct" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+                        <form action="EditProduct" method="post" enctype="multipart/form-data">
                             <input type="hidden" name="productId" value="${product.productId}"/>
-
                             <div class="form-group">
                                 <label for="productName">Product Name:</label>
-                                <input type="text" class="form-control" id="productName" name="productName" value="${product.productName}" required minlength="2">
+                                <input type="text" class="form-control" id="productName" name="productName" value="${product.productName}" required>
                             </div>
 
                             <div class="form-group">
@@ -104,29 +103,20 @@
 
                             <div class="form-group">
                                 <label for="price">Price:</label>
-                                <input type="number" step="0.01" min="0" class="form-control" id="price" name="price" value="${product.price}" required>
+                                <input type="number" step="0.01" class="form-control" id="price" name="price" value="${product.price}" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="discount">Discount (%):</label>
-                                <input type="number" step="0.01" min="0" max="100" class="form-control" id="discount" name="discount" value="${product.discount}" required>
+                                <input type="number" step="0.01" class="form-control" id="discount" name="discount" value="${product.discount}" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="quantity">Quantity:</label>
-                                <input type="number" min="0" class="form-control" id="quantity" name="quantity" value="${product.quantity}" required>
+                                <input type="number" class="form-control" id="quantity" name="quantity" value="${product.quantity}" required>
                             </div>
 
-                            <div class="form-group">
-                                <label for="target">Target:</label>
-                                <input type="text" class="form-control" id="target" name="target" value="${product.target}" required minlength="2">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="factory">Factory:</label>
-                                <input type="text" class="form-control" id="factory" name="factory" value="${product.factory}" required minlength="2">
-                            </div>
-
+                            <!-- Display current avatar (product image) -->
                             <div class="form-group">
                                 <label>Current Image:</label><br>
                                 <c:choose>
@@ -139,9 +129,10 @@
                                 </c:choose>
                             </div>
 
+                            <!-- Upload a new image for product (if required) -->
                             <div class="form-group">
                                 <label for="imageFile">Choose new image (if any):</label>
-                                <input type="file" class="form-control" id="imageFile" name="image" accept="image/*">
+                                <input type="file" class="form-control" id="imageFile" name="image">
                             </div>
 
                             <div class="form-group">
@@ -159,29 +150,6 @@
                 </main>
             </div>
         </div>
-
-        <!-- JavaScript validation -->
-        <script>
-            function validateForm() {
-                const price = parseFloat(document.getElementById("price").value);
-                const discount = parseFloat(document.getElementById("discount").value);
-                const quantity = parseInt(document.getElementById("quantity").value);
-                const target = document.getElementById("target").value.trim();
-                const factory = document.getElementById("factory").value.trim();
-
-                if (price < 0 || discount < 0 || discount > 100 || quantity < 0) {
-                    alert("Price, Discount, and Quantity must be valid numbers.\nDiscount should be between 0 and 100.");
-                    return false;
-                }
-
-                if (target.length < 2 || factory.length < 2) {
-                    alert("Target and Factory must be at least 2 characters long.");
-                    return false;
-                }
-
-                return true;
-            }
-        </script>
 
         <!-- Bootstrap and required scripts -->
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
