@@ -104,7 +104,7 @@
                                                 id="email" 
                                                 placeholder="name@example.com" 
                                                 required
-                                                >
+                                            >
                                             <label for="email" class="form-label">Email</label>
                                         </div>
                                         <div class="form-floating mb-3">
@@ -115,7 +115,7 @@
                                                 id="password" 
                                                 placeholder="Password" 
                                                 required
-                                                >
+                                            >
                                             <label for="password" class="form-label">Password</label>
                                         </div>
                                         <!-- Link Quên mật khẩu -->
@@ -133,9 +133,9 @@
 
                                         <!-- Thông báo lỗi nếu có -->
                                         <% if (request.getAttribute("errorMessage") != null) { %>
-                                        <div class="alert alert-danger mt-3" role="alert">
-                                            <%= request.getAttribute("errorMessage") %>
-                                        </div>
+                                            <div class="alert alert-danger mt-3" role="alert">
+                                                <%= request.getAttribute("errorMessage") %>
+                                            </div>
                                         <% } %>
                                     </form>
 
@@ -146,7 +146,7 @@
 
                                     <!-- Đăng nhập qua Google với nền trắng -->
                                     <div class="d-grid">
-                                        <a href="<%=request.getContextPath() %>/googleLogin" class="btn btn-light btn-lg d-flex align-items-center justify-content-center">
+                                        <a href="googleLogin" class="btn btn-light btn-lg d-flex align-items-center justify-content-center">
                                             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlvdLI5zD4GmMr_SgWbtV8G5EJI0u_VSmFUA&s" alt="Google logo" class="google-logo">
                                             <span class="ms-2 fs-6">Sign in with Google</span>
                                         </a>

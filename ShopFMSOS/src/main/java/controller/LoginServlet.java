@@ -2,11 +2,8 @@ package controller;
 
 import dal.UserDAO;
 import model.User;
-import utils.HashUtil;  // Import HashUtil để mã hóa mật khẩu
-
 import java.io.IOException;
 import java.util.Optional;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,11 +25,8 @@ public class LoginServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        // Mã hóa mật khẩu người dùng nhập vào bằng MD5
-        String hashedPassword = HashUtil.md5(password);
-
         UserDAO userDAO = new UserDAO();
-        Optional<User> userOpt = userDAO.validateUser(email, hashedPassword);
+        Optional<User> userOpt = userDAO.validateUser(email, password);
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();

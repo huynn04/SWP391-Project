@@ -23,28 +23,32 @@ import model.Category;
  */
 public class ManageProductServlet extends HttpServlet {
 
+    private static final int PAGE_SIZE = 10; // Số sản phẩm mỗi trang
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String searchQuery = request.getParameter("searchQuery");
         String searchBy = request.getParameter("searchBy");
         String sortBy = request.getParameter("sortBy");
+        String pageParam = request.getParameter("page");
 
-        // Nếu không có giá trị nào, đặt mặc định
+        // Set default values
         if (searchQuery == null) {
             searchQuery = "";
         }
         if (searchBy == null) {
-            searchBy = "id"; // Tìm kiếm theo tên mặc định
+            searchBy = "name"; // Default to search by name instead of 'all'
         }
         if (sortBy == null) {
-            sortBy = "id"; // Sắp xếp theo id mặc định
+            sortBy = "id-asc";
         }
+        int page = (pageParam != null && !pageParam.isEmpty()) ? Integer.parseInt(pageParam) : 1;
 
-        // Kiểm tra và cập nhật tham số sortBy nếu cần
         ProductDAO productDAO = new ProductDAO();
-        List<Product> products = productDAO.searchProducts(searchQuery, searchBy, sortBy);
+        List<Product> products = productDAO.getPaginatedProducts(searchQuery, searchBy, sortBy, page, PAGE_SIZE);
+        int totalProducts = productDAO.countAllProducts();
+        int totalPages = (int) Math.ceil((double) totalProducts / PAGE_SIZE);
 
-        // Lấy danh sách tên danh mục
         CategoryDAO categoryDao = new CategoryDAO();
         Map<Integer, String> categoryNames = new HashMap<>();
         for (Product product : products) {
@@ -52,10 +56,14 @@ public class ManageProductServlet extends HttpServlet {
             categoryNames.put(product.getProductId(), categoryName);
         }
 
-        // Lưu danh sách sản phẩm và danh mục vào request để hiển thị
         request.setAttribute("productList", products);
         request.setAttribute("categoryNames", categoryNames);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("searchQuery", searchQuery);
+        request.setAttribute("searchBy", searchBy);
+        request.setAttribute("sortBy", sortBy);
+
         request.getRequestDispatcher("/ManageProduct.jsp").forward(request, response);
     }
-
 }

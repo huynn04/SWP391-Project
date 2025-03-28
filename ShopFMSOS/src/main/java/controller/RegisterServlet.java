@@ -3,7 +3,6 @@ package controller;
 import dal.UserDAO;
 import dal.EmailService; // Import lớp EmailService để gửi email
 import model.User;
-import utils.HashUtil; // Import HashUtil để mã hóa mật khẩu
 import java.io.IOException;
 import java.util.Date;
 import jakarta.servlet.ServletException;
@@ -28,7 +27,6 @@ public class RegisterServlet extends HttpServlet {
         String lastName = request.getParameter("lastName");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String confirmPassword = request.getParameter("confirmPassword");
 
         // Kiểm tra các trường không được để trống
         if (firstName == null || firstName.isEmpty() || lastName == null || lastName.isEmpty()
@@ -57,14 +55,6 @@ public class RegisterServlet extends HttpServlet {
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
-        if (!password.equals(confirmPassword)) {
-            request.setAttribute("errorMessage", "Password and Confirm Password do not match.");
-            request.getRequestDispatcher("register.jsp").forward(request, response);
-            return;
-        }
-
-        // Mã hóa mật khẩu người dùng nhập vào với MD5
-        String hashedPassword = HashUtil.md5(password);
 
         String fullName = firstName + " " + lastName;
         int roleId = 3; // Giả định role mặc định là 3
@@ -72,7 +62,7 @@ public class RegisterServlet extends HttpServlet {
         Date createdAt = new Date();
         Date updatedAt = new Date();
 
-        User user = new User(0, roleId, fullName, email, "", "", hashedPassword, "default-avatar.png", status, createdAt, updatedAt);
+        User user = new User(0, roleId, fullName, email, "", "", password, "default-avatar.png", status, createdAt, updatedAt);
         UserDAO userDAO = new UserDAO();
 
         boolean isInserted = userDAO.insertUser(user);
