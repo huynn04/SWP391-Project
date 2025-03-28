@@ -36,24 +36,23 @@ public class LuckyWheelServlet extends HttpServlet {
             return;
         }
 
-        // Kiểm tra số lần quay
-        Integer spins = (Integer) session.getAttribute("spins");
-        if (spins != null && spins >= 1) {  // Giới hạn chỉ cho phép quay 1 lần
-            response.setContentType("text/plain;charset=UTF-8");
-            response.getWriter().write("You have already spun the wheel.");
-            return;  // Nếu đã quay rồi, không cho phép quay nữa
-        }
-
         // Tăng số lần quay
+        Integer spins = (Integer) session.getAttribute("spins");
         spins = (spins == null) ? 1 : spins + 1;
         session.setAttribute("spins", spins);
 
-        // Quyết định ngẫu nhiên xem có thắng không (50% cơ hội thắng, 50% thua)
+        // Quyết định ngẫu nhiên xem có thắng không (70% cơ hội thắng, 30% thua)
         Random rand = new Random();
-        boolean isWinner = rand.nextInt(100) < 50; // 50% cơ hội thắng
+        boolean isWinner = rand.nextInt(100) < 70; // 70% cơ hội thắng
         String couponCode = "";
 
         if (isWinner) {
+            couponCode = generateCouponCode();
+            if (couponCode == null || couponCode.isEmpty()) {
+                System.out.println("Error: Coupon code is null or empty! Using fallback code.");
+                couponCode = "TESTCODE123"; // Mã cứng để kiểm tra
+            }
+            System.out.println("Generated coupon code: " + couponCode);
 
             // Lưu vào cơ sở dữ liệu
             try {
@@ -78,4 +77,28 @@ public class LuckyWheelServlet extends HttpServlet {
         System.out.println("Response sent to AJAX: " + (couponCode != null ? couponCode : "Better luck next time"));
     }
 
+    private String generateCouponCode() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder coupon = new StringBuilder();
+        Random rand = new Random();
+        DiscountDAO discountDAO = new DiscountDAO();
+        String code;
+
+        try {
+            // Kiểm tra mã cho đến khi nó không trùng trong cơ sở dữ liệu
+            do {
+                coupon.setLength(0);
+                for (int i = 0; i < 8; i++) {
+                    coupon.append(chars.charAt(rand.nextInt(chars.length())));
+                }
+                code = coupon.toString();
+            } while (discountDAO.getDiscountByCode(code) != null);
+
+            System.out.println("Generated code in generateCouponCode: " + code);
+            return code;
+        } catch (Exception e) {
+            System.out.println("Error in generateCouponCode: " + e.getMessage());
+            return null;
+        }
+    }
 }
