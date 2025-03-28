@@ -31,7 +31,12 @@ public class AllNewsServlet extends HttpServlet {
         LOGGER.log(Level.INFO, "Received sortOption: {0}, page: {1}, search: {2}", new Object[]{sortOption, currentPage, searchQuery});
 
         NewsDAO newsDAO = new NewsDAO();
-        int totalNews = searchQuery != null ? newsDAO.countSearchNews(searchQuery) : newsDAO.countAllNews();
+        int totalNews;
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            totalNews = newsDAO.countSearchNews(searchQuery, "title"); // Gọi với searchBy = "title"
+        } else {
+            totalNews = newsDAO.countAllNews();
+        }
         int totalPages = (int) Math.ceil((double) totalNews / NEWS_PER_PAGE);
 
         List<News> newsList = newsDAO.getNewsSortedByUser(currentPage, sortOption, searchQuery);
