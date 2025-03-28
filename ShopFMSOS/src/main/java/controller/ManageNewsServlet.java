@@ -20,41 +20,6 @@ import java.util.List;
  */
 public class ManageNewsServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ManageNewsServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ManageNewsServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String searchQuery = request.getParameter("searchQuery");
@@ -78,7 +43,7 @@ public class ManageNewsServlet extends HttpServlet {
             searchQuery = "";
         }
         if (searchBy == null || (!searchBy.equals("id") && !searchBy.equals("title"))) {
-            searchBy = "id"; // Default search by ID
+            searchBy = "title"; // Default search by title (thay vì id)
         }
         if (sortBy == null || (!sortBy.equals("id") && !sortBy.equals("date"))) {
             sortBy = "id"; // Default sort by ID
@@ -88,10 +53,10 @@ public class ManageNewsServlet extends HttpServlet {
         NewsDAO newsDAO = new NewsDAO();
 
         // Perform search with pagination
-        List<News> newsList = newsDAO.searchNews(searchQuery, currentPage, newsPerPage);
+        List<News> newsList = newsDAO.searchNews(searchQuery, searchBy, currentPage, newsPerPage);
 
         // Calculate total pages
-        int totalNews = newsDAO.countSearchNews(searchQuery);
+        int totalNews = newsDAO.countSearchNews(searchQuery, searchBy);
         int totalPages = (int) Math.ceil((double) totalNews / newsPerPage);
 
         // Set attributes for the JSP
@@ -108,29 +73,4 @@ public class ManageNewsServlet extends HttpServlet {
             request.getRequestDispatcher("/error.jsp").forward(request, response);
         }
     }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }

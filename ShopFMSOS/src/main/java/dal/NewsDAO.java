@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class NewsDAO extends DBContext {
 
     private static final Logger LOGGER = Logger.getLogger(NewsDAO.class.getName());
-    
+
     // Lấy tất cả tin tức
     public List<News> getAllNews(int page) {
         List<News> newsList = new ArrayList<>();
@@ -172,23 +172,51 @@ public class NewsDAO extends DBContext {
         }
     }
 
-    public List<News> searchNews(String searchQuery, int currentPage, int newsPerPage) {
+    public List<News> searchNews(String searchQuery, String searchBy, int currentPage, int newsPerPage) {
         List<News> newsList = new ArrayList<>();
-        int offset = (currentPage - 1) * newsPerPage; // Tính toán offset để phân trang
+        int offset = (currentPage - 1) * newsPerPage;
+
+        String whereClause = "";
+        boolean isValidId = false;
+        int newsId = -1;
+
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            if ("id".equals(searchBy)) {
+                try {
+                    newsId = Integer.parseInt(searchQuery);
+                    isValidId = true;
+                    whereClause = " WHERE news_id = ?";
+                } catch (NumberFormatException e) {
+                    whereClause = ""; // Bỏ qua điều kiện nếu ID không hợp lệ
+                }
+            } else { // title
+                whereClause = " WHERE LOWER(title) LIKE LOWER(?)";
+            }
+        }
+
         String sql = "WITH NewsWithRow AS ("
                 + "   SELECT news_id, user_id, title, content, image, status, created_at, updated_at, "
                 + "          ROW_NUMBER() OVER (ORDER BY created_at DESC) AS RowNum "
                 + "   FROM news "
-                + "   WHERE LOWER(title) LIKE LOWER(?) "
+                + whereClause
                 + ") "
                 + "SELECT news_id, user_id, title, content, image, status, created_at, updated_at "
                 + "FROM NewsWithRow "
                 + "WHERE RowNum BETWEEN ? AND ?";
 
         try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, "%" + searchQuery + "%");
-            ps.setInt(2, offset + 1);  // Bắt đầu từ bài viết thứ (offset + 1)
-            ps.setInt(3, offset + newsPerPage);  // Kết thúc tại bài viết thứ (offset + newsPerPage)
+            int paramIndex = 1;
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                if ("id".equals(searchBy)) {
+                    if (isValidId) {
+                        ps.setInt(paramIndex++, newsId);
+                    }
+                } else {
+                    ps.setString(paramIndex++, "%" + searchQuery + "%");
+                }
+            }
+            ps.setInt(paramIndex++, offset + 1);
+            ps.setInt(paramIndex, offset + newsPerPage);
 
             try ( ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -208,8 +236,49 @@ public class NewsDAO extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return newsList;
+    }
+
+// Cập nhật phương thức đếm số lượng tin tức
+    public int countSearchNews(String searchQuery, String searchBy) {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM news";
+        boolean isValidId = false;
+        int newsId = -1;
+
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            if ("id".equals(searchBy)) {
+                try {
+                    newsId = Integer.parseInt(searchQuery);
+                    isValidId = true;
+                    sql += " WHERE news_id = ?";
+                } catch (NumberFormatException e) {
+                    // Không áp dụng điều kiện nếu ID không hợp lệ
+                }
+            } else {
+                sql += " WHERE LOWER(title) LIKE LOWER(?)";
+            }
+        }
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                if ("id".equals(searchBy)) {
+                    if (isValidId) {
+                        ps.setInt(1, newsId);
+                    }
+                } else {
+                    ps.setString(1, "%" + searchQuery + "%");
+                }
+            }
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    count = rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
     }
 
     public List<News> getRecentNews() {
@@ -236,24 +305,6 @@ public class NewsDAO extends DBContext {
         }
 
         return newsList;
-    }
-
-    // Đếm tổng số bài viết phù hợp với tìm kiếm
-    public int countSearchNews(String searchQuery) {
-        int count = 0;
-        String sql = "SELECT COUNT(*) FROM news WHERE LOWER(title) LIKE LOWER(?)";
-
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, "%" + searchQuery + "%");
-            try ( ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    count = rs.getInt(1);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return count;
     }
 
     public List<News> getAllNews(int page, String sortOption) {
@@ -309,19 +360,19 @@ public class NewsDAO extends DBContext {
 
         return newsList;
     }
-public List<News> getNewsSortedByUser(int page, String sortOption, String searchQuery) {
+
+    public List<News> getNewsSortedByUser(int page, String sortOption, String searchQuery) {
         List<News> newsList = new ArrayList<>();
         int pageSize = 10;
         int offset = (page - 1) * pageSize;
 
         String orderBy = "n.created_at DESC";  // Mặc định
         String whereClause = " WHERE n.status = 1";
-        
+
         if (searchQuery != null && !searchQuery.trim().isEmpty()) {
-            whereClause += " AND LOWER(n.title) LIKE LOWER('%" + searchQuery + "%')";
+            whereClause += " AND LOWER(n.title) LIKE LOWER(?)";
         }
 
-        // Xử lý sortOption
         switch (sortOption) {
             case "name-asc":
                 orderBy = "n.title ASC";
@@ -348,7 +399,7 @@ public List<News> getNewsSortedByUser(int page, String sortOption, String search
                 orderBy = "u.full_name DESC";
                 break;
             default:
-                orderBy = "n.created_at DESC"; // Mặc định nếu sortOption không hợp lệ
+                orderBy = "n.created_at DESC";
         }
 
         String sql = "WITH NewsWithRow AS ("
@@ -362,14 +413,15 @@ public List<News> getNewsSortedByUser(int page, String sortOption, String search
                 + "FROM NewsWithRow "
                 + "WHERE RowNum BETWEEN ? AND ?";
 
-        LOGGER.log(Level.INFO, "Executing SQL: {0}", sql);
-        LOGGER.log(Level.INFO, "Sort Option: {0}, Page: {1}, Search: {2}", new Object[]{sortOption, page, searchQuery});
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            int paramIndex = 1;
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                ps.setString(paramIndex++, "%" + searchQuery + "%");
+            }
+            ps.setInt(paramIndex++, offset + 1);
+            ps.setInt(paramIndex, offset + pageSize);
 
-        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, offset + 1);
-            ps.setInt(2, offset + pageSize);
-
-            try (ResultSet rs = ps.executeQuery()) {
+            try ( ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     News news = new News(
                             rs.getInt("news_id"),
@@ -387,7 +439,6 @@ public List<News> getNewsSortedByUser(int page, String sortOption, String search
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "SQL Exception: ", e);
         }
-
         return newsList;
     }
 

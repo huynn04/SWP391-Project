@@ -81,20 +81,22 @@ public class AddNewsServlet extends HttpServlet {
             news.setCreatedAt(currentTimestamp);  // Thiết lập thời gian tạo
             news.setUpdatedAt(currentTimestamp);  // Thiết lập thời gian cập nhật
 
-            // Lưu tin tức vào cơ sở dữ liệu
+            // Add news to database
             boolean success = newsDAO.addNews(news);
 
             if (success) {
-                response.sendRedirect("ManageNews");  // Redirect sau khi thành công
+                request.setAttribute("success", "✅ News added successfully!");
             } else {
                 request.setAttribute("error", "❌ Failed to add news. Please check the data.");
-                request.getRequestDispatcher("/AddNews.jsp").forward(request, response);
             }
+
+            // Forward back to AddNews.jsp
+            request.getRequestDispatcher("AddNews.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "❌ Error occurred: " + e.getMessage());
-            request.getRequestDispatcher("/AddNews.jsp").forward(request, response);
+            request.getRequestDispatcher("AddNews.jsp").forward(request, response);
         }
     }
 }
