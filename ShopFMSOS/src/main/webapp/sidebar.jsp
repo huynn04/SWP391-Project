@@ -43,7 +43,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="CategoryServlet">
                     <span data-feather="user"></span>
-                    Category Manage
+                     Manage Category
                 </a>
             </li>
             <% } %>
