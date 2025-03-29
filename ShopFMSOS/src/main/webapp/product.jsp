@@ -7,6 +7,16 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>
+            main {
+                flex: 1;
+                padding-bottom: 50px;
+                padding-top: 50px; /* Đảm bảo khoảng cách giữa header và main */
+            }
+            #wrapper {
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
             html, body {
                 height: 100%;
                 margin: 0;
@@ -269,141 +279,145 @@
         </script>
     </head>
     <body>
-        <%@ include file="header.jsp" %>
-        <div class="container content-wrapper">
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="filter-section">
-                        <h5>🔍 Search Product</h5>
-                        <form id="filterForm" action="ProductController" method="GET">
-                            <div class="input-group mb-3">
-                                <input type="text" id="searchQuery" name="searchQuery" class="form-control"
-                                       placeholder="Search products..."
-                                       value="<%= request.getAttribute("searchQuery") != null ? request.getAttribute("searchQuery") : ""%>"
-                                       oninput="filterProducts()">
-                                <button type="button" class="clear-search" onclick="clearSearch()">×</button>
-                                <span class="input-group-text">🔎</span>
-                            </div>
-                            <h6>🎯 Categories:</h6>
-                            <button type="button" class="btn btn-danger btn-sm mb-2" onclick="clearAllFilters()">Show All</button>
-                            <%
-                                List<Category> categories = (List<Category>) request.getAttribute("categories");
-                                String[] selectedCategories = (String[]) request.getAttribute("selectedCategories");
-                                if (categories != null && !categories.isEmpty()) {
-                                    for (Category category : categories) {
-                                        String categoryId = String.valueOf(category.getCategoryId());
-                                        boolean isChecked = selectedCategories != null && Arrays.asList(selectedCategories).contains(categoryId);
-                            %>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input"
-                                       name="categoryId" value="<%= categoryId%>"
-                                       onchange="filterProducts()"
-                                       <%= isChecked ? "checked" : ""%> />
-                                <label class="form-check-label"><%= category.getCategoryName()%></label>
-                            </div>
-                            <%
-                                }
-                            } else {
-                            %>
-                            <%
-                                }
-                            %>
-                            <input type="hidden" name="page" id="pageInput"
-                                   value="<%= request.getParameter("page") != null ? request.getParameter("page") : "1"%>">
-                        </form>
-                    </div>
-                </div>
-                <div class="col-md-9 products-col">
-                    <div class="sort-section mb-3">
-                        <h6>Sort By:</h6>
-                        <div class="d-flex">
-                            <select class="form-select me-2" name="sortOption" onchange="sortProducts()">
-                                <option value="name-asc" <%= "name-asc".equals(request.getParameter("sortOption")) ? "selected" : "" %>>Name (A-Z)</option>
-                                <option value="name-desc" <%= "name-desc".equals(request.getParameter("sortOption")) ? "selected" : "" %>>Name (Z-A)</option>
-                                <option value="price-asc" <%= "price-asc".equals(request.getParameter("sortOption")) ? "selected" : "" %>>Price (Low to High)</option>
-                                <option value="price-desc" <%= "price-desc".equals(request.getParameter("sortOption")) ? "selected" : "" %>>Price (High to Low)</option>
-                            </select>
-                        </div>
-                    </div>
-
+        <div id="wrapper">
+            <%@ include file="header.jsp" %>
+            <main>
+                <div class="container content-wrapper">
                     <div class="row">
-                        <%
-                            List<Product> products = (List<Product>) request.getAttribute("products");
-                            if (products != null && !products.isEmpty()) {
-                                for (Product product : products) {
-                                    if (product.getQuantity() > 0 && product.getStatus() == 1) {
-                        %>
-                        <div class="col-md-4 col-sm-6">
-                            <div class="card product-card shadow-sm">
-                                <a href="ProductDetail?productId=<%= product.getProductId() %>">
-                                    <img src="<%= product.getImage() != null ? product.getImage() : "images/no-image.png" %>"
-                                         class="card-img-top" alt="<%= product.getProductName() %>">
-                                </a>
-                                <div class="product-title text-truncate"><%= product.getProductName() %></div>
-                                <div class="card-body">
-                                    <h6 class="product-price text-success">$<%= product.getPrice() %></h6>
-                                    <div class="d-flex justify-content-between">
-                                        <a href="ProductDetail?productId=<%= product.getProductId() %>" class="btn btn-primary btn-sm">Buy Now</a>
-                                        <a href="<%= session.getAttribute("loggedInUser") != null ? "AddToCart?productId=" + product.getProductId() : "login.jsp" %>" 
-                                           class="btn btn-success btn-sm">
-                                            🛒
-                                        </a>
+                        <div class="col-md-3">
+                            <div class="filter-section">
+                                <h5>🔍 Search Product</h5>
+                                <form id="filterForm" action="ProductController" method="GET">
+                                    <div class="input-group mb-3">
+                                        <input type="text" id="searchQuery" name="searchQuery" class="form-control"
+                                               placeholder="Search products..."
+                                               value="<%= request.getAttribute("searchQuery") != null ? request.getAttribute("searchQuery") : ""%>"
+                                               oninput="filterProducts()">
+                                        <button type="button" class="clear-search" onclick="clearSearch()">×</button>
+                                        <span class="input-group-text">🔎</span>
                                     </div>
+                                    <h6>🎯 Categories:</h6>
+                                    <button type="button" class="btn btn-danger btn-sm mb-2" onclick="clearAllFilters()">Show All</button>
+                                    <%
+                                        List<Category> categories = (List<Category>) request.getAttribute("categories");
+                                        String[] selectedCategories = (String[]) request.getAttribute("selectedCategories");
+                                        if (categories != null && !categories.isEmpty()) {
+                                            for (Category category : categories) {
+                                                String categoryId = String.valueOf(category.getCategoryId());
+                                                boolean isChecked = selectedCategories != null && Arrays.asList(selectedCategories).contains(categoryId);
+                                    %>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input"
+                                               name="categoryId" value="<%= categoryId%>"
+                                               onchange="filterProducts()"
+                                               <%= isChecked ? "checked" : ""%> />
+                                        <label class="form-check-label"><%= category.getCategoryName()%></label>
+                                    </div>
+                                    <%
+                                        }
+                                    } else {
+                                    %>
+                                    <%
+                                        }
+                                    %>
+                                    <input type="hidden" name="page" id="pageInput"
+                                           value="<%= request.getParameter("page") != null ? request.getParameter("page") : "1"%>">
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-md-9 products-col">
+                            <div class="sort-section mb-3">
+                                <h6>Sort By:</h6>
+                                <div class="d-flex">
+                                    <select class="form-select me-2" name="sortOption" onchange="sortProducts()">
+                                        <option value="name-asc" <%= "name-asc".equals(request.getParameter("sortOption")) ? "selected" : "" %>>Name (A-Z)</option>
+                                        <option value="name-desc" <%= "name-desc".equals(request.getParameter("sortOption")) ? "selected" : "" %>>Name (Z-A)</option>
+                                        <option value="price-asc" <%= "price-asc".equals(request.getParameter("sortOption")) ? "selected" : "" %>>Price (Low to High)</option>
+                                        <option value="price-desc" <%= "price-desc".equals(request.getParameter("sortOption")) ? "selected" : "" %>>Price (High to Low)</option>
+                                    </select>
                                 </div>
                             </div>
-                        </div>
-                        <%
+
+                            <div class="row">
+                                <%
+                                    List<Product> products = (List<Product>) request.getAttribute("products");
+                                    if (products != null && !products.isEmpty()) {
+                                        for (Product product : products) {
+                                            if (product.getQuantity() > 0 && product.getStatus() == 1) {
+                                %>
+                                <div class="col-md-4 col-sm-6">
+                                    <div class="card product-card shadow-sm">
+                                        <a href="ProductDetail?productId=<%= product.getProductId() %>">
+                                            <img src="<%= product.getImage() != null ? product.getImage() : "images/no-image.png" %>"
+                                                 class="card-img-top" alt="<%= product.getProductName() %>">
+                                        </a>
+                                        <div class="product-title text-truncate"><%= product.getProductName() %></div>
+                                        <div class="card-body">
+                                            <h6 class="product-price text-success">$<%= product.getPrice() %></h6>
+                                            <div class="d-flex justify-content-between">
+                                                <a href="ProductDetail?productId=<%= product.getProductId() %>" class="btn btn-primary btn-sm">Buy Now</a>
+                                                <a href="<%= session.getAttribute("loggedInUser") != null ? "AddToCart?productId=" + product.getProductId() : "login.jsp" %>" 
+                                                   class="btn btn-success btn-sm">
+                                                    🛒
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <%
+                                            }
+                                        }
+                                    } else {
+                                %>
+                                <div class="col-12 text-center"><p>No products available.</p></div>
+                                <%
                                     }
+                                %>
+                            </div>
+
+                            <%-- Pagination --%>
+                            <%
+                                Integer totalPages = (Integer) request.getAttribute("totalPages");
+                                Integer currentPage = (Integer) request.getAttribute("currentPage");
+
+                                if (totalPages != null && totalPages > 1) {
+                                    StringBuilder queryParams = new StringBuilder();
+                                    if (request.getAttribute("searchQuery") != null) {
+                                        queryParams.append("&searchQuery=").append(request.getAttribute("searchQuery"));
+                                    }
+                                    if (selectedCategories != null) {
+                                        for (String catId : selectedCategories) {
+                                            queryParams.append("&categoryId=").append(catId);
+                                        }
+                                    }
+                            %>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination">
+                                    <li class="page-item <%= currentPage <= 1 ? "disabled" : ""%>">
+                                        <a class="page-link" href="ProductController?page=<%= currentPage - 1%><%= queryParams%>">Previous</a>
+                                    </li>
+                                    <%
+                                        for (int i = 1; i <= totalPages; i++) {
+                                    %>
+                                    <li class="page-item <%= i == currentPage ? "active" : ""%>">
+                                        <a class="page-link" href="ProductController?page=<%= i%><%= queryParams%>"><%= i%></a>
+                                    </li>
+                                    <%
+                                        }
+                                    %>
+                                    <li class="page-item <%= currentPage >= totalPages ? "disabled" : ""%>">
+                                        <a class="page-link" href="ProductController?page=<%= currentPage + 1%><%= queryParams%>">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <%
                                 }
-                            } else {
-                        %>
-                        <div class="col-12 text-center"><p>No products available.</p></div>
-                        <%
-                            }
-                        %>
+                            %>
+                        </div>
                     </div>
-
-                    <%-- Pagination --%>
-                    <%
-                        Integer totalPages = (Integer) request.getAttribute("totalPages");
-                        Integer currentPage = (Integer) request.getAttribute("currentPage");
-
-                        if (totalPages != null && totalPages > 1) {
-                            StringBuilder queryParams = new StringBuilder();
-                            if (request.getAttribute("searchQuery") != null) {
-                                queryParams.append("&searchQuery=").append(request.getAttribute("searchQuery"));
-                            }
-                            if (selectedCategories != null) {
-                                for (String catId : selectedCategories) {
-                                    queryParams.append("&categoryId=").append(catId);
-                                }
-                            }
-                    %>
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination">
-                            <li class="page-item <%= currentPage <= 1 ? "disabled" : ""%>">
-                                <a class="page-link" href="ProductController?page=<%= currentPage - 1%><%= queryParams%>">Previous</a>
-                            </li>
-                            <%
-                                for (int i = 1; i <= totalPages; i++) {
-                            %>
-                            <li class="page-item <%= i == currentPage ? "active" : ""%>">
-                                <a class="page-link" href="ProductController?page=<%= i%><%= queryParams%>"><%= i%></a>
-                            </li>
-                            <%
-                                }
-                            %>
-                            <li class="page-item <%= currentPage >= totalPages ? "disabled" : ""%>">
-                                <a class="page-link" href="ProductController?page=<%= currentPage + 1%><%= queryParams%>">Next</a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <%
-                        }
-                    %>
                 </div>
-            </div>
+            </main>
+            <%@ include file="footer.jsp" %>
         </div>
-        <%@ include file="footer.jsp" %>
     </body>
 </html>

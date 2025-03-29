@@ -60,7 +60,7 @@
                 <!-- Nếu là Admin, hiển thị Dashboard -->
                 <li><a class="dropdown-item" href="dashboard">Admin Dashboard</a></li>
                     <% } %>
-                <li><a class="dropdown-item" href="viewProfile.jsp">Update Profile</a></li>
+                <li><a class="dropdown-item" href="viewProfile.jsp">View Profile</a></li>
                 <li><a class="dropdown-item" href="changePassword.jsp">Change Password</a></li>
                 <li><a class="dropdown-item" href="CustomerOrderHistory">Order History</a></li>
                 <li><a class="dropdown-item" href="managePayment.jsp">Manage Payment</a></li>

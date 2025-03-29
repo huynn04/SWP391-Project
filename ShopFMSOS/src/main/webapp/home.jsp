@@ -27,15 +27,18 @@
                 margin: 0;
             }
 
+            /* Container chính chứa tất cả phần tử */
             #wrapper {
-                min-height: 100vh;
+                min-height: 100vh; /* Đảm bảo chiều cao đầy đủ */
                 display: flex;
                 flex-direction: column;
             }
 
+            /* Phần nội dung chính */
             main {
-                flex: 1;
+                flex: 1; /* Chiếm không gian còn lại giữa header và footer */
                 padding-bottom: 50px;
+                padding-top:50px;/* Đảm bảo có khoảng trống dưới cùng để footer không đè lên */
             }
 
             /* Stretch the container to full width */

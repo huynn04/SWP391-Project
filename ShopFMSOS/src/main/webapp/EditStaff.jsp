@@ -78,14 +78,14 @@
                     </div>
 
                     <div class="edit-card">
-                        <h3>Chỉnh sửa thông tin nhân viên</h3>
-                        <!-- Form chỉnh sửa nhân viên: thêm enctype để upload file -->
+                        <h3>Edit Staff Information</h3>
+                        <!-- Edit staff form: added enctype for file upload -->
                         <form action="EditStaff" method="post" enctype="multipart/form-data">
-                            <!-- Input ẩn cho userId -->
+                            <!-- Hidden input for userId -->
                             <input type="hidden" name="userId" value="${staff.userId}"/>
 
                             <div class="form-group">
-                                <label for="fullName">Họ và tên:</label>
+                                <label for="fullName">Full Name:</label>
                                 <input type="text" class="form-control" id="fullName" name="fullName" value="${staff.fullName}" required>
                             </div>
 
@@ -95,18 +95,18 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="phoneNumber">Số điện thoại:</label>
+                                <label for="phoneNumber">Phone Number:</label>
                                 <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" value="${staff.phoneNumber}" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="address">Địa chỉ:</label>
+                                <label for="address">Address:</label>
                                 <input type="text" class="form-control" id="address" name="address" value="${staff.address}" required>
                             </div>
 
-                            <!-- Hiển thị avatar hiện tại -->
+                            <!-- Display current avatar -->
                             <div class="form-group">
-                                <label>Avatar hiện tại:</label><br>
+                                <label>Current Avatar:</label><br>
                                 <c:choose>
                                     <c:when test="${not empty staff.avatar}">
                                         <img src="${staff.avatar}" alt="Avatar" class="current-avatar"/>
@@ -117,14 +117,14 @@
                                 </c:choose>
                             </div>
 
-                            <!-- Cho phép chọn file upload mới (nếu muốn thay đổi avatar) -->
+                            <!-- Allow user to upload a new avatar (if changing) -->
                             <div class="form-group">
-                                <label for="avatarFile">Chọn file avatar mới (nếu có):</label>
+                                <label for="avatarFile">Choose a new avatar file (if any):</label>
                                 <input type="file" class="form-control" id="avatarFile" name="avatar">
                             </div>
 
                             <div class="form-group">
-                                <label for="status">Trạng thái:</label>
+                                <label for="status">Status:</label>
                                 <select class="form-control" id="status" name="status">
                                     <option value="1" <c:if test="${staff.status == 1}">selected</c:if>>Active</option>
                                     <option value="0" <c:if test="${staff.status == 0}">selected</c:if>>Inactive</option>
@@ -132,16 +132,16 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="roleId">Chức vụ:</label>
+                                    <label for="roleId">Role:</label>
                                     <select class="form-control" id="roleId" name="roleId">
-                                        <!-- Giả sử: 2 là Staff, các giá trị khác tùy theo thiết kế -->
+                                        <!-- Assuming: 2 is Staff, other values based on your design -->
                                         <option value="2" <c:if test="${staff.roleId == 2}">selected</c:if>>Staff</option>
                                     <option value="3" <c:if test="${staff.roleId == 3}">selected</c:if>>Customer</option>
                                 </select>
                             </div>
 
-                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                            <a href="StaffManager" class="btn btn-secondary">Hủy</a>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <a href="StaffManager" class="btn btn-secondary">Cancel</a>
                         </form>
                     </div>
                 </main>
