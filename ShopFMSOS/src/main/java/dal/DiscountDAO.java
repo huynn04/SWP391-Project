@@ -222,6 +222,7 @@ public class DiscountDAO extends DBContext {
             e.printStackTrace();
         }
     }
+
     public void updateDiscountStatus(String code, int status) {
         String query = "UPDATE discounts SET status = ? WHERE code = ?";
         try ( Connection conn = getConnection();  PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -232,4 +233,74 @@ public class DiscountDAO extends DBContext {
             e.printStackTrace();
         }
     }
+
+    public List<Discount> searchAndSortDiscounts(String searchQuery, String searchBy, String sortOption) {
+        List<Discount> discounts = new ArrayList<>();
+        String orderBy = "code ASC"; // Default: Code A-Z
+
+        // Set sort order based on the provided option
+        switch (sortOption != null ? sortOption.toLowerCase() : "") {
+            case "code-asc":
+                orderBy = "code ASC";
+                break;
+            case "code-desc":
+                orderBy = "code DESC";
+                break;
+            case "discountvalue-asc":
+                orderBy = "discount_value ASC";
+                break;
+            case "discountvalue-desc":
+                orderBy = "discount_value DESC";
+                break;
+            case "expirydate-asc":
+                orderBy = "expiry_date ASC";
+                break;
+            case "expirydate-desc":
+                orderBy = "expiry_date DESC";
+                break;
+            default:
+                orderBy = "code ASC"; // Default
+        }
+
+        StringBuilder sql = new StringBuilder("SELECT * FROM discounts WHERE status = 1 ");
+
+        // Add WHERE clause based on search query
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            if ("code".equalsIgnoreCase(searchBy)) {
+                sql.append("AND code LIKE ? ");
+            } else if ("discountValue".equalsIgnoreCase(searchBy)) {
+                sql.append("AND CAST(discount_value AS VARCHAR) LIKE ? ");
+            } else if ("expiryDate".equalsIgnoreCase(searchBy)) {
+                sql.append("AND expiry_date LIKE ? ");
+            }
+        }
+
+        sql.append("ORDER BY ").append(orderBy);
+
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql.toString())) {
+
+            // Set search query parameter if present
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                ps.setString(1, "%" + searchQuery + "%");
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Discount discount = new Discount(
+                        rs.getInt("discount_id"),
+                        rs.getString("code"),
+                        rs.getDouble("discount_value"),
+                        rs.getString("discount_type"),
+                        rs.getDouble("min_order_value"),
+                        rs.getDate("expiry_date"),
+                        rs.getInt("status")
+                );
+                discounts.add(discount);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return discounts;
+    }
+
 }
