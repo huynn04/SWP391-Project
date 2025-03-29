@@ -249,28 +249,75 @@ public class ProductDAO extends DBContext {
         }
     }
 
-    public List<Product> searchProducts(String searchQuery, String searchBy, String sortBy) {
+   public List<Product> searchProducts(String searchQuery, String searchBy, String sortBy) {
         List<Product> products = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM [products] WHERE LOWER(product_name) LIKE LOWER(?)");
+        StringBuilder sql = new StringBuilder("SELECT * FROM [products] WHERE 1=1");
 
-        // Thêm điều kiện tìm kiếm theo ID nếu cần
-        if ("id".equals(searchBy)) {
-            sql = new StringBuilder("SELECT * FROM [products] WHERE product_id LIKE ?");
+        // Handle dynamic search based on searchBy field (name, id, price, quantity, sold)
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            switch (searchBy) {
+                case "id":
+                    sql.append(" AND product_id LIKE ?");
+                    break;
+                case "name":
+                    sql.append(" AND LOWER(product_name) LIKE LOWER(?)");
+                    break;
+                case "price":
+                    sql.append(" AND price LIKE ?");
+                    break;
+                case "quantity":
+                    sql.append(" AND quantity LIKE ?");
+                    break;
+                case "sold":
+                    sql.append(" AND sold LIKE ?");
+                    break;
+                default:
+                    sql.append(" AND LOWER(product_name) LIKE LOWER(?)"); // Default to search by name
+                    break;
+            }
         }
 
-        // Thêm phần sắp xếp
-        if ("name".equals(sortBy)) {
-            sql.append(" ORDER BY product_name");
-        } else if ("id".equals(sortBy)) {
-            sql.append(" ORDER BY product_id");
+        // Handle sorting based on the sortBy parameter
+        if (sortBy != null && !sortBy.isEmpty()) {
+            String[] sortParts = sortBy.split("-");
+            String column = sortParts[0];
+            String direction = (sortParts.length > 1 && "desc".equals(sortParts[1])) ? "DESC" : "ASC";
+
+            switch (column) {
+                case "name":
+                    sql.append(" ORDER BY product_name ").append(direction);
+                    break;
+                case "id":
+                    sql.append(" ORDER BY product_id ").append(direction);
+                    break;
+                case "price":
+                    sql.append(" ORDER BY price ").append(direction);
+                    break;
+                case "quantity":
+                    sql.append(" ORDER BY quantity ").append(direction);
+                    break;
+                case "sold":
+                    sql.append(" ORDER BY sold ").append(direction);
+                    break;
+                default:
+                    sql.append(" ORDER BY product_id ASC");  // Default sorting by ID
+                    break;
+            }
+        } else {
+            sql.append(" ORDER BY product_id ASC");  // Default sorting by ID ascending
         }
 
+        // Execute the query
         try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql.toString())) {
-            ps.setString(1, "%" + searchQuery + "%");
+            // Set search query parameter
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                String searchPattern = "%" + searchQuery + "%";
+                ps.setString(1, searchPattern); // Bind search parameter
+            }
+
             try ( ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Product product = new Product(
-                            rs.getInt("product_id"),
+                    Product product = new Product(rs.getInt("product_id"),
                             rs.getInt("category_id"),
                             rs.getString("product_name"),
                             rs.getString("detail_desc"),
@@ -573,4 +620,20 @@ public class ProductDAO extends DBContext {
         }
         return products;
     }
+    public boolean updateProductCategory(int oldCategoryId) {
+    int newCategoryId = 13; // Mặc định chuyển tất cả sản phẩm về category_id = 13
+    String sql = "UPDATE products SET category_id = ? WHERE category_id = ?";
+
+    try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, newCategoryId);  // Cập nhật category_id thành 13
+        ps.setInt(2, oldCategoryId);  // Tìm các sản phẩm có category_id cũ
+
+        int rowsAffected = ps.executeUpdate();
+        return rowsAffected > 0;  // Trả về true nếu có sản phẩm bị ảnh hưởng
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;  // Nếu có lỗi, trả về false
+    }
+}
+
 }
