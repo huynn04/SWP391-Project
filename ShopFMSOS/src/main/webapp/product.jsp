@@ -250,8 +250,8 @@
             function sortProducts() {
                 const sortOption = document.querySelector('select[name="sortOption"]').value;
                 const urlParams = new URLSearchParams(window.location.search);
-                urlParams.set('sortOption', sortOption); // Add or update the sortOption parameter
-                window.location.search = urlParams.toString(); // Reload with the new sort option
+                urlParams.set('sortOption', sortOption);
+                window.location.search = urlParams.toString();
             }
 
             window.addEventListener('load', function () {
@@ -315,10 +315,7 @@
                                     </div>
                                     <%
                                         }
-                                    } else {
-                                    %>
-                                    <%
-                                        }
+                                    }
                                     %>
                                     <input type="hidden" name="page" id="pageInput"
                                            value="<%= request.getParameter("page") != null ? request.getParameter("page") : "1"%>">
@@ -356,7 +353,7 @@
                                             <h6 class="product-price text-success">$<%= product.getPrice() %></h6>
                                             <div class="d-flex justify-content-between">
                                                 <a href="ProductDetail?productId=<%= product.getProductId() %>" class="btn btn-primary btn-sm">Buy Now</a>
-                                                <a href="<%= session.getAttribute("loggedInUser") != null ? "AddToCart?productId=" + product.getProductId() : "login.jsp" %>" 
+                                                <a href="<%= session.getAttribute("loggedInUser") != null ? "AddToCart?productId=" + product.getProductId() : "login.jsp" %>"
                                                    class="btn btn-success btn-sm">
                                                     🛒
                                                 </a>
@@ -379,34 +376,40 @@
                             <%
                                 Integer totalPages = (Integer) request.getAttribute("totalPages");
                                 Integer currentPage = (Integer) request.getAttribute("currentPage");
+                                String searchQuery = (String) request.getAttribute("searchQuery");
+                                // Removed duplicate declaration of selectedCategories
+                                String sortOption = (String) request.getAttribute("sortOption");
 
                                 if (totalPages != null && totalPages > 1) {
                                     StringBuilder queryParams = new StringBuilder();
-                                    if (request.getAttribute("searchQuery") != null) {
-                                        queryParams.append("&searchQuery=").append(request.getAttribute("searchQuery"));
+                                    if (searchQuery != null && !searchQuery.isEmpty()) {
+                                        queryParams.append("&searchQuery=").append(java.net.URLEncoder.encode(searchQuery, "UTF-8"));
                                     }
-                                    if (selectedCategories != null) {
+                                    if (selectedCategories != null && selectedCategories.length > 0) {
                                         for (String catId : selectedCategories) {
                                             queryParams.append("&categoryId=").append(catId);
                                         }
                                     }
+                                    if (sortOption != null && !sortOption.isEmpty()) {
+                                        queryParams.append("&sortOption=").append(sortOption);
+                                    }
                             %>
                             <nav aria-label="Page navigation">
-                                <ul class="pagination">
-                                    <li class="page-item <%= currentPage <= 1 ? "disabled" : ""%>">
-                                        <a class="page-link" href="ProductController?page=<%= currentPage - 1%><%= queryParams%>">Previous</a>
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item <%= currentPage <= 1 ? "disabled" : "" %>">
+                                        <a class="page-link" href="ProductController?page=<%= currentPage - 1 %><%= queryParams %>">Previous</a>
                                     </li>
                                     <%
                                         for (int i = 1; i <= totalPages; i++) {
                                     %>
-                                    <li class="page-item <%= i == currentPage ? "active" : ""%>">
-                                        <a class="page-link" href="ProductController?page=<%= i%><%= queryParams%>"><%= i%></a>
+                                    <li class="page-item <%= i == currentPage ? "active" : "" %>">
+                                        <a class="page-link" href="ProductController?page=<%= i %><%= queryParams %>"><%= i %></a>
                                     </li>
                                     <%
                                         }
                                     %>
-                                    <li class="page-item <%= currentPage >= totalPages ? "disabled" : ""%>">
-                                        <a class="page-link" href="ProductController?page=<%= currentPage + 1%><%= queryParams%>">Next</a>
+                                    <li class="page-item <%= currentPage >= totalPages ? "disabled" : "" %>">
+                                        <a class="page-link" href="ProductController?page=<%= currentPage + 1 %><%= queryParams %>">Next</a>
                                     </li>
                                 </ul>
                             </nav>
