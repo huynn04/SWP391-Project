@@ -249,7 +249,7 @@ public class ProductDAO extends DBContext {
         }
     }
 
-   public List<Product> searchProducts(String searchQuery, String searchBy, String sortBy) {
+    public List<Product> searchProducts(String searchQuery, String searchBy, String sortBy) {
         List<Product> products = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM [products] WHERE 1=1");
 
@@ -620,20 +620,41 @@ public class ProductDAO extends DBContext {
         }
         return products;
     }
+
     public boolean updateProductCategory(int oldCategoryId) {
-    int newCategoryId = 13; // Mặc định chuyển tất cả sản phẩm về category_id = 13
-    String sql = "UPDATE products SET category_id = ? WHERE category_id = ?";
+        int newCategoryId = 13; // Mặc định chuyển tất cả sản phẩm về category_id = 13
+        String sql = "UPDATE products SET category_id = ? WHERE category_id = ?";
 
-    try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-        ps.setInt(1, newCategoryId);  // Cập nhật category_id thành 13
-        ps.setInt(2, oldCategoryId);  // Tìm các sản phẩm có category_id cũ
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, newCategoryId);  // Cập nhật category_id thành 13
+            ps.setInt(2, oldCategoryId);  // Tìm các sản phẩm có category_id cũ
 
-        int rowsAffected = ps.executeUpdate();
-        return rowsAffected > 0;  // Trả về true nếu có sản phẩm bị ảnh hưởng
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return false;  // Nếu có lỗi, trả về false
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;  // Trả về true nếu có sản phẩm bị ảnh hưởng
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;  // Nếu có lỗi, trả về false
+        }
     }
-}
+
+    public int getProductCountByCategory(int categoryId) {
+        int count = 0;
+        String query = "SELECT COUNT(*) FROM products WHERE category_id = ?"; // Thay 'products' bằng tên bảng sản phẩm của bạn
+
+        DBContext dbContext = new DBContext();
+        try ( Connection connection = dbContext.getConnection(); // Sử dụng kết nối từ DBContext
+                  PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, categoryId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                count = rs.getInt(1); // Lấy số lượng sản phẩm từ kết quả query
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Log lỗi nếu có
+        }
+
+        return count;
+    }
 
 }
