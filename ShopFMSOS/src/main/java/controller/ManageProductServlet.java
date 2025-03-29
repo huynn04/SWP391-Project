@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import dal.CategoryDAO;
@@ -15,40 +11,42 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import model.Category;
 
-/**
- *
- * @author Tran Huy Lam CE180899
- */
 public class ManageProductServlet extends HttpServlet {
 
-    private static final int PAGE_SIZE = 10; // Số sản phẩm mỗi trang
+    private static final int PAGE_SIZE = 10; // Number of products per page
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Get request parameters
         String searchQuery = request.getParameter("searchQuery");
         String searchBy = request.getParameter("searchBy");
         String sortBy = request.getParameter("sortBy");
         String pageParam = request.getParameter("page");
 
-        // Set default values
+        // Set default values for parameters if not provided
         if (searchQuery == null) {
             searchQuery = "";
         }
         if (searchBy == null) {
-            searchBy = "name"; // Default to search by name instead of 'all'
+            searchBy = "name"; // Default search by name
         }
         if (sortBy == null) {
-            sortBy = "id-asc";
+            sortBy = "id-asc"; // Default sort by ID (ascending)
         }
         int page = (pageParam != null && !pageParam.isEmpty()) ? Integer.parseInt(pageParam) : 1;
 
+        // Create an instance of ProductDAO to handle data retrieval
         ProductDAO productDAO = new ProductDAO();
-        List<Product> products = productDAO.getPaginatedProducts(searchQuery, searchBy, sortBy, page, PAGE_SIZE);
+
+        // Get paginated products based on search and sorting criteria
+        List<Product> products = productDAO.searchProducts(searchQuery, searchBy, sortBy);
+
+        // Get total number of products for pagination
         int totalProducts = productDAO.countAllProducts();
         int totalPages = (int) Math.ceil((double) totalProducts / PAGE_SIZE);
 
+        // Get category names for each product
         CategoryDAO categoryDao = new CategoryDAO();
         Map<Integer, String> categoryNames = new HashMap<>();
         for (Product product : products) {
@@ -56,6 +54,7 @@ public class ManageProductServlet extends HttpServlet {
             categoryNames.put(product.getProductId(), categoryName);
         }
 
+        // Set the attributes to be passed to the JSP
         request.setAttribute("productList", products);
         request.setAttribute("categoryNames", categoryNames);
         request.setAttribute("currentPage", page);
@@ -64,6 +63,7 @@ public class ManageProductServlet extends HttpServlet {
         request.setAttribute("searchBy", searchBy);
         request.setAttribute("sortBy", sortBy);
 
+        // Forward the request to the JSP page for rendering
         request.getRequestDispatcher("/ManageProduct.jsp").forward(request, response);
     }
 }

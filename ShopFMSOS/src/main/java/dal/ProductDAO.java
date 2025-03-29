@@ -251,22 +251,70 @@ public class ProductDAO extends DBContext {
 
     public List<Product> searchProducts(String searchQuery, String searchBy, String sortBy) {
         List<Product> products = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM [products] WHERE LOWER(product_name) LIKE LOWER(?)");
+        StringBuilder sql = new StringBuilder("SELECT * FROM [products] WHERE 1=1");
 
-        // Thêm điều kiện tìm kiếm theo ID nếu cần
-        if ("id".equals(searchBy)) {
-            sql = new StringBuilder("SELECT * FROM [products] WHERE product_id LIKE ?");
+        // Handle dynamic search based on searchBy field (name, id, price, quantity, sold)
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            switch (searchBy) {
+                case "id":
+                    sql.append(" AND product_id LIKE ?");
+                    break;
+                case "name":
+                    sql.append(" AND LOWER(product_name) LIKE LOWER(?)");
+                    break;
+                case "price":
+                    sql.append(" AND price LIKE ?");
+                    break;
+                case "quantity":
+                    sql.append(" AND quantity LIKE ?");
+                    break;
+                case "sold":
+                    sql.append(" AND sold LIKE ?");
+                    break;
+                default:
+                    sql.append(" AND LOWER(product_name) LIKE LOWER(?)"); // Default to search by name
+                    break;
+            }
         }
 
-        // Thêm phần sắp xếp
-        if ("name".equals(sortBy)) {
-            sql.append(" ORDER BY product_name");
-        } else if ("id".equals(sortBy)) {
-            sql.append(" ORDER BY product_id");
+        // Handle sorting based on the sortBy parameter
+        if (sortBy != null && !sortBy.isEmpty()) {
+            String[] sortParts = sortBy.split("-");
+            String column = sortParts[0];
+            String direction = (sortParts.length > 1 && "desc".equals(sortParts[1])) ? "DESC" : "ASC";
+
+            switch (column) {
+                case "name":
+                    sql.append(" ORDER BY product_name ").append(direction);
+                    break;
+                case "id":
+                    sql.append(" ORDER BY product_id ").append(direction);
+                    break;
+                case "price":
+                    sql.append(" ORDER BY price ").append(direction);
+                    break;
+                case "quantity":
+                    sql.append(" ORDER BY quantity ").append(direction);
+                    break;
+                case "sold":
+                    sql.append(" ORDER BY sold ").append(direction);
+                    break;
+                default:
+                    sql.append(" ORDER BY product_id ASC");  // Default sorting by ID
+                    break;
+            }
+        } else {
+            sql.append(" ORDER BY product_id ASC");  // Default sorting by ID ascending
         }
 
+        // Execute the query
         try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql.toString())) {
-            ps.setString(1, "%" + searchQuery + "%");
+            // Set search query parameter
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                String searchPattern = "%" + searchQuery + "%";
+                ps.setString(1, searchPattern); // Bind search parameter
+            }
+
             try ( ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Product product = new Product(
