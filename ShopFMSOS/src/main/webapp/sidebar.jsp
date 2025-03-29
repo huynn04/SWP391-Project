@@ -60,14 +60,12 @@
                     Manage Orders
                 </a>
             </li>
-            <% if (userRole == 1) { %>  <!-- Thêm điều kiện để chỉ hiển thị cho người dùng role 1 (Admin) -->
             <li class="nav-item">
                 <a class="nav-link" href="ManageDiscount">
                     <span data-feather="tag"></span>
                     Manage Discounts
                 </a>
             </li>
-            <% } %>
             <li class="nav-item">
                 <a class="nav-link" href="ManageNews">
                     <span data-feather="file-text"></span>

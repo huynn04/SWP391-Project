@@ -25,15 +25,14 @@ import model.User;
  */
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024,   // 1 MB
-    maxFileSize = 1024 * 1024 * 5,       // 5 MB
-    maxRequestSize = 1024 * 1024 * 25    // 25 MB
+    maxFileSize = 1024 * 1024 * 5,     // 5 MB
+    maxRequestSize = 1024 * 1024 * 25  // 25 MB
 )
 public class EditStaffServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Lấy id từ request
         String idParam = request.getParameter("id");
         if (idParam == null || idParam.trim().isEmpty()) {
             response.sendRedirect("StaffManager");
@@ -46,7 +45,6 @@ public class EditStaffServlet extends HttpServlet {
             
             if (optionalStaff.isPresent()) {
                 User staff = optionalStaff.get();
-                // Kiểm tra xem có phải Staff không (giả sử roleId == 2 là Staff)
                 if (staff.getRoleId() == 2) {
                     request.setAttribute("staff", staff);
                     request.getRequestDispatcher("EditStaff.jsp").forward(request, response);
@@ -65,10 +63,8 @@ public class EditStaffServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Đảm bảo request được đọc dưới dạng UTF-8
         request.setCharacterEncoding("UTF-8");
 
-        // Lấy userId và thông tin text từ form
         int userId = Integer.parseInt(request.getParameter("userId"));
         String fullName = request.getParameter("fullName");
         String email = request.getParameter("email");
@@ -77,7 +73,6 @@ public class EditStaffServlet extends HttpServlet {
         int status = Integer.parseInt(request.getParameter("status"));
         int roleId = Integer.parseInt(request.getParameter("roleId"));
 
-        // Lấy thông tin staff hiện tại từ DB (để giữ lại avatar cũ nếu không upload mới)
         UserDAO userDao = new UserDAO();
         Optional<User> optionalStaff = userDao.getUserById(userId);
         if (!optionalStaff.isPresent()) {
@@ -87,38 +82,26 @@ public class EditStaffServlet extends HttpServlet {
         }
         User currentStaff = optionalStaff.get();
 
-        // Xử lý file upload cho avatar
+        // Handle avatar upload
         Part filePart = request.getPart("avatar"); 
-        // Nếu filePart không null và có kích thước > 0 thì xử lý upload, ngược lại giữ lại avatar cũ
         String newAvatarPath = currentStaff.getAvatar();
         if (filePart != null && filePart.getSize() > 0) {
-            // Lấy tên file gốc
             String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+            String uploadPath = getServletContext().getRealPath("") + File.separator + "image";
 
-            // Xác định đường dẫn thư mục lưu file (ví dụ: thư mục "uploads" trong webapps)
-            String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
-
-            // Tạo thư mục nếu chưa tồn tại
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) {
                 uploadDir.mkdir();
             }
 
-            // Đổi tên file để tránh trùng lặp (ví dụ: sử dụng userId + "_" + fileName)
-            String savedFileName = fileName;
+            String savedFileName = System.currentTimeMillis() + "_" + fileName;
             File fileToSave = new File(uploadDir, savedFileName);
 
-            // Ghi file lên server
             filePart.write(fileToSave.getAbsolutePath());
-
-            // Lưu đường dẫn tương đối (có thể thay đổi theo cấu trúc project)
-            newAvatarPath = "/image/" + savedFileName;
+            newAvatarPath = "image/" + savedFileName; 
         }
 
-        // Cập nhật thời gian updatedAt
         Date updatedAt = new Date();
-
-        // Tạo đối tượng User cập nhật (giữ lại các trường khác như password, createdAt nếu cần)
         User updatedStaff = new User();
         updatedStaff.setUserId(userId);
         updatedStaff.setFullName(fullName);
@@ -128,15 +111,14 @@ public class EditStaffServlet extends HttpServlet {
         updatedStaff.setStatus(status);
         updatedStaff.setRoleId(roleId);
         updatedStaff.setUpdatedAt(updatedAt);
-        updatedStaff.setAvatar(newAvatarPath); // Avatar mới (hoặc cũ nếu không upload)
+        updatedStaff.setAvatar(newAvatarPath);
 
-        // Gọi DAO để cập nhật thông tin staff
         boolean success = userDao.updateStaff(updatedStaff);
 
         if (success) {
             response.sendRedirect("StaffManager");
         } else {
-            request.setAttribute("error", "Cập nhật thông tin thất bại. Vui lòng thử lại.");
+            request.setAttribute("error", "Update failed. Please try again.");
             request.getRequestDispatcher("EditStaff.jsp").forward(request, response);
         }
     }
