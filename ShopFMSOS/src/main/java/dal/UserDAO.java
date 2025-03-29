@@ -581,5 +581,22 @@ public class UserDAO extends DBContext {
         }
         return false;
     }
+    public boolean isEmailExist(String email) {
+    // Truy vấn cơ sở dữ liệu để kiểm tra email đã tồn tại hay chưa
+    // Giả sử có một phương thức query trong UserDAO để thực hiện điều này
+    String query = "SELECT COUNT(*) FROM users WHERE email = ?";
+    try (Connection conn = getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setString(1, email);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next() && rs.getInt(1) > 0) {
+            return true;
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
 
 }
