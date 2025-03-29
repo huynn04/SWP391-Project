@@ -227,7 +227,6 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <li><a class="dropdown-item" href="EditNews?newsId=${news.newsId}"><i class="fas fa-edit"></i> Edit</a></li>
-                            <li><a class="dropdown-item" href="DeleteNews?newsId=${news.newsId}" onclick="return confirm('Are you sure you want to delete this news?')"><i class="fas fa-trash"></i> Delete</a></li>
                         </ul>
                     </div>
                     <% } %>
