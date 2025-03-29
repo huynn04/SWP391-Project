@@ -114,17 +114,15 @@
                     <div class="search-container">
                         <form action="StaffManager" method="get" class="form-inline">
                             <label for="searchQuery" class="mr-2">Search:</label>
-                            <input type="text" name="searchQuery" id="searchQuery" class="form-control mr-2" placeholder="Enter name or ID" value="${param.searchQuery}">
-                            <select name="searchBy" id="searchBy" class="form-control mr-2">
-                                <option value="id" ${param.searchBy == 'id' ? 'selected' : ''}>ID</option>
-                                <option value="name" ${param.searchBy == 'name' ? 'selected' : ''}>Name</option>
-                            </select>
+                            <input type="text" name="searchQuery" id="searchQuery" class="form-control mr-2" placeholder="Enter name" value="${param.searchQuery}">
+                            <input type="hidden" name="searchBy" value="name"> <!-- Always search by name -->
                             <c:if test="${not empty param.sortOption}">
                                 <input type="hidden" name="sortOption" value="${param.sortOption}">
                             </c:if>
                             <button type="submit" class="btn btn-primary">Search</button>
                         </form>
                     </div>
+
 
                     <!-- Sort Section -->
                     <div class="sort-container">
@@ -216,7 +214,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
         <script src="https://unpkg.com/feather-icons"></script>
         <script>
-            feather.replace();
+                                                           feather.replace();
         </script>
     </body>
 </html>
