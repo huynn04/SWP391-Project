@@ -130,7 +130,7 @@ public class CategoryDAO extends DBContext {
         return category;
     }
      // Xóa danh mục khỏi bảng categories
-    public boolean deleteCategory(int categoryId) {
+   public boolean deleteCategory(int categoryId) {
         String sql = "DELETE FROM categories WHERE category_id = ?";
 
         try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
