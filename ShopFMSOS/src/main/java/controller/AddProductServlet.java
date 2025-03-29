@@ -45,7 +45,7 @@ public class AddProductServlet extends HttpServlet {
 
         Map<String, String> errors = new HashMap<>();
         try {
-            // Lấy dữ liệu từ form
+            // Retrieve data from the form
             String productName = request.getParameter("productName");
             String categoryIdStr = request.getParameter("categoryId");
             String detailDesc = request.getParameter("detailDesc");
@@ -129,15 +129,20 @@ public class AddProductServlet extends HttpServlet {
                     errors.put("imageError", "Only PNG and JPEG images are allowed.");
                 } else {
                     fileName = System.currentTimeMillis() + "_" + fileName;
-                    String uploadPath = getServletContext().getRealPath("") + File.separator + "image";
-                    File uploadDir = new File(uploadPath);
+                    
+                    // Define path to save image directly into src/main/webapp/image
+                    String picFolder = "src/main/webapp/image"; // The folder for image
+                    String projectPath = getServletContext().getRealPath("/").split("target")[0];
+                    String realPath = projectPath + picFolder;
+
+                    File uploadDir = new File(realPath);
                     if (!uploadDir.exists()) uploadDir.mkdirs();
-                    filePart.write(uploadPath + File.separator + fileName);
+                    filePart.write(realPath + File.separator + fileName);
                     imageName = "image/" + fileName;
                 }
             }
 
-            // Nếu có lỗi, trả về trang nhập liệu với thông báo lỗi
+            // If there are errors, return to the input page with error messages
             if (!errors.isEmpty()) {
                 List<Category> categoryList = categoryDAO.getAllCategories();
                 request.setAttribute("categoryList", categoryList);
@@ -146,7 +151,7 @@ public class AddProductServlet extends HttpServlet {
                 return;
             }
 
-            // Tạo đối tượng Product
+            // Create a Product object
             Product product = new Product();
             product.setProductName(productName);
             product.setCategoryId(categoryId);
@@ -159,10 +164,10 @@ public class AddProductServlet extends HttpServlet {
             product.setStatus(status);
             product.setImage(imageName);
 
-            // Thêm sản phẩm vào database
+            // Add product to the database
             boolean success = productDAO.addProduct(product);
 
-            // Load lại danh sách category
+            // Reload the category list
             List<Category> categoryList = categoryDAO.getAllCategories();
             request.setAttribute("categoryList", categoryList);
 

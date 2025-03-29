@@ -43,7 +43,8 @@ public class UpdateProfileServlet extends HttpServlet {
         try {
             Part part = request.getPart("avatar");
             if (part != null && part.getSize() > 0) {
-                String picFolder = "src/main/webapp/image"; // đưa trực tiếp vào source
+                // Đường dẫn lưu ảnh vào thư mục src/main/webapp/image
+                String picFolder = "src/main/webapp/image"; // Đưa trực tiếp vào source
 
                 // Lấy đường dẫn thư mục gốc của project
                 String projectPath = getServletContext().getRealPath("/").split("target")[0];
@@ -53,15 +54,18 @@ public class UpdateProfileServlet extends HttpServlet {
 
                 File uploadDir = new File(realPath);
                 if (!uploadDir.exists()) {
-                    uploadDir.mkdirs();
+                    uploadDir.mkdirs(); // Tạo thư mục nếu chưa có
                 }
 
+                // Lấy tên file ảnh
                 String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
                 String savedFileName = System.currentTimeMillis() + "_" + fileName;
 
+                // Lưu ảnh vào thư mục
                 part.write(realPath + File.separator + savedFileName);
 
-                img = "image/" + savedFileName; // Đường dẫn để hiển thị trên JSP
+                // Lưu đường dẫn ảnh để hiển thị trên JSP
+                img = "image/" + savedFileName;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -71,15 +75,15 @@ public class UpdateProfileServlet extends HttpServlet {
         user.setFullName(fullName);
         user.setPhoneNumber(phone);
         user.setAddress(address);
-        user.setAvatar(img);
+        user.setAvatar(img); // Cập nhật ảnh đại diện mới
 
-        // Gọi DAO để cập nhật vào DB
+        // Gọi DAO để cập nhật thông tin người dùng vào DB
         UserDAO userDAO = new UserDAO();
         boolean success = userDAO.updateUserProfile(user);
 
         if (success) {
-            session.setAttribute("loggedInUser", user);
-            response.sendRedirect("viewProfile.jsp");
+            session.setAttribute("loggedInUser", user); // Cập nhật lại thông tin người dùng trong session
+            response.sendRedirect("viewProfile.jsp"); // Điều hướng đến trang View Profile
         } else {
             request.setAttribute("error", "Failed to update profile.");
             request.getRequestDispatcher("updateProfile.jsp").forward(request, response);

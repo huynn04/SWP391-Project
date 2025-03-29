@@ -1,11 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
-
 import dal.UserDAO;
+import model.User;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -17,12 +14,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
-import model.User;
 
-/**
- *
- * @author Nguyễn Ngoc Huy CE180178
- */
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024,   // 1 MB
     maxFileSize = 1024 * 1024 * 5,     // 5 MB
@@ -87,18 +79,22 @@ public class EditStaffServlet extends HttpServlet {
         String newAvatarPath = currentStaff.getAvatar();
         if (filePart != null && filePart.getSize() > 0) {
             String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-            String uploadPath = getServletContext().getRealPath("") + File.separator + "image";
+            
+            // Định nghĩa thư mục lưu ảnh vào src/main/webapp/image
+            String picFolder = "src/main/webapp/image"; 
+            String projectPath = getServletContext().getRealPath("/").split("target")[0];
+            String realPath = projectPath + picFolder;
 
-            File uploadDir = new File(uploadPath);
+            File uploadDir = new File(realPath);
             if (!uploadDir.exists()) {
-                uploadDir.mkdir();
+                uploadDir.mkdirs(); // Tạo thư mục nếu chưa có
             }
 
             String savedFileName = System.currentTimeMillis() + "_" + fileName;
             File fileToSave = new File(uploadDir, savedFileName);
 
             filePart.write(fileToSave.getAbsolutePath());
-            newAvatarPath = "image/" + savedFileName; 
+            newAvatarPath = "image/" + savedFileName; // Đường dẫn lưu ảnh trong thư mục image
         }
 
         Date updatedAt = new Date();
