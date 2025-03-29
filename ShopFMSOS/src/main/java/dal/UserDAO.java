@@ -366,6 +366,7 @@ public List<User> getAllStaff(String sortOption) {
     }
 
     // Tìm kiếm và sắp xếp danh sách Staff theo từ khóa và tiêu chí
+    // Tìm kiếm và sắp xếp danh sách Staff theo từ khóa và tiêu chí
     public List<User> searchAndSortStaff(String searchQuery, String searchBy, String sortOption) {
         List<User> staffList = new ArrayList<>();
         String orderBy = "full_name ASC"; // Default: Name A-Z
@@ -396,8 +397,7 @@ public List<User> getAllStaff(String sortOption) {
 
         sql.append("ORDER BY ").append(orderBy);
 
-        try (Connection con = getConnection();
-             PreparedStatement ps = con.prepareStatement(sql.toString())) {
+        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql.toString())) {
 
             if (searchQuery != null && !searchQuery.trim().isEmpty()) {
                 ps.setString(1, "%" + searchQuery + "%");
@@ -425,6 +425,7 @@ public List<User> getAllStaff(String sortOption) {
         }
         return staffList;
     }
+
 
     // ------------------ Cập nhật lại phương thức updateUser ------------------
     // (Bao gồm cập nhật luôn cả role_id cho chức năng Edit Staff)
