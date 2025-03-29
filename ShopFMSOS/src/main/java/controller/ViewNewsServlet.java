@@ -73,12 +73,12 @@ public class ViewNewsServlet extends HttpServlet {
                 request.getRequestDispatcher("/ViewNews.jsp").forward(request, response);
             } else {
                 // Nếu không tìm thấy bài viết
-                request.setAttribute("error", "❌ Tin tức không tồn tại.");
+                request.setAttribute("error", "❌The news does not exist.");
                 request.getRequestDispatcher("/ManageNews").forward(request, response);
             }
 
         } catch (NumberFormatException e) {
-            request.setAttribute("error", "❌ Lỗi ID tin tức không hợp lệ.");
+            request.setAttribute("error", "❌The news ID is invalid.");
             request.getRequestDispatcher("/ManageNews").forward(request, response);
         }
     }
