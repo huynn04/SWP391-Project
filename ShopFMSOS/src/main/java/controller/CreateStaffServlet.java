@@ -50,20 +50,23 @@ public class CreateStaffServlet extends HttpServlet {
 
         try {
             if (filePart != null && filePart.getSize() > 0) {
+                // Định nghĩa thư mục lưu ảnh vào src/main/webapp/image
                 String picFolder = "src/main/webapp/image";
                 String projectPath = getServletContext().getRealPath("/").split("target")[0];
                 String realPath = projectPath + picFolder;
 
                 File uploadDir = new File(realPath);
                 if (!uploadDir.exists()) {
-                    uploadDir.mkdirs();
+                    uploadDir.mkdirs(); // Tạo thư mục nếu chưa có
                 }
 
                 String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
                 String savedFileName = roleId + "_" + System.currentTimeMillis() + "_" + fileName;
 
+                // Lưu ảnh vào thư mục gốc
                 filePart.write(realPath + File.separator + savedFileName);
 
+                // Đường dẫn lưu ảnh trong thư mục image
                 avatarPath = "image/" + savedFileName;
             }
         } catch (Exception e) {
@@ -95,5 +98,4 @@ public class CreateStaffServlet extends HttpServlet {
             request.getRequestDispatcher("CreateStaff.jsp").forward(request, response);
         }
     }
-
 }
