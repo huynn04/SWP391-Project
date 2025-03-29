@@ -37,6 +37,9 @@ public class AddressDAO extends DBContext {
     }
 
     public boolean saveAddress(Address address) {
+        if (address == null) {
+        throw new IllegalArgumentException("Address cannot be null");
+    }
     // Kiểm tra xem các trường bắt buộc đã có giá trị chưa
     if (address.getUserId() == 0 || address.getPhone().isEmpty() || address.getCity().isEmpty() || address.getSpecificAddress().isEmpty()) {
         System.out.println("Error: Missing required fields");

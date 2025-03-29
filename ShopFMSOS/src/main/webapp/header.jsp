@@ -46,7 +46,7 @@
                 id="settingsDropdown" 
                 data-bs-toggle="dropdown" 
                 aria-expanded="false">
-                <% if (loggedInUser.getAvatar() == null || loggedInUser.getAvatar().isEmpty()) { %>
+                <% if (loggedInUser.getAvatar() == "NULL" || loggedInUser.getAvatar() == null || loggedInUser.getAvatar().isEmpty()) { %>
                 <!-- Hiển thị icon nếu không có ảnh đại diện -->
                 👤
                 <% } else { %>

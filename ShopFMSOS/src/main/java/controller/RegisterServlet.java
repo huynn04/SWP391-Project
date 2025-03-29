@@ -72,7 +72,7 @@ public class RegisterServlet extends HttpServlet {
         Date createdAt = new Date();
         Date updatedAt = new Date();
 
-        User user = new User(0, roleId, fullName, email, "", "", hashedPassword, "default-avatar.png", status, createdAt, updatedAt);
+        User user = new User(0, roleId, fullName, email, "", "", hashedPassword, "NULL", status, createdAt, updatedAt);
         UserDAO userDAO = new UserDAO();
 
         boolean isInserted = userDAO.insertUser(user);
