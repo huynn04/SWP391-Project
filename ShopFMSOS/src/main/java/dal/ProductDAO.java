@@ -249,7 +249,7 @@ public class ProductDAO extends DBContext {
         }
     }
 
-    public List<Product> searchProducts(String searchQuery, String searchBy, String sortBy) {
+   public List<Product> searchProducts(String searchQuery, String searchBy, String sortBy) {
         List<Product> products = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM [products] WHERE 1=1");
 
@@ -317,8 +317,7 @@ public class ProductDAO extends DBContext {
 
             try ( ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Product product = new Product(
-                            rs.getInt("product_id"),
+                    Product product = new Product(rs.getInt("product_id"),
                             rs.getInt("category_id"),
                             rs.getString("product_name"),
                             rs.getString("detail_desc"),
@@ -621,4 +620,20 @@ public class ProductDAO extends DBContext {
         }
         return products;
     }
+    public boolean updateProductCategory(int oldCategoryId) {
+    int newCategoryId = 13; // Mặc định chuyển tất cả sản phẩm về category_id = 13
+    String sql = "UPDATE products SET category_id = ? WHERE category_id = ?";
+
+    try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, newCategoryId);  // Cập nhật category_id thành 13
+        ps.setInt(2, oldCategoryId);  // Tìm các sản phẩm có category_id cũ
+
+        int rowsAffected = ps.executeUpdate();
+        return rowsAffected > 0;  // Trả về true nếu có sản phẩm bị ảnh hưởng
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;  // Nếu có lỗi, trả về false
+    }
+}
+
 }
