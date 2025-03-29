@@ -172,10 +172,12 @@ public class NewsDAO extends DBContext {
         }
     }
 
-    public List<News> searchNews(String searchQuery, String searchBy, int currentPage, int newsPerPage) {
+
+ public List<News> searchNews(String searchQuery, String searchBy, int currentPage, int newsPerPage, String sortOption) {
         List<News> newsList = new ArrayList<>();
         int offset = (currentPage - 1) * newsPerPage;
 
+        // Build WHERE clause based on search criteria
         String whereClause = "";
         boolean isValidId = false;
         int newsId = -1;
@@ -187,16 +189,33 @@ public class NewsDAO extends DBContext {
                     isValidId = true;
                     whereClause = " WHERE news_id = ?";
                 } catch (NumberFormatException e) {
-                    whereClause = ""; // Bỏ qua điều kiện nếu ID không hợp lệ
+                    whereClause = ""; // Ignore if ID is not valid
                 }
-            } else { // title
+            } else { // Searching by title
                 whereClause = " WHERE LOWER(title) LIKE LOWER(?)";
             }
         }
 
+        // Sorting options
+        String orderBy = "created_at DESC"; // Default: Sort by created_at descending (newest first)
+        switch (sortOption) {
+            case "id-asc":
+                orderBy = "news_id ASC";
+                break;
+            case "id-desc":
+                orderBy = "news_id DESC";
+                break;
+            case "date-asc":
+                orderBy = "created_at ASC";
+                break;
+            case "date-desc":
+                orderBy = "created_at DESC";
+                break;
+        }
+
         String sql = "WITH NewsWithRow AS ("
                 + "   SELECT news_id, user_id, title, content, image, status, created_at, updated_at, "
-                + "          ROW_NUMBER() OVER (ORDER BY created_at DESC) AS RowNum "
+                + "          ROW_NUMBER() OVER (ORDER BY " + orderBy + ") AS RowNum "
                 + "   FROM news "
                 + whereClause
                 + ") "
@@ -204,7 +223,7 @@ public class NewsDAO extends DBContext {
                 + "FROM NewsWithRow "
                 + "WHERE RowNum BETWEEN ? AND ?";
 
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             int paramIndex = 1;
             if (searchQuery != null && !searchQuery.trim().isEmpty()) {
                 if ("id".equals(searchBy)) {
@@ -218,7 +237,7 @@ public class NewsDAO extends DBContext {
             ps.setInt(paramIndex++, offset + 1);
             ps.setInt(paramIndex, offset + newsPerPage);
 
-            try ( ResultSet rs = ps.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     News news = new News(
                             rs.getInt("news_id"),
@@ -236,10 +255,10 @@ public class NewsDAO extends DBContext {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return newsList;
     }
 
-// Cập nhật phương thức đếm số lượng tin tức
     public int countSearchNews(String searchQuery, String searchBy) {
         int count = 0;
         String sql = "SELECT COUNT(*) FROM news";
@@ -253,14 +272,14 @@ public class NewsDAO extends DBContext {
                     isValidId = true;
                     sql += " WHERE news_id = ?";
                 } catch (NumberFormatException e) {
-                    // Không áp dụng điều kiện nếu ID không hợp lệ
+                    // Do not apply condition if ID is invalid
                 }
             } else {
                 sql += " WHERE LOWER(title) LIKE LOWER(?)";
             }
         }
 
-        try ( Connection con = getConnection();  PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             if (searchQuery != null && !searchQuery.trim().isEmpty()) {
                 if ("id".equals(searchBy)) {
                     if (isValidId) {
@@ -270,7 +289,8 @@ public class NewsDAO extends DBContext {
                     ps.setString(1, "%" + searchQuery + "%");
                 }
             }
-            try ( ResultSet rs = ps.executeQuery()) {
+
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     count = rs.getInt(1);
                 }
@@ -280,6 +300,7 @@ public class NewsDAO extends DBContext {
         }
         return count;
     }
+
 
     public List<News> getRecentNews() {
         List<News> newsList = new ArrayList<>();

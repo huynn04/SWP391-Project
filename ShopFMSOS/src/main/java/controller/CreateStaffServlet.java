@@ -12,11 +12,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import model.User;
+import utils.HashUtil;
 
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024,   // 1 MB
-    maxFileSize = 1024 * 1024 * 5,       // 5 MB
-    maxRequestSize = 1024 * 1024 * 25    // 25 MB
+        fileSizeThreshold = 1024 * 1024, // 1 MB
+        maxFileSize = 1024 * 1024 * 5, // 5 MB
+        maxRequestSize = 1024 * 1024 * 25 // 25 MB
 )
 public class CreateStaffServlet extends HttpServlet {
 
@@ -40,9 +41,12 @@ public class CreateStaffServlet extends HttpServlet {
         int status = Integer.parseInt(request.getParameter("status"));
         int roleId = 2;
 
+        // Mã hóa mật khẩu bằng MD5
+        String hashedPassword = HashUtil.md5(password);
+
         // Xử lý upload avatar vào src/main/webapp/image
         Part filePart = request.getPart("avatar");
-        String avatarPath = "image/avatarnull.jpg"; // Mặc định
+        String avatarPath = "NULL"; // Mặc định
 
         try {
             if (filePart != null && filePart.getSize() > 0) {
@@ -68,12 +72,13 @@ public class CreateStaffServlet extends HttpServlet {
 
         Date now = new Date();
 
+        // Tạo đối tượng User và set thông tin đã được mã hóa mật khẩu
         User newStaff = new User();
         newStaff.setFullName(fullName);
         newStaff.setEmail(email);
         newStaff.setPhoneNumber(phoneNumber);
         newStaff.setAddress(address);
-        newStaff.setPassword(password);
+        newStaff.setPassword(hashedPassword);  // Lưu mật khẩu đã mã hóa
         newStaff.setAvatar(avatarPath);
         newStaff.setStatus(status);
         newStaff.setRoleId(roleId);
@@ -90,4 +95,5 @@ public class CreateStaffServlet extends HttpServlet {
             request.getRequestDispatcher("CreateStaff.jsp").forward(request, response);
         }
     }
+
 }
